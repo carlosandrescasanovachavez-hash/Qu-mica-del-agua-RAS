@@ -3,61 +3,67 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Agua RAS Salmón</title>
+<title>Química del agua RAS</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
 /* Layout: guía de campo — cabecera compacta, simulador, fichas con barra de rangos, red de interacciones, fuentes */
 :root{
-  --bg:#F2F6F7; --surface:#FFFFFF; --sunk:#E7EEF0; --ink:#0F2A33; --muted:#526870; --line:#D3DEE1;
-  --fjord:#0D5B6C; --salmon:#DC5F42; --salmon-soft:#F8DED6;
+  --bg:#EEF5FD; --surface:#FFFFFF; --sunk:#E1EDFA; --ink:#0B2545; --muted:#4A6283; --line:#C9DBF0;
+  --fjord:#1565C0; --salmon:#E8613C; --salmon-soft:#FBE3DA;
+  --blue-1:#0A2A5E; --blue-2:#1565C0; --blue-3:#42A5F5; --blue-4:#BBDEFB;
   --ok:#2C8A57; --acc:#86BFA0; --warn:#C68A0A; --crit:#C23A3A;
   --ok-bg:#DCEFE3; --warn-bg:#F7EBCB; --crit-bg:#F6DADA;
-  --no3:#1F9E8A; --v-top:#F7FAFB; --v-bot:#D9E6EA;
-  --f-display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
-  --f-body:"IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --no3:#1F9E8A; --v-top:#F5FAFF; --v-bot:#CFE3F7;
+  --f-display:"Fredoka", "Segoe UI", system-ui, sans-serif;
+  --f-body:"Nunito", "Segoe UI", system-ui, sans-serif;
   --f-mono:"IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#0A181D; --surface:#10242B; --sunk:#0C1E24; --ink:#E3EDEF; --muted:#93AAB0; --line:#21404A;
-  --fjord:#5CB9CA; --salmon:#F0866A; --salmon-soft:#3A2420;
+  --bg:#07152B; --surface:#0E2140; --sunk:#0A1A34; --ink:#E4EEFB; --muted:#93A9C9; --line:#1F3A63;
+  --fjord:#64B5F6; --salmon:#F0866A; --salmon-soft:#3A2420;
+  --blue-1:#041026; --blue-2:#0D3B7A; --blue-3:#64B5F6; --blue-4:#1F3A63;
   --ok:#5DC48B; --acc:#3E7A5A; --warn:#E3B440; --crit:#EE6C6C;
-  --ok-bg:#163527; --warn-bg:#3A2F12; --crit-bg:#3D1C1C; --no3:#4FD1B5; --v-top:#16313A; --v-bot:#071317; color-scheme:dark}}
+  --ok-bg:#163527; --warn-bg:#3A2F12; --crit-bg:#3D1C1C; --no3:#4FD1B5; --v-top:#132C52; --v-bot:#050F20; color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#0A181D; --surface:#10242B; --sunk:#0C1E24; --ink:#E3EDEF; --muted:#93AAB0; --line:#21404A;
-  --fjord:#5CB9CA; --salmon:#F0866A; --salmon-soft:#3A2420;
+  --bg:#07152B; --surface:#0E2140; --sunk:#0A1A34; --ink:#E4EEFB; --muted:#93A9C9; --line:#1F3A63;
+  --fjord:#64B5F6; --salmon:#F0866A; --salmon-soft:#3A2420;
+  --blue-1:#041026; --blue-2:#0D3B7A; --blue-3:#64B5F6; --blue-4:#1F3A63;
   --ok:#5DC48B; --acc:#3E7A5A; --warn:#E3B440; --crit:#EE6C6C;
-  --ok-bg:#163527; --warn-bg:#3A2F12; --crit-bg:#3D1C1C; --no3:#4FD1B5; --v-top:#16313A; --v-bot:#071317; color-scheme:dark}
+  --ok-bg:#163527; --warn-bg:#3A2F12; --crit-bg:#3D1C1C; --no3:#4FD1B5; --v-top:#132C52; --v-bot:#050F20; color-scheme:dark}
 
 *{box-sizing:border-box}
-body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.6}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.65}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
 .wrap{max-width:1120px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 h1,h2,h3{font-family:var(--f-display);line-height:1.1;text-wrap:balance;margin:0}
-h2{font-size:clamp(1.6rem,3.2vw,2.2rem);font-weight:800;letter-spacing:-.01em}
-h3{font-size:1.35rem;font-weight:700}
+h2{font-size:clamp(1.7rem,3.4vw,2.4rem);font-weight:700;color:var(--fjord)}
+h3{font-size:1.4rem;font-weight:600}
 p{margin:0}
 .mono{font-family:var(--f-mono)}
-.eyebrow{font-family:var(--f-mono);font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--fjord)}
+.eyebrow{display:inline-block;width:max-content;max-width:100%;font-family:var(--f-display);font-weight:600;font-size:.85rem;letter-spacing:.04em;color:var(--fjord);background:var(--sunk);padding:3px 12px;border-radius:999px}
 a{color:var(--fjord)}
-:focus-visible{outline:3px solid var(--salmon);outline-offset:2px;border-radius:4px}
+:focus-visible{outline:3px solid var(--blue-3);outline-offset:2px;border-radius:4px}
 
 /* Header */
-.hero{padding-block:48px 28px;border-bottom:1px solid var(--line)}
+.hero{padding-block:48px 32px;background:linear-gradient(180deg,var(--sunk),var(--bg));border-bottom:1px solid var(--line)}
 .hero-grid{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:40px;align-items:end}
-.hero h1{font-size:clamp(2.3rem,6vw,4.2rem);font-weight:800;letter-spacing:-.025em}
-.hero h1 em{font-style:normal;color:var(--salmon)}
+.hero h1{font-size:clamp(2.2rem,5.6vw,3.8rem);font-weight:700;color:var(--blue-1)}
+:root[data-theme="dark"] .hero h1{color:var(--ink)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .hero h1{color:var(--ink)}}
+.hero h1 em{font-style:normal;color:var(--blue-2)}
 .hero .lede{margin-top:16px;max-width:60ch;color:var(--muted);font-size:1.08rem}
-.hero-note{border-left:3px solid var(--fjord);padding:4px 0 4px 16px;color:var(--muted);font-size:.95rem;display:grid;gap:8px}
+.hero-note{border-left:4px solid var(--blue-3);background:var(--surface);border-radius:0 12px 12px 0;padding:14px 18px;color:var(--muted);font-size:.95rem;display:grid;gap:8px}
 .hero-note b{color:var(--ink)}
 
 /* Sticky nav */
 .nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:var(--surface);border-bottom:1px solid var(--line)}
 .nav .wrap{display:flex;gap:6px;overflow-x:auto;padding-block:10px;scrollbar-width:thin}
-.nav a{flex:0 0 auto;font-family:var(--f-mono);font-size:.82rem;text-decoration:none;color:var(--ink);padding:5px 11px;border:1px solid var(--line);border-radius:999px;white-space:nowrap}
+.nav a{flex:0 0 auto;font-family:var(--f-display);font-weight:500;font-size:.9rem;text-decoration:none;color:var(--ink);padding:5px 11px;border:1px solid var(--line);border-radius:999px;white-space:nowrap}
 .nav a:hover{border-color:var(--fjord);color:var(--fjord)}
-.nav a.sec{background:var(--sunk)}
+.nav a.sec{background:var(--fjord);color:#fff;border-color:var(--fjord)}
+.nav a.sec:hover{color:#fff;filter:brightness(1.1)}
 
 section.block{padding-block:56px 16px}
 .sec-head{display:grid;gap:10px;margin-bottom:28px;max-width:70ch}
@@ -65,7 +71,7 @@ section.block{padding-block:56px 16px}
 
 /* Simulator */
 .sim{display:grid;grid-template-columns:minmax(0,340px) minmax(0,1fr);gap:24px;align-items:start}
-.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:20px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:0 2px 10px rgba(21,101,192,.06);padding:20px}
 .controls{display:grid;gap:16px;align-content:start}
 .ctl label{display:flex;justify-content:space-between;gap:8px;font-size:.9rem;font-weight:500}
 .ctl label output{font-family:var(--f-mono);color:var(--fjord);font-variant-numeric:tabular-nums}
@@ -94,7 +100,7 @@ section.block{padding-block:56px 16px}
 .tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
 table{border-collapse:collapse;width:100%;min-width:820px;font-size:.9rem}
 th,td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--line);vertical-align:top}
-th{font-family:var(--f-mono);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);background:var(--sunk);font-weight:500}
+th{font-family:var(--f-display);font-size:.9rem;color:#fff;background:var(--fjord);font-weight:600}
 tr:last-child td{border-bottom:0}
 td.n{font-family:var(--f-mono);font-variant-numeric:tabular-nums;white-space:nowrap}
 td .ok{color:var(--ok)} td .warn{color:var(--warn)} td .crit{color:var(--crit)}
@@ -102,18 +108,18 @@ td a{font-weight:600;text-decoration:none}
 
 /* Cards */
 .cards{display:grid;gap:20px}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:24px;display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:28px;scroll-margin-top:72px}
+.card{background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--blue-3);border-radius:16px;box-shadow:0 2px 12px rgba(21,101,192,.07);padding:24px;display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:28px;scroll-margin-top:72px}
 .card-head{grid-column:1/-1;display:flex;flex-wrap:wrap;align-items:baseline;gap:10px 16px;justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:14px}
-.card-head .sym{font-family:var(--f-display);font-size:2rem;font-weight:800;color:var(--salmon);margin-right:10px}
+.card-head .sym{font-family:var(--f-display);font-size:2rem;font-weight:700;color:var(--fjord);margin-right:10px}
 .card-head h3{display:flex;align-items:baseline;flex-wrap:wrap}
 .card-head .unit{font-family:var(--f-mono);font-size:.8rem;color:var(--muted)}
 .tags{display:flex;gap:6px;flex-wrap:wrap}
 .tag{font-family:var(--f-mono);font-size:.7rem;padding:2px 9px;border-radius:999px;background:var(--sunk);color:var(--muted)}
 .tag.s{background:var(--salmon-soft);color:var(--salmon)}
 .col{display:grid;gap:16px;align-content:start;min-width:0}
-.col h4{font-family:var(--f-mono);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--fjord);margin:0 0 4px;font-weight:500}
+.col h4{font-family:var(--f-display);font-size:1rem;color:var(--fjord);margin:0 0 4px;font-weight:600}
 .col ul{margin:0;padding-left:18px;display:grid;gap:4px}
-.col li::marker{color:var(--salmon)}
+.col li::marker{color:var(--blue-3)}
 .eq{font-family:var(--f-mono);font-size:.85rem;background:var(--sunk);padding:8px 12px;border-radius:6px;overflow-x:auto;white-space:nowrap}
 
 /* Range bar */
@@ -164,7 +170,7 @@ td a{font-weight:600;text-decoration:none}
 
 /* Stage */
 .stages{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
-.stage{border-top:3px solid var(--fjord);background:var(--surface);padding:14px 16px;border-radius:0 0 8px 8px;display:grid;gap:6px;align-content:start}
+.stage{border-top:5px solid var(--blue-3);background:var(--surface);padding:14px 16px;border-radius:0 0 8px 8px;display:grid;gap:6px;align-content:start}
 .stage b{font-family:var(--f-display);font-size:1.05rem}
 .stage p{font-size:.88rem;color:var(--muted)}
 
@@ -213,7 +219,7 @@ footer{padding-block:40px;color:var(--muted);font-size:.82rem}
 .stepc{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:grid;gap:6px}
 .stepc h4{margin:0;font-family:var(--f-display);font-size:1.05rem}
 .stepc p{font-size:.88rem;color:var(--muted)}
-.stepn{font-family:var(--f-mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--salmon)}
+.stepn{font-family:var(--f-display);font-weight:600;font-size:.85rem;color:var(--fjord)}
 .factors{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:14px}
 .fct{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px;display:grid;gap:4px;align-content:start}
 .fct b{font-family:var(--f-display);font-size:1.05rem}
@@ -247,12 +253,120 @@ footer{padding-block:40px;color:var(--muted);font-size:.82rem}
   .viewer{height:400px}
   .vleg{top:8px;right:8px;left:8px;justify-content:flex-start}
 }
+/* Presentación */
+.pres{position:relative;min-height:100vh;min-height:100svh;display:grid;align-content:center;color:#fff;overflow:hidden;
+  background:radial-gradient(120% 80% at 80% 0%,#42A5F5 0%,transparent 55%),linear-gradient(160deg,#0A2A5E 0%,#1565C0 60%,#1E88E5 100%);
+  padding-block:calc(env(safe-area-inset-top,0px) + 32px) 96px}
+.pres .wrap{position:relative;z-index:2;width:100%}
+.pres-top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:28px;font-family:var(--f-display);font-weight:500;font-size:.95rem;opacity:.9}
+.pres-badge{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);padding:4px 14px;border-radius:999px}
+.slides{position:relative}
+.slide{display:none;max-width:780px}
+.slide.on{display:block;animation:sIn .5s ease both}
+@keyframes sIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.slide .kick{font-family:var(--f-display);font-weight:600;color:#BBDEFB;font-size:1.05rem;margin-bottom:10px}
+.slide h1,.slide h2{color:#fff;font-family:var(--f-display);font-weight:700;line-height:1.08}
+.slide h1{font-size:clamp(2.4rem,7vw,4.6rem)}
+.slide h1 span{color:#90CAF9}
+.slide h2{font-size:clamp(1.9rem,5vw,3rem)}
+.slide p{margin-top:16px;font-size:clamp(1.05rem,2.2vw,1.25rem);color:#E3F2FD;max-width:60ch}
+.slide ul{margin:20px 0 0;padding:0;list-style:none;display:grid;gap:12px}
+.slide li{display:grid;grid-template-columns:44px 1fr;gap:12px;align-items:center;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:14px;padding:10px 14px;font-size:1.05rem}
+.slide li b{color:#fff}
+.slide .ico{width:44px;height:44px;border-radius:12px;background:rgba(255,255,255,.18);display:grid;place-items:center;font-family:var(--f-display);font-weight:700;font-size:1rem}
+.pres-ctl{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:32px}
+.pbtn{font-family:var(--f-display);font-weight:600;font-size:1rem;border-radius:999px;padding:10px 20px;cursor:pointer;border:2px solid rgba(255,255,255,.6);background:transparent;color:#fff;text-decoration:none}
+.pbtn:hover{background:rgba(255,255,255,.12)}
+.pbtn.main{background:#fff;color:#0D47A1;border-color:#fff}
+.pbtn.main:hover{background:#E3F2FD}
+.pbtn:disabled{opacity:.35;cursor:default}
+.dots{display:flex;gap:8px;margin-inline:4px}
+.dots button{width:11px;height:11px;border-radius:50%;border:0;padding:0;background:rgba(255,255,255,.4);cursor:pointer}
+.dots button[aria-current="true"]{background:#fff;width:28px;border-radius:999px}
+.wave{position:absolute;left:0;right:0;bottom:-1px;width:100%;height:90px;z-index:1;display:block}
+.wave path{fill:var(--bg)}
+.bub{position:absolute;bottom:-40px;border-radius:50%;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);z-index:1}
+@media (prefers-reduced-motion:no-preference){.bub{animation:rise linear infinite}}
+@keyframes rise{to{transform:translateY(-115vh)}}
 </style>
 </head>
 <body>
 
 
-<header class="hero">
+
+<section class="pres" id="inicio" aria-label="Presentación">
+  <span class="bub" style="left:8%;width:18px;height:18px;animation-duration:14s"></span>
+  <span class="bub" style="left:22%;width:34px;height:34px;animation-duration:19s;animation-delay:-6s"></span>
+  <span class="bub" style="left:47%;width:12px;height:12px;animation-duration:11s;animation-delay:-3s"></span>
+  <span class="bub" style="left:66%;width:26px;height:26px;animation-duration:16s;animation-delay:-9s"></span>
+  <span class="bub" style="left:84%;width:16px;height:16px;animation-duration:13s;animation-delay:-2s"></span>
+  <div class="wrap">
+    <div class="pres-top"><span class="pres-badge">Química del agua · RAS</span><span id="pCount">1 / 4</span></div>
+    <div class="slides" id="slides">
+      <div class="slide on">
+        <div class="kick">Guía didáctica para piscicultura</div>
+        <h1>Calidad del agua<br>en salmones <span>RAS</span></h1>
+        <p>Aprende, paso a paso, qué parámetros del agua deciden si un salmón crece sano o se enferma, y cómo controlarlos en un sistema de recirculación.</p>
+      </div>
+      <div class="slide">
+        <div class="kick">Paso 1 · El sistema</div>
+        <h2>¿Qué es un RAS?</h2>
+        <p>Un <b>Sistema de Recirculación Acuícola</b> reutiliza el mismo agua una y otra vez. Se limpia con filtros mecánicos, un biofiltro con bacterias, desgasificación y oxigenación, y vuelve a los estanques.</p>
+        <ul>
+          <li><span class="ico">90%</span><span>Más del <b>90 % del agua</b> se recircula cada día.</span></li>
+          <li><span class="ico">⟳</span><span>Todo lo que entra (alimento) <b>se queda en el agua</b> si no se retira.</span></li>
+        </ul>
+      </div>
+      <div class="slide">
+        <div class="kick">Paso 2 · El problema</div>
+        <h2>Todo está conectado</h2>
+        <p>El alimento genera amoníaco, CO₂ y sólidos. El biofiltro consume oxígeno y alcalinidad. Si cambias el pH, cambias la toxicidad del amoníaco. Por eso hay que mirar los parámetros <b>en conjunto</b>.</p>
+        <ul>
+          <li><span class="ico">NH₃</span><span>Amoníaco: tóxico incluso en cantidades muy pequeñas.</span></li>
+          <li><span class="ico">O₂</span><span>Oxígeno: el salmón lo necesita en abundancia.</span></li>
+          <li><span class="ico">pH</span><span>El pH regula el equilibrio entre CO₂ y amoníaco.</span></li>
+        </ul>
+      </div>
+      <div class="slide">
+        <div class="kick">Paso 3 · Lo que vas a aprender</div>
+        <h2>En esta guía encontrarás</h2>
+        <ul>
+          <li><span class="ico">01</span><span><b>Simulador</b> del dilema pH–CO₂–amoníaco.</span></li>
+          <li><span class="ico">12</span><span><b>Fichas</b> de doce parámetros con rangos seguros y críticos.</span></li>
+          <li><span class="ico">3D</span><span><b>Biofiltro en 3D</b> y calculadora de nitrificación.</span></li>
+          <li><span class="ico">⚗</span><span><b>Reacciones</b> químicas clave y fuentes científicas.</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="pres-ctl">
+      <button class="pbtn" id="pPrev" type="button" disabled>← Anterior</button>
+      <div class="dots" id="pDots" role="tablist" aria-label="Diapositivas"></div>
+      <button class="pbtn" id="pNext" type="button">Siguiente →</button>
+      <a class="pbtn main" href="#guia">Comenzar la guía ↓</a>
+    </div>
+  </div>
+  <svg class="wave" viewBox="0 0 1440 90" preserveAspectRatio="none" aria-hidden="true"><path d="M0,40 C240,90 480,0 720,36 C960,72 1200,10 1440,44 L1440,90 L0,90 Z"/></svg>
+</section>
+<script>
+(function(){
+  var sl=[].slice.call(document.querySelectorAll('#slides .slide')),i=0,
+      dots=document.getElementById('pDots'),prev=document.getElementById('pPrev'),next=document.getElementById('pNext'),cnt=document.getElementById('pCount');
+  sl.forEach(function(_,k){var b=document.createElement('button');b.type='button';b.setAttribute('aria-label','Diapositiva '+(k+1));b.onclick=function(){go(k)};dots.appendChild(b);});
+  function go(k){i=Math.max(0,Math.min(sl.length-1,k));sl.forEach(function(s,j){s.classList.toggle('on',j===i)});
+    [].forEach.call(dots.children,function(d,j){d.setAttribute('aria-current',j===i?'true':'false')});
+    prev.disabled=i===0;next.textContent=i===sl.length-1?'Ir a la guía ↓':'Siguiente →';cnt.textContent=(i+1)+' / '+sl.length;}
+  prev.onclick=function(){go(i-1)};
+  next.onclick=function(){if(i===sl.length-1){document.getElementById('guia').scrollIntoView({behavior:'smooth'});}else go(i+1)};
+  document.addEventListener('keydown',function(e){var r=document.getElementById('inicio').getBoundingClientRect();if(r.bottom<100)return;
+    if(e.key==='ArrowRight')go(i+1);if(e.key==='ArrowLeft')go(i-1);});
+  var x0=null;var el=document.getElementById('slides');
+  el.addEventListener('touchstart',function(e){x0=e.touches[0].clientX},{passive:true});
+  el.addEventListener('touchend',function(e){if(x0===null)return;var dx=e.changedTouches[0].clientX-x0;if(Math.abs(dx)>50)go(i+(dx<0?1:-1));x0=null;});
+  go(0);
+})();
+</script>
+
+<header class="hero" id="guia">
   <div class="wrap hero-grid">
     <div>
       <div class="eyebrow">Guía didáctica · Salmo salar · RAS agua dulce / salobre</div>
