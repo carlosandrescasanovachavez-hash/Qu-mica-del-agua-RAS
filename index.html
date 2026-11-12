@@ -213,6 +213,7 @@ footer{padding-block:40px;color:var(--muted);font-size:.82rem}
 .vleg{position:absolute;top:12px;right:12px;display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;font-family:var(--f-mono);font-size:.72rem;background:var(--surface);border:1px solid var(--line);padding:5px 10px;border-radius:8px;max-width:calc(100% - 24px)}
 .vleg i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;vertical-align:-1px}
 .fallback{position:absolute;inset:0;display:grid;place-items:center;padding:24px;text-align:center;color:var(--muted)}
+.fallback[hidden]{display:none}
 .bio2{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:20px;margin-top:24px;align-items:start}
 #bfSvg{width:100%;min-width:500px;height:auto;display:block;margin-top:10px}
 .steps{display:grid;gap:12px}
@@ -499,7 +500,7 @@ footer{padding-block:40px;color:var(--muted);font-size:.82rem}
         <button class="tbtn" id="bAer" aria-pressed="true">Aireación</button>
         <button class="tbtn" id="bWall" aria-pressed="true">Ver interior</button>
         <button class="tbtn" id="bLbl" aria-pressed="true">Etiquetas</button>
-        <button class="tbtn" id="bRot" aria-pressed="false">Girar solo</button>
+        <button class="tbtn" id="bRot" aria-pressed="true">Girar solo</button>
         <button class="tbtn" id="bPlay" aria-pressed="true">Animación</button>
         <button class="tbtn" id="bReset">Restablecer vista</button>
       </div>
@@ -919,7 +920,8 @@ document.addEventListener('click',ev=>{const a=ev.target.closest('[data-net]');i
 sel('ph');
 })();
 </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="js/three.min.js"></script>
+<script>window.THREE||document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"><\/script>')</script>
 <script>
 (function(){
 const $=id=>document.getElementById(id);
@@ -1048,7 +1050,7 @@ dots.forEach(paintDot);
 /* ======================= MAQUETA 3D ======================= */
 const host=$('bioViewer');
 const tg=(id,fn)=>{const b=$(id);b.addEventListener('click',()=>{const on=b.getAttribute('aria-pressed')!=='true';b.setAttribute('aria-pressed',on);fn(on);});};
-let playing=!reduce, visible=true, last=performance.now();
+let playing=true, visible=true, last=performance.now();
 let tick3d=null;
 if(window.THREE){ try{ tick3d=build3D(); }catch(e){ console.warn(e); host.querySelector('.fallback').hidden=false; } }
 else host.querySelector('.fallback').hidden=false;
@@ -1173,7 +1175,7 @@ function build3D(){
 
   // cámara orbital
   const tgt=V(0,1.15,0);
-  let az,el,dist,auto=false;
+  let az,el,dist,auto=true;
   const narrow=()=>host.clientWidth<620;
   function resetView(){az=0.72;el=0.36;dist=narrow()?12.5:9.6;}
   resetView();
