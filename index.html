@@ -12,7 +12,7 @@
 :root{
   --bg:#EEF5FD; --surface:#FFFFFF; --sunk:#E1EDFA; --ink:#0B2545; --muted:#4A6283; --line:#C9DBF0;
   --fjord:#1565C0; --salmon:#E8613C; --salmon-soft:#FBE3DA;
-  --blue-1:#0A2A5E; --blue-2:#1565C0; --blue-3:#42A5F5; --blue-4:#BBDEFB;
+  --blue-1:#0A2A5E; --blue-2:#1565C0; --blue-3:#42A5F5; --blue-4:#BBDEFB; --alt:#F6FAFF;
   --ok:#2C8A57; --acc:#86BFA0; --warn:#C68A0A; --crit:#C23A3A;
   --ok-bg:#DCEFE3; --warn-bg:#F7EBCB; --crit-bg:#F6DADA;
   --no3:#1F9E8A; --v-top:#F5FAFF; --v-bot:#CFE3F7;
@@ -23,13 +23,13 @@
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#07152B; --surface:#0E2140; --sunk:#0A1A34; --ink:#E4EEFB; --muted:#93A9C9; --line:#1F3A63;
   --fjord:#64B5F6; --salmon:#F0866A; --salmon-soft:#3A2420;
-  --blue-1:#041026; --blue-2:#0D3B7A; --blue-3:#64B5F6; --blue-4:#1F3A63;
+  --blue-1:#041026; --blue-2:#0D3B7A; --blue-3:#64B5F6; --blue-4:#1F3A63; --alt:#0A1A33;
   --ok:#5DC48B; --acc:#3E7A5A; --warn:#E3B440; --crit:#EE6C6C;
   --ok-bg:#163527; --warn-bg:#3A2F12; --crit-bg:#3D1C1C; --no3:#4FD1B5; --v-top:#132C52; --v-bot:#050F20; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#07152B; --surface:#0E2140; --sunk:#0A1A34; --ink:#E4EEFB; --muted:#93A9C9; --line:#1F3A63;
   --fjord:#64B5F6; --salmon:#F0866A; --salmon-soft:#3A2420;
-  --blue-1:#041026; --blue-2:#0D3B7A; --blue-3:#64B5F6; --blue-4:#1F3A63;
+  --blue-1:#041026; --blue-2:#0D3B7A; --blue-3:#64B5F6; --blue-4:#1F3A63; --alt:#0A1A33;
   --ok:#5DC48B; --acc:#3E7A5A; --warn:#E3B440; --crit:#EE6C6C;
   --ok-bg:#163527; --warn-bg:#3A2F12; --crit-bg:#3D1C1C; --no3:#4FD1B5; --v-top:#132C52; --v-bot:#050F20; color-scheme:dark}
 
@@ -198,20 +198,49 @@ footer{padding-block:40px;color:var(--muted);font-size:.82rem}
 }
 
 /* Biofiltro */
-.viewer{position:relative;height:520px;border-radius:12px;overflow:hidden;border:1px solid var(--line);background:radial-gradient(120% 90% at 50% 20%,var(--v-top),var(--v-bot));touch-action:none}
+.viewer{position:relative;height:540px;border-radius:20px;overflow:hidden;border:1px solid var(--line);box-shadow:0 6px 24px rgba(10,42,94,.12);background:radial-gradient(120% 90% at 50% 20%,var(--v-top),var(--v-bot));touch-action:none}
 .viewer canvas{position:absolute;inset:0;width:100%;height:100%;display:block;cursor:grab}
 .viewer canvas:active{cursor:grabbing}
-.lbls{position:absolute;inset:0;pointer-events:none}
-.lbl{position:absolute;transform:translate(-50%,-100%);font-family:var(--f-mono);font-size:.72rem;line-height:1.25;background:var(--surface);color:var(--ink);border:1px solid var(--line);padding:3px 8px;border-radius:6px;white-space:nowrap;opacity:.94}
-.lbl::after{content:"";position:absolute;left:50%;top:100%;width:1px;height:10px;background:var(--muted)}
-.lbl{margin-top:-10px}
+.lbls{position:absolute;inset:0;pointer-events:none;z-index:2}
 .lbls.off{display:none}
-.vbar{position:absolute;left:12px;right:12px;bottom:12px;display:flex;flex-wrap:wrap;gap:6px}
-.tbtn{font-family:var(--f-mono);font-size:.76rem;padding:6px 11px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
-.tbtn[aria-pressed="true"]{background:var(--fjord);color:var(--surface);border-color:var(--fjord)}
-.tbtn:hover{border-color:var(--fjord)}
-.vleg{position:absolute;top:12px;right:12px;display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;font-family:var(--f-mono);font-size:.72rem;background:var(--surface);border:1px solid var(--line);padding:5px 10px;border-radius:8px;max-width:calc(100% - 24px)}
-.vleg i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;vertical-align:-1px}
+.pin{position:absolute;transform:translate(-50%,-50%);pointer-events:auto;display:flex;align-items:center;gap:6px;border:0;background:none;padding:0;cursor:pointer;font-family:var(--f-display)}
+.pin b{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--fjord);color:#fff;font-weight:600;font-size:.9rem;box-shadow:0 0 0 3px rgba(255,255,255,.85),0 3px 10px rgba(10,42,94,.35)}
+.pin span{background:var(--surface);color:var(--ink);border:1px solid var(--line);font-size:.78rem;font-weight:500;padding:3px 9px;border-radius:999px;white-space:nowrap;box-shadow:0 2px 8px rgba(10,42,94,.12)}
+.pin.on b{background:var(--salmon);transform:scale(1.15)}
+.pin.on span{border-color:var(--salmon)}
+@media (prefers-reduced-motion:no-preference){.pin.on b{animation:pinp 1.4s ease-out infinite}}
+@keyframes pinp{0%{box-shadow:0 0 0 3px #fff,0 0 0 3px rgba(232,97,60,.6)}100%{box-shadow:0 0 0 3px #fff,0 0 0 16px rgba(232,97,60,0)}}
+.viewer.narrow .pin:not(.on) span{display:none}
+.vtop{position:absolute;top:10px;left:10px;right:10px;display:flex;justify-content:space-between;align-items:flex-start;gap:8px;z-index:3;pointer-events:none}
+.vhint{font-family:var(--f-display);font-size:.8rem;background:rgba(10,42,94,.72);color:#fff;padding:5px 12px;border-radius:999px;transition:opacity .6s}
+.vhint.gone{opacity:0}
+.vicon{pointer-events:auto;width:40px;height:40px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--fjord);font-size:1.2rem;cursor:pointer;box-shadow:0 2px 8px rgba(10,42,94,.12)}
+.bio-shell{display:grid;gap:14px}
+.bio-shell.full{position:fixed;inset:0;z-index:60;background:var(--bg);padding:max(12px,env(safe-area-inset-top)) 12px 12px;overflow:auto;align-content:start}
+.bio-shell.full .viewer{height:min(68vh,720px)}
+.tour{background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--fjord);border-radius:16px;padding:16px 18px;display:grid;gap:10px;box-shadow:0 2px 12px rgba(21,101,192,.07)}
+.tour-head{display:flex;gap:12px;align-items:center}
+.tour-n{flex:0 0 auto;width:40px;height:40px;border-radius:12px;background:var(--fjord);color:#fff;display:grid;place-items:center;font-family:var(--f-display);font-weight:700;font-size:1.15rem}
+.tour-k{font-family:var(--f-display);font-size:.82rem;color:var(--muted)}
+.tour h4{margin:0;font-family:var(--f-display);font-weight:600;font-size:1.2rem;color:var(--ink)}
+.tour p{font-size:.95rem;color:var(--ink)}
+.tour p b{color:var(--fjord)}
+.tour-ctl{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.tdots{display:flex;gap:6px}
+.tdots button{width:10px;height:10px;border-radius:50%;border:0;padding:0;background:var(--line);cursor:pointer}
+.tdots button[aria-current="true"]{background:var(--fjord);width:24px;border-radius:999px}
+@media (max-width:520px){.tdots{order:-1;width:100%;justify-content:center}.tour-ctl .tbtn{flex:1 1 0;justify-content:center}}
+.vbar{display:flex;flex-wrap:wrap;gap:8px}
+.tbtn{display:inline-flex;align-items:center;gap:6px;min-height:40px;font-family:var(--f-display);font-weight:500;font-size:.92rem;padding:7px 14px;border-radius:12px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;transition:background .15s,border-color .15s}
+.tbtn span{font-size:1rem;line-height:1}
+.tbtn[aria-pressed="true"]{background:var(--sunk);color:var(--fjord);border-color:var(--fjord)}
+.tbtn[aria-pressed="false"]{opacity:.75}
+.tbtn.solid{background:var(--fjord);color:#fff;border-color:var(--fjord)}
+.tbtn.ghost{background:transparent}
+.tbtn:disabled{opacity:.4;cursor:default}
+.vleg{display:flex;gap:8px 16px;flex-wrap:wrap;align-items:center;font-size:.85rem;color:var(--muted);background:var(--surface);border:1px solid var(--line);padding:10px 14px;border-radius:12px}
+.vleg b{color:var(--ink);font-family:var(--f-display);font-weight:600}
+.vleg i{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:6px;vertical-align:-1px}
 .fallback{position:absolute;inset:0;display:grid;place-items:center;padding:24px;text-align:center;color:var(--muted)}
 .fallback[hidden]{display:none}
 .bio2{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:20px;margin-top:24px;align-items:start}
@@ -252,8 +281,32 @@ footer{padding-block:40px;color:var(--muted);font-size:.82rem}
 @media (max-width:460px){
   .factors{grid-template-columns:minmax(0,1fr)}
   .viewer{height:400px}
-  .vleg{top:8px;right:8px;left:8px;justify-content:flex-start}
 }
+/* Interfaz general */
+.progress{position:fixed;top:0;left:0;height:4px;width:0;z-index:70;background:linear-gradient(90deg,var(--blue-3),var(--fjord));border-radius:0 4px 4px 0}
+.nav{backdrop-filter:saturate(1.4) blur(8px);background:color-mix(in srgb,var(--surface) 88%,transparent);box-shadow:0 2px 12px rgba(10,42,94,.06)}
+.nav a{transition:background .15s,color .15s,border-color .15s}
+.nav a.active{background:var(--salmon);border-color:var(--salmon);color:#fff}
+section.block{scroll-margin-top:56px}
+main>section.block:nth-of-type(even){background:var(--alt)}
+main>section.block{padding-block:64px 40px}
+.sec-head h2{display:flex;align-items:center;gap:12px}
+.sec-head p{font-size:1.02rem}
+.ro{border-radius:14px}
+.tbl-wrap{border-radius:16px}
+tbody tr:nth-child(even) td{background:var(--alt)}
+tbody tr:hover td{background:var(--sunk)}
+.fab{position:fixed;right:max(16px,env(safe-area-inset-right));bottom:max(16px,env(safe-area-inset-bottom));z-index:55;display:grid;gap:10px}
+.fab button{width:48px;height:48px;border-radius:50%;border:0;background:var(--fjord);color:#fff;font-size:1.25rem;cursor:pointer;box-shadow:0 6px 18px rgba(10,42,94,.3);transition:transform .2s,opacity .2s}
+.fab button:hover{transform:translateY(-2px)}
+.fab .top{opacity:0;pointer-events:none}
+.fab .top.show{opacity:1;pointer-events:auto}
+:root[data-theme="dark"] .nav a.sec,:root[data-theme="dark"] .fab button,:root[data-theme="dark"] .tbtn.solid,:root[data-theme="dark"] .tour-n,:root[data-theme="dark"] .pin b,:root[data-theme="dark"] th{color:#04122A}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .nav a.sec,:root:not([data-theme="light"]) .fab button,:root:not([data-theme="light"]) .tbtn.solid,:root:not([data-theme="light"]) .tour-n,:root:not([data-theme="light"]) .pin b,:root:not([data-theme="light"]) th{color:#04122A}}
+footer{background:linear-gradient(160deg,var(--blue-1),var(--blue-2));color:#DCEBFB;padding-block:48px 64px;margin-top:40px}
+footer .wrap{display:grid;gap:8px;font-size:.92rem}
+footer b{font-family:var(--f-display);font-size:1.2rem;color:#fff;font-weight:600}
+
 /* Presentación */
 .pres{position:relative;min-height:100vh;min-height:100svh;display:grid;align-content:center;color:#fff;overflow:hidden;
   background:radial-gradient(120% 80% at 80% 0%,#42A5F5 0%,transparent 55%),linear-gradient(160deg,#0A2A5E 0%,#1565C0 60%,#1E88E5 100%);
@@ -494,20 +547,40 @@ footer{padding-block:40px;color:var(--muted);font-size:.82rem}
       <p>En un biofiltro de lecho móvil (MBBR), miles de piezas plásticas (biocarriers) giran impulsadas por el aire. Sobre ellas crece una biopelícula de bacterias que transforma el NAT tóxico en nitrato. Arrastra para girar la maqueta y apaga la aireación para ver qué pasa.</p>
     </div>
 
-    <div class="viewer" id="bioViewer">
-      <div class="lbls" id="bioLbls" aria-hidden="true"></div>
-      <div class="vbar" role="toolbar" aria-label="Controles de la maqueta">
-        <button class="tbtn" id="bAer" aria-pressed="true">Aireación</button>
-        <button class="tbtn" id="bWall" aria-pressed="true">Ver interior</button>
-        <button class="tbtn" id="bLbl" aria-pressed="true">Etiquetas</button>
-        <button class="tbtn" id="bRot" aria-pressed="true">Girar solo</button>
-        <button class="tbtn" id="bPlay" aria-pressed="true">Animación</button>
-        <button class="tbtn" id="bReset">Restablecer vista</button>
+    <div class="bio-shell" id="bioShell">
+      <div class="viewer" id="bioViewer">
+        <div class="lbls" id="bioLbls"></div>
+        <div class="vtop">
+          <span class="vhint" id="vHint">☝ Arrastra para girar · pellizca para acercar</span>
+          <button class="vicon" id="bFs" type="button" aria-label="Pantalla completa" title="Pantalla completa">⛶</button>
+        </div>
+        <p class="fallback" hidden>No se pudo cargar el motor 3D (Three.js). El resto de la guía funciona igual.</p>
       </div>
-      <div class="vleg"><span><i style="background:var(--salmon)"></i>NH₄⁺ / NAT</span><span><i style="background:var(--warn)"></i>NO₂⁻</span><span><i style="background:var(--no3)"></i>NO₃⁻</span><span><i style="background:#ffffff;border:1px solid var(--line)"></i>aire</span></div>
-      <p class="fallback" hidden>No se pudo cargar el motor 3D (Three.js). El resto de la guía funciona igual.</p>
+
+      <div class="tour" id="tour" aria-live="polite">
+        <div class="tour-head">
+          <span class="tour-n" id="tourN">0</span>
+          <div><div class="tour-k" id="tourK">Recorrido guiado</div><h4 id="tourT">Vista general</h4></div>
+        </div>
+        <p id="tourP"></p>
+        <div class="tour-ctl">
+          <button class="tbtn ghost" id="tPrev" type="button">← Anterior</button>
+          <div class="tdots" id="tDots"></div>
+          <button class="tbtn solid" id="tNext" type="button">Siguiente →</button>
+        </div>
+      </div>
+
+      <div class="vbar" role="toolbar" aria-label="Controles de la maqueta">
+        <button class="tbtn" id="bAer" aria-pressed="true"><span>💨</span>Aireación</button>
+        <button class="tbtn" id="bWall" aria-pressed="true"><span>🔍</span>Ver interior</button>
+        <button class="tbtn" id="bLbl" aria-pressed="true"><span>🏷</span>Etiquetas</button>
+        <button class="tbtn" id="bRot" aria-pressed="true"><span>⟳</span>Girar solo</button>
+        <button class="tbtn" id="bPlay" aria-pressed="true"><span>▶</span>Animación</button>
+        <button class="tbtn" id="bReset"><span>⌂</span>Vista inicial</button>
+      </div>
+      <div class="vleg"><b>Colores del agua:</b><span><i style="background:var(--salmon)"></i>NH₄⁺ / NAT (entra)</span><span><i style="background:var(--warn)"></i>NO₂⁻ (intermedio)</span><span><i style="background:var(--no3)"></i>NO₃⁻ (sale)</span><span><i style="background:#ffffff;border:1px solid var(--muted)"></i>burbujas de aire</span></div>
+      <p class="note" id="aerMsg">Biocarriers dibujados a escala aumentada (un K1 real mide ~9 mm) y colores del agua exagerados para mostrar la transformación; en una pasada real solo se remueve una fracción del NAT.</p>
     </div>
-    <p class="note" id="aerMsg" style="margin-top:10px">Biocarriers dibujados a escala aumentada (un K1 real mide ~9 mm) y colores del agua exagerados para mostrar la transformación; en una pasada real solo se remueve una fracción del NAT.</p>
 
     <div class="bio2">
       <div class="panel">
@@ -647,7 +720,35 @@ footer{padding-block:40px;color:var(--muted);font-size:.82rem}
   </div>
 </section>
 </main>
-<footer><div class="wrap">Guía didáctica de calidad de agua para salmónidos en RAS · Material de apoyo técnico, no reemplaza procedimientos internos ni normativa vigente.</div></footer>
+<footer><div class="wrap"><b>Química del agua · RAS</b><span>Guía didáctica de calidad de agua para salmónidos en sistemas de recirculación.</span><span style="opacity:.8">Material de apoyo técnico: no reemplaza procedimientos internos ni normativa vigente.</span></div></footer>
+<div class="progress" id="progress"></div>
+<div class="fab">
+  <button type="button" id="themeBtn" aria-label="Cambiar modo claro u oscuro" title="Modo claro / oscuro">🌙</button>
+  <button type="button" class="top" id="topBtn" aria-label="Volver arriba" title="Volver arriba">↑</button>
+</div>
+<script>
+(function(){
+  var bar=document.getElementById('progress'),top=document.getElementById('topBtn'),root=document.documentElement;
+  function onScroll(){var h=root.scrollHeight-innerHeight;bar.style.width=(h>0?scrollY/h*100:0)+'%';top.classList.toggle('show',scrollY>innerHeight*.8);}
+  addEventListener('scroll',onScroll,{passive:true});onScroll();
+  top.onclick=function(){scrollTo({top:0,behavior:'smooth'})};
+  var tb=document.getElementById('themeBtn');
+  function isDark(){var t=root.getAttribute('data-theme');return t?t==='dark':matchMedia('(prefers-color-scheme: dark)').matches;}
+  function paint(){tb.textContent=isDark()?'☀':'🌙';}
+  try{var sv=localStorage.getItem('tema');if(sv)root.setAttribute('data-theme',sv);}catch(e){}
+  paint();
+  tb.onclick=function(){var n=isDark()?'light':'dark';root.setAttribute('data-theme',n);try{localStorage.setItem('tema',n)}catch(e){}paint();};
+  var nav=document.querySelector('.nav .wrap'),links=[].slice.call(nav.querySelectorAll('a')),map={};
+  links.forEach(function(a){map[a.getAttribute('href').slice(1)]=a;});
+  var ids=Object.keys(map).map(function(id){return document.getElementById(id)}).filter(Boolean);
+  if('IntersectionObserver' in window){
+    var cur=null;
+    var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){var a=map[e.target.id];if(a&&a!==cur){if(cur)cur.classList.remove('active');a.classList.add('active');cur=a;
+      nav.scrollTo({left:a.offsetLeft-nav.clientWidth/2+a.offsetWidth/2,behavior:'smooth'});}}});},{rootMargin:'-45% 0px -50% 0px'});
+    ids.forEach(function(el){io.observe(el)});
+  }
+})();
+</script>
 
 <script>
 (function(){
@@ -1057,7 +1158,7 @@ else host.querySelector('.fallback').hidden=false;
 
 function loop(now){
   const dt=Math.min(0.05,(now-last)/1000); last=now;
-  if(visible){ if(playing) stepDots(dt); if(tick3d) tick3d(playing?dt:0); }
+  if(visible){ if(playing) stepDots(dt); if(tick3d) tick3d(playing?dt:0, dt); }
   requestAnimationFrame(loop);
 }
 if('IntersectionObserver' in window){
@@ -1091,10 +1192,12 @@ function build3D(){
     steel:new T.MeshStandardMaterial({color:0xb9c3c9,metalness:0.88,roughness:0.3}),
     dark:new T.MeshStandardMaterial({color:0x3a464c,metalness:0.6,roughness:0.45}),
     pvc:new T.MeshStandardMaterial({color:0x7b878e,metalness:0.15,roughness:0.5}),
-    floor:new T.MeshStandardMaterial({color:0x5b676d,metalness:0.1,roughness:0.85}),
-    wall:new T.MeshStandardMaterial({color:0xd6e8ee,metalness:0,roughness:0.08,transparent:true,opacity:0.16,depthWrite:false,side:T.DoubleSide}),
-    water:new T.MeshStandardMaterial({color:0x2b8ea3,metalness:0,roughness:0.2,transparent:true,opacity:0.13,depthWrite:false}),
-    surf:new T.MeshStandardMaterial({color:0x5bb7c8,metalness:0.1,roughness:0.05,transparent:true,opacity:0.32,depthWrite:false,side:T.DoubleSide}),
+    floor:new T.MeshStandardMaterial({color:0x4f6f8f,metalness:0.1,roughness:0.8}),
+    base:new T.MeshStandardMaterial({color:0xdbe7f3,metalness:0,roughness:0.9}),
+    baseEdge:new T.MeshStandardMaterial({color:0x1565c0,metalness:0.2,roughness:0.5}),
+    wall:new T.MeshStandardMaterial({color:0xcfe3f7,metalness:0,roughness:0.08,transparent:true,opacity:0.16,depthWrite:false,side:T.DoubleSide}),
+    water:new T.MeshStandardMaterial({color:0x2f80d0,metalness:0,roughness:0.2,transparent:true,opacity:0.16,depthWrite:false}),
+    surf:new T.MeshStandardMaterial({color:0x6fb6f2,metalness:0.1,roughness:0.05,transparent:true,opacity:0.32,depthWrite:false,side:T.DoubleSide}),
     membrane:new T.MeshStandardMaterial({color:0x22292d,metalness:0,roughness:0.9}),
     bubble:new T.MeshStandardMaterial({color:0xffffff,metalness:0,roughness:0.1,transparent:true,opacity:0.6,depthWrite:false}),
     carrier:new T.MeshStandardMaterial({color:0xffffff,metalness:0,roughness:0.65,side:T.DoubleSide}),
@@ -1106,13 +1209,16 @@ function build3D(){
   const add=(g,m,x,y,z)=>{const o=new T.Mesh(g,m);o.position.set(x,y,z);scene.add(o);return o;};
 
   // estanque
+  const plat=add(new T.CylinderGeometry(5.4,5.5,0.14,64),M.base,0,-0.08,0);
+  add(new T.TorusGeometry(5.45,0.035,8,96),M.baseEdge,0,-0.01,0).rotation.x=Math.PI/2;
   add(new T.BoxGeometry(W,0.06,D),M.floor,0,0.03,0);
   const walls=[add(new T.BoxGeometry(W,H,0.03),M.wall,0,H/2,hz),add(new T.BoxGeometry(W,H,0.03),M.wall,0,H/2,-hz),add(new T.BoxGeometry(0.03,H,D),M.wall,hx,H/2,0),add(new T.BoxGeometry(0.03,H,D),M.wall,-hx,H/2,0)];
   const fr=0.06;
   [[hx,hz],[hx,-hz],[-hx,hz],[-hx,-hz]].forEach(p=>add(new T.BoxGeometry(fr,H,fr),M.steel,p[0],H/2,p[1]));
   [H,0.03].forEach(y=>{add(new T.BoxGeometry(W+fr,fr,fr),M.steel,0,y,hz);add(new T.BoxGeometry(W+fr,fr,fr),M.steel,0,y,-hz);add(new T.BoxGeometry(fr,fr,D+fr),M.steel,hx,y,0);add(new T.BoxGeometry(fr,fr,D+fr),M.steel,-hx,y,0);});
   add(new T.BoxGeometry(W-0.06,WL-0.06,D-0.06),M.water,0,WL/2+0.03,0);
-  const surf=add(new T.PlaneGeometry(W-0.06,D-0.06),M.surf,0,WL,0); surf.rotation.x=-Math.PI/2;
+  const surfG=new T.PlaneGeometry(W-0.06,D-0.06,40,22);const surf=add(surfG,M.surf,0,WL,0); surf.rotation.x=-Math.PI/2;
+  const sPos=surfG.attributes.position;
 
   // sombra de contacto
   const sc=document.createElement('canvas');sc.width=sc.height=128;const sx=sc.getContext('2d');const gr=sx.createRadialGradient(64,64,10,64,64,64);gr.addColorStop(0,'rgba(0,0,0,0.38)');gr.addColorStop(1,'rgba(0,0,0,0)');sx.fillStyle=gr;sx.fillRect(0,0,128,128);
@@ -1124,21 +1230,22 @@ function build3D(){
   const pIn=cpath([[V(-3.7,0.05,-0.55),V(-3.7,1.55,-0.55)],[V(-3.7,1.55,-0.55),V(-3.7,1.9,-0.55),V(-3.35,1.9,-0.55)],[V(-3.35,1.9,-0.55),V(-1.95,1.9,-0.55)]]);
   const pOut=cpath([[V(1.95,1.7,-0.5),V(3.3,1.7,-0.5)],[V(3.3,1.7,-0.5),V(3.7,1.7,-0.5),V(3.7,1.3,-0.5)],[V(3.7,1.3,-0.5),V(3.7,0.05,-0.5)]]);
   const pAir=cpath([[V(-3.2,0.6,0.7),V(-3.2,2.8,0.7)],[V(-3.2,2.8,0.7),V(-3.2,3.0,0.7),V(-3.0,3.0,0.7)],[V(-3.0,3.0,0.7),V(-2.05,3.0,0.7)],[V(-2.05,3.0,0.7),V(-1.85,3.0,0.7),V(-1.85,2.8,0.7)],[V(-1.85,2.8,0.7),V(-1.85,0.3,0.7)],[V(-1.85,0.3,0.7),V(-1.85,0.13,0.7),V(-1.68,0.13,0.7)],[V(-1.68,0.13,0.7),V(1.85,0.13,0.7)]]);
-  scene.add(new T.Mesh(new T.TubeGeometry(pIn,120,0.1,20,false),M.pvc));
-  scene.add(new T.Mesh(new T.TubeGeometry(pOut,120,0.1,20,false),M.pvc));
-  scene.add(new T.Mesh(new T.TubeGeometry(pAir,240,0.045,14,false),M.pvc));
+  M.pIn=M.pvc.clone();M.pOut=M.pvc.clone();M.pAir=M.pvc.clone();M.blow=M.dark.clone();M.mem=M.membrane.clone();
+  scene.add(new T.Mesh(new T.TubeGeometry(pIn,120,0.1,20,false),M.pIn));
+  scene.add(new T.Mesh(new T.TubeGeometry(pOut,120,0.1,20,false),M.pOut));
+  scene.add(new T.Mesh(new T.TubeGeometry(pAir,240,0.045,14,false),M.pAir));
   const flange=(x,y,z)=>{const f=add(new T.CylinderGeometry(0.17,0.17,0.05,28),M.steel,x,y,z);f.rotation.z=Math.PI/2;};
   flange(-2.05,1.9,-0.55); flange(2.05,1.7,-0.5);
   const band=(x,y,z,m)=>{const b=add(new T.CylinderGeometry(0.106,0.106,0.12,24),m,x,y,z);b.rotation.z=Math.PI/2;};
   band(-2.6,1.9,-0.55,M.bandIn); band(2.7,1.7,-0.5,M.bandOut);
-  for(let x=-1.5;x<=1.51;x+=0.5){add(new T.CylinderGeometry(0.11,0.11,0.035,24),M.membrane,x,0.19,0.7);add(new T.CylinderGeometry(0.03,0.03,0.04,10),M.pvc,x,0.16,0.7);}
+  for(let x=-1.5;x<=1.51;x+=0.5){add(new T.CylinderGeometry(0.11,0.11,0.035,24),M.mem,x,0.19,0.7);add(new T.CylinderGeometry(0.03,0.03,0.04,10),M.pvc,x,0.16,0.7);}
   // soplador
-  add(new T.BoxGeometry(0.75,0.5,0.55),M.dark,-3.2,0.3,0.7);
+  add(new T.BoxGeometry(0.75,0.5,0.55),M.blow,-3.2,0.3,0.7);
   const mot=add(new T.CylinderGeometry(0.2,0.2,0.45,24),M.steel,-3.2,0.3,1.2);mot.rotation.x=Math.PI/2;
   // tamiz de salida
   const tc=document.createElement('canvas');tc.width=tc.height=128;const tx=tc.getContext('2d');tx.clearRect(0,0,128,128);tx.strokeStyle='#cfd8dc';tx.lineWidth=3;for(let i=0;i<=128;i+=8){tx.beginPath();tx.moveTo(i,0);tx.lineTo(i,128);tx.stroke();tx.beginPath();tx.moveTo(0,i);tx.lineTo(128,i);tx.stroke();}
   const tt=new T.CanvasTexture(tc);tt.wrapS=tt.wrapT=T.RepeatWrapping;tt.repeat.set(3,3);
-  const sieve=add(new T.PlaneGeometry(0.8,0.8),new T.MeshStandardMaterial({map:tt,transparent:true,alphaTest:0.3,metalness:0.8,roughness:0.35,side:T.DoubleSide}),1.9,1.7,-0.5);sieve.rotation.y=Math.PI/2;
+  M.sieve=new T.MeshStandardMaterial({map:tt,transparent:true,alphaTest:0.3,metalness:0.8,roughness:0.35,side:T.DoubleSide});const sieve=add(new T.PlaneGeometry(0.8,0.8),new T.MeshStandardMaterial({map:tt,transparent:true,alphaTest:0.3,metalness:0.8,roughness:0.35,side:T.DoubleSide}),1.9,1.7,-0.5);sieve.rotation.y=Math.PI/2;sieve.material=M.sieve;
   [[0,0.42,0.86,0.05],[0,-0.42,0.86,0.05]].forEach(b=>add(new T.BoxGeometry(0.05,b[3],b[2]),M.steel,1.9,1.7+b[1],-0.5));
   [-0.42,0.42].forEach(dz=>add(new T.BoxGeometry(0.05,0.86,0.05),M.steel,1.9,1.7,-0.5+dz));
 
@@ -1168,43 +1275,80 @@ function build3D(){
   window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',readColors);
   new MutationObserver(readColors).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
 
-  // etiquetas
-  const L=[['Entrada · NAT alto',V(-3.7,2.15,-0.55)],['Salida · NO₃⁻',V(3.4,2.0,-0.5)],['Tamiz retiene medio',V(1.9,2.25,-0.5)],['Difusores de aire',V(0.25,0.24,0.7)],['Biocarriers con biopelícula',V(-0.4,1.75,0)],['Soplador',V(-3.2,0.65,0.7)]];
+  // recorrido guiado y marcadores
+  const STEPS=[
+    {t:'Vista general',k:'Recorrido guiado',p:'Un biofiltro <b>MBBR</b> es un estanque con miles de piezas plásticas que giran en el agua. Sobre ellas viven bacterias que limpian el agua. Toca <b>Siguiente</b> o un número de la maqueta para ver cada parte.',tg:V(0,1.15,0),az:0.72,el:0.36,d:null,hl:[]},
+    {t:'Entrada del agua',k:'Paso 1 de 5',p:'Llega el agua desde los estanques de peces con <b>NAT alto</b> (amonio + amoníaco), producido por la digestión del alimento. Las bolitas <b style="color:var(--salmon)">rojas</b> representan ese amonio.',tg:V(-3.0,1.6,-0.55),az:-0.55,el:0.3,d:6.2,hl:['pIn'],pin:V(-3.7,2.15,-0.55)},
+    {t:'Soplador y difusores',k:'Paso 2 de 5',p:'El <b>soplador</b> empuja aire hasta los <b>difusores</b> del fondo. Las burbujas hacen dos trabajos: entregan el <b>oxígeno</b> que necesitan las bacterias y mueven los biocarriers para que no se amontonen.',tg:V(-2.2,0.6,0.7),az:0.25,el:0.28,d:6.4,hl:['pAir','blow','mem'],pin:V(-3.2,0.75,0.7)},
+    {t:'Biocarriers y bacterias',k:'Paso 3 de 5',p:'En cada pieza crece una <b>biopelícula</b>. Primero las <b>Nitrosomonas</b> transforman NH₄⁺ en NO₂⁻ (amarillo) y luego las <b>Nitrobacter</b> lo pasan a NO₃⁻ (verde), mucho menos tóxico. Este proceso consume O₂ y alcalinidad.',tg:V(0,1.2,0),az:0.9,el:0.5,d:6.8,hl:['car'],pin:V(-0.4,1.75,0)},
+    {t:'Tamiz de salida',k:'Paso 4 de 5',p:'Una <b>rejilla</b> deja pasar el agua pero retiene los biocarriers dentro del estanque, para que las bacterias no se pierdan.',tg:V(1.9,1.7,-0.5),az:1.6,el:0.22,d:5.2,hl:['sieve'],pin:V(1.9,2.25,-0.5)},
+    {t:'Salida del agua',k:'Paso 5 de 5',p:'Sale agua con <b>NO₃⁻ (nitrato)</b>, que el salmón tolera en concentraciones mucho mayores. Desde aquí el agua sigue hacia la desgasificación (quitar CO₂) y la oxigenación antes de volver a los peces.',tg:V(3.0,1.3,-0.5),az:1.25,el:0.3,d:6.2,hl:['pOut'],pin:V(3.4,2.0,-0.5)}
+  ];
+  const HL={pIn:[M.pIn],pAir:[M.pAir],blow:[M.blow],mem:[M.mem],car:[M.carrier],sieve:[M.sieve],pOut:[M.pOut]};
   const lw=$('bioLbls');
-  const lEls=L.map(l=>{const d=document.createElement('div');d.className='lbl';d.textContent=l[0];lw.appendChild(d);return d;});
+  const pins=STEPS.map((st,i)=>{if(!st.pin)return null;const b=document.createElement('button');b.type='button';b.className='pin';b.innerHTML='<b>'+i+'</b><span>'+st.t+'</span>';b.addEventListener('click',()=>goStep(i));lw.appendChild(b);return b;});
+  const tDots=$('tDots');
+  STEPS.forEach((_,i)=>{const d=document.createElement('button');d.type='button';d.setAttribute('aria-label','Paso '+i);d.addEventListener('click',()=>goStep(i));tDots.appendChild(d);});
+  let step=0, goal=null;
+  function goStep(i){
+    step=Math.max(0,Math.min(STEPS.length-1,i));const st=STEPS[step];
+    $('tourN').textContent=step===0?'★':step;$('tourT').textContent=st.t;$('tourK').textContent=st.k;$('tourP').innerHTML=st.p;
+    $('tPrev').disabled=step===0;$('tNext').textContent=step===STEPS.length-1?'Volver al inicio ⟲':'Siguiente →';
+    [].forEach.call(tDots.children,(d,j)=>d.setAttribute('aria-current',j===step?'true':'false'));
+    pins.forEach((p,j)=>p&&p.classList.toggle('on',j===step));
+    goal={tg:st.tg.clone(),az:st.az,el:st.el,d:st.d?st.d*(narrow()?1.45:1):(narrow()?12.5:9.6)};
+    if(step>0){auto=false;$('bRot').setAttribute('aria-pressed','false');}
+  }
+  $('tPrev').addEventListener('click',()=>goStep(step-1));
+  $('tNext').addEventListener('click',()=>goStep(step===STEPS.length-1?0:step+1));
 
   // cámara orbital
   const tgt=V(0,1.15,0);
   let az,el,dist,auto=true;
+  const shortest=(a,b)=>{let d=(b-a)%(Math.PI*2);if(d>Math.PI)d-=Math.PI*2;if(d<-Math.PI)d+=Math.PI*2;return a+d;};
   const narrow=()=>host.clientWidth<620;
-  function resetView(){az=0.72;el=0.36;dist=narrow()?12.5:9.6;}
+  function resetView(){az=0.72;el=0.36;dist=narrow()?12.5:9.6;tgt.set(0,1.15,0);goal=null;}
   resetView();
   const ptr=new Map();let pinch0=0,dist0=0;
   const cv=renderer.domElement;
-  cv.addEventListener('pointerdown',e=>{cv.setPointerCapture(e.pointerId);ptr.set(e.pointerId,{x:e.clientX,y:e.clientY});if(ptr.size===2){const a=[...ptr.values()];pinch0=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y);dist0=dist;}});
+  const hint=$('vHint');const killHint=()=>hint.classList.add('gone');setTimeout(killHint,6000);
+  cv.addEventListener('pointerdown',e=>{goal=null;killHint();cv.setPointerCapture(e.pointerId);ptr.set(e.pointerId,{x:e.clientX,y:e.clientY});if(ptr.size===2){const a=[...ptr.values()];pinch0=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y);dist0=dist;}});
   cv.addEventListener('pointermove',e=>{if(!ptr.has(e.pointerId))return;const p=ptr.get(e.pointerId);const dx=e.clientX-p.x,dy=e.clientY-p.y;p.x=e.clientX;p.y=e.clientY;
     if(ptr.size===1){az-=dx*0.008;el=Math.max(0.04,Math.min(1.35,el+dy*0.006));}
     else if(ptr.size===2&&pinch0>0){const a=[...ptr.values()];const pd=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y);dist=Math.max(5,Math.min(18,dist0*pinch0/pd));}});
   const up=e=>{ptr.delete(e.pointerId);if(ptr.size<2)pinch0=0;};
   cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
-  cv.addEventListener('wheel',e=>{e.preventDefault();dist=Math.max(5,Math.min(18,dist*(1+e.deltaY*0.001)));},{passive:false});
+  cv.addEventListener('wheel',e=>{e.preventDefault();goal=null;dist=Math.max(5,Math.min(18,dist*(1+e.deltaY*0.001)));},{passive:false});
 
   // controles
   let aerT=1,aer=1,wallOn=true;
   tg('bAer',on=>{aerT=on?1:0;$('aerMsg').textContent=on?'Biocarriers dibujados a escala aumentada (un K1 real mide ~9 mm) y colores del agua exagerados para mostrar la transformación; en una pasada real solo se remueve una fracción del NAT.':'Sin aire el medio (densidad ~0,95 g/cm³) flota y se compacta en la superficie: deja de mezclarse, el O₂ cae y la biopelícula pierde contacto con el agua. Por eso un corte de soplador es una emergencia para el biofiltro.';});
-  tg('bWall',on=>{wallOn=on;M.wall.opacity=on?0.16:0.82;M.wall.color.set(on?0xd6e8ee:0x8a979d);M.wall.depthWrite=!on;});
+  tg('bWall',on=>{wallOn=on;M.wall.opacity=on?0.16:0.82;M.wall.color.set(on?0xcfe3f7:0x7f97b0);M.wall.depthWrite=!on;});
   tg('bLbl',on=>lw.classList.toggle('off',!on));
   tg('bRot',on=>{auto=on;});
-  $('bReset').addEventListener('click',resetView);
+  $('bReset').addEventListener('click',()=>{goStep(0);});
+  const shell=$('bioShell');
+  const setFull=on=>{shell.classList.toggle('full',on);$('bFs').textContent=on?'✕':'⛶';document.body.style.overflow=on?'hidden':'';};
+  $('bFs').addEventListener('click',()=>setFull(!shell.classList.contains('full')));
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&shell.classList.contains('full'))setFull(false);});
 
-  function resize(){const w=host.clientWidth,h=host.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();}
+  function resize(){host.classList.toggle('narrow',narrow());const w=host.clientWidth,h=host.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();}
   new ResizeObserver(resize).observe(host);resize();
 
   const m4=new T.Matrix4(),pos=new T.Vector3(),scl=new T.Vector3(),qa=new T.Quaternion(),one=new T.Vector3(1,1,1),col=new T.Color(),pv=new T.Vector3();
-  let time=0;
-  return function(dt){
-    time+=dt;
-    if(auto)az+=dt*0.15;
+  let time=0,clk=0;
+  goStep(0);goal=null;
+  return function(dt,rdt){
+    if(rdt===undefined)rdt=dt;
+    time+=dt;clk+=rdt;
+    if(auto)az+=rdt*0.15;
+    if(goal){const k=1-Math.exp(-rdt*3);az+=(shortest(az,goal.az)-az)*k;el+=(goal.el-el)*k;dist+=(goal.d-dist)*k;tgt.lerp(goal.tg,k);}
+    // resaltado del componente activo
+    const pulse=0.35+0.35*Math.sin(clk*4);
+    Object.keys(HL).forEach(key=>{const on=STEPS[step].hl.indexOf(key)>=0;HL[key].forEach(m=>{m.emissive.setHex(on?0x1e88e5:0x000000);m.emissiveIntensity=on?pulse:0;});});
+    // ondas en la superficie
+    for(let i=0;i<sPos.count;i++){const x=sPos.getX(i),y=sPos.getY(i);sPos.setZ(i,(Math.sin(x*3+time*2.2)+Math.cos(y*4-time*1.7))*0.012*(0.3+aer));}
+    sPos.needsUpdate=true;
     aer+=(aerT-aer)*Math.min(1,dt*1.1);
     camera.position.set(tgt.x+dist*Math.cos(el)*Math.sin(az),tgt.y+dist*Math.sin(el),tgt.z+dist*Math.cos(el)*Math.cos(az));
     camera.lookAt(tgt);
@@ -1234,7 +1378,7 @@ function build3D(){
     renderer.render(scene,camera);
     // etiquetas
     const w=host.clientWidth,h=host.clientHeight;
-    L.forEach((l,i)=>{pv.copy(l[1]).project(camera);const e=lEls[i];if(pv.z>1){e.style.display='none';return;}e.style.display='';e.style.left=((pv.x+1)/2*w).toFixed(0)+'px';e.style.top=((1-pv.y)/2*h).toFixed(0)+'px';});
+    STEPS.forEach((st,i)=>{const e=pins[i];if(!e)return;pv.copy(st.pin).project(camera);if(pv.z>1||Math.abs(pv.x)>1.05||Math.abs(pv.y)>1.05){e.style.display='none';return;}e.style.display='';e.style.left=((pv.x+1)/2*w).toFixed(0)+'px';e.style.top=((1-pv.y)/2*h).toFixed(0)+'px';});
   };
 }
 })();
