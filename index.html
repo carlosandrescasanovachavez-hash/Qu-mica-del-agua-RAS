@@ -239,6 +239,7 @@ footer{padding-block:40px;color:var(--muted);font-size:.82rem}
 .tbtn.ghost{background:transparent}
 .tbtn:disabled{opacity:.4;cursor:default}
 .vleg{display:flex;gap:8px 16px;flex-wrap:wrap;align-items:center;font-size:.85rem;color:var(--muted);background:var(--surface);border:1px solid var(--line);padding:10px 14px;border-radius:12px}
+.usel{font-family:var(--f-body);font-size:.95rem;padding:9px 12px;border:1.5px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);width:100%}
 .vleg b{color:var(--ink);font-family:var(--f-display);font-weight:600}
 .vleg i{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:6px;vertical-align:-1px}
 .fallback{position:absolute;inset:0;display:grid;place-items:center;padding:24px;text-align:center;color:var(--muted)}
@@ -388,6 +389,7 @@ footer b{font-family:var(--f-display);font-size:1.2rem;color:#fff;font-weight:60
           <li><span class="ico">01</span><span><b>Simulador</b> del dilema pH–CO₂–amoníaco.</span></li>
           <li><span class="ico">12</span><span><b>Fichas</b> de doce parámetros con rangos seguros y críticos.</span></li>
           <li><span class="ico">3D</span><span><b>Biofiltro en 3D</b> y calculadora de nitrificación.</span></li>
+          <li><span class="ico">UV</span><span><b>Reactor UV en 3D</b> con simulador de dosis.</span></li>
           <li><span class="ico">⚗</span><span><b>Reacciones</b> químicas clave y fuentes científicas.</span></li>
         </ul>
       </div>
@@ -442,6 +444,7 @@ footer b{font-family:var(--f-display);font-size:1.2rem;color:#fff;font-weight:60
     <a href="#dbo">DBO</a><a href="#ntu">Turbidez</a><a href="#dur">Dureza</a><a href="#cu">Cobre</a><a href="#fe">Hierro</a><a href="#al">Aluminio</a><a href="#o3">Ozono</a>
     <a class="sec" href="#interacciones">Interacciones</a>
     <a class="sec" href="#biofiltro">Biofiltro 3D</a>
+    <a class="sec" href="#uv">Desinfección UV</a>
     <a class="sec" href="#reacciones">Reacciones</a>
     <a class="sec" href="#fuentes">Fuentes</a>
   </div>
@@ -653,10 +656,96 @@ footer b{font-family:var(--f-display);font-size:1.2rem;color:#fff;font-weight:60
 </section>
 
 <!-- REACCIONES -->
+<!-- DESINFECCIÓN UV -->
+<section class="block" id="uv">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">06 · Desinfección UV</div>
+      <h2>Reactor UV de media presión en línea</h2>
+      <p>La luz ultravioleta C (200–280 nm) daña el ADN y ARN de bacterias, virus y hongos para que no puedan multiplicarse. No agrega químicos al agua. Explora el reactor, enciende y apaga las lámparas y cambia el caudal y la claridad del agua para ver cómo cambia la dosis.</p>
+    </div>
+
+    <div class="bio-shell" id="uvShell">
+      <div class="viewer" id="uvViewer">
+        <div class="lbls" id="uvLbls"></div>
+        <div class="vtop">
+          <span class="vhint" id="uvHint">☝ Arrastra para girar · pellizca para acercar</span>
+          <button class="vicon" id="uFs" type="button" aria-label="Pantalla completa" title="Pantalla completa">⛶</button>
+        </div>
+        <p class="fallback" id="uvFallback" hidden>No se pudo cargar el motor 3D (Three.js). El simulador de dosis funciona igual.</p>
+      </div>
+
+      <div class="tour" aria-live="polite">
+        <div class="tour-head">
+          <span class="tour-n" id="uTourN">★</span>
+          <div><div class="tour-k" id="uTourK">Recorrido guiado</div><h4 id="uTourT">Vista general</h4></div>
+        </div>
+        <p id="uTourP"></p>
+        <div class="tour-ctl">
+          <button class="tbtn ghost" id="uPrev" type="button">← Anterior</button>
+          <div class="tdots" id="uDots"></div>
+          <button class="tbtn solid" id="uNext" type="button">Siguiente →</button>
+        </div>
+      </div>
+
+      <div class="vbar" role="toolbar" aria-label="Controles del reactor UV">
+        <button class="tbtn" id="uL1" aria-pressed="true"><span>💡</span>Lámpara 1</button>
+        <button class="tbtn" id="uL2" aria-pressed="true"><span>💡</span>Lámpara 2</button>
+        <button class="tbtn" id="uIn" aria-pressed="false"><span>🔍</span>Ver interior</button>
+        <button class="tbtn" id="uLbl" aria-pressed="true"><span>🏷</span>Etiquetas</button>
+        <button class="tbtn" id="uRot" aria-pressed="true"><span>⟳</span>Girar solo</button>
+        <button class="tbtn" id="uReset"><span>⌂</span>Vista inicial</button>
+      </div>
+      <div class="vleg"><b>Microorganismos:</b><span><i style="background:var(--salmon)"></i>activo (puede infectar)</span><span><i style="background:#8FA3B8"></i>inactivado por UV</span><span><i style="background:#B388FF"></i>luz UV-C</span></div>
+    </div>
+
+    <div class="sim" style="margin-top:24px">
+      <div class="panel controls">
+        <h3 style="font-size:1.15rem">Simulador de dosis</h3>
+        <div class="ctl"><label for="uPow">Potencia de lámparas <output id="uPowO">100 %</output></label><input type="range" id="uPow" min="0" max="100" step="5" value="100"><small>El balasto regula la potencia según la dosis que se necesita.</small></div>
+        <div class="ctl"><label for="uQ">Caudal <output id="uQO">300 m³/h</output></label><input type="range" id="uQ" min="50" max="600" step="10" value="300"><small>Más caudal = menos tiempo bajo la luz.</small></div>
+        <div class="ctl"><label for="uT">Transmitancia UV del agua (UVT) <output id="uTO">90 %</output></label><input type="range" id="uT" min="60" max="98" step="1" value="90"><small>% de luz UV que atraviesa 1 cm de agua. Agua turbia o con color = UVT bajo.</small></div>
+        <div class="ctl"><label for="uFoul">Ensuciamiento del cuarzo <output id="uFoulO">0 %</output></label><input type="range" id="uFoul" min="0" max="60" step="5" value="0"><small>Biopelícula y sarro sobre la vaina bloquean luz. Se limpian con escobillas automáticas.</small></div>
+        <div class="fld"><label for="uPat">Patógeno objetivo</label>
+          <select id="uPat" class="usel"></select>
+        </div>
+      </div>
+      <div style="display:grid;gap:12px;min-width:0">
+        <div class="readouts">
+          <div class="ro" id="uRoD"><span class="k">Dosis UV</span><span class="v" id="uD">–<small>mJ/cm²</small></span><span class="pill" id="uDp">–</span></div>
+          <div class="ro"><span class="k">Reducción</span><span class="v" id="uLog">–<small>log</small></span><span class="d" id="uPct">–</span></div>
+          <div class="ro"><span class="k">Tiempo bajo la luz</span><span class="v" id="uTr">–<small>s</small></span><span class="d" id="uIm">–</span></div>
+        </div>
+        <div class="panel" style="display:grid;gap:8px">
+          <h4 style="margin:0;font-family:var(--f-display);font-size:1.05rem">¿Cómo se calcula?</h4>
+          <div class="eq">Dosis (mJ/cm²) = Intensidad media (mW/cm²) × Tiempo (s)</div>
+          <p style="font-size:.9rem;color:var(--muted)">El tiempo es el volumen de la cámara (≈ 71 L) dividido por el caudal. La intensidad media baja cuando el agua absorbe luz (UVT bajo) o el cuarzo está sucio. La reducción se estima como <b>log = Dosis / D₁₀</b>, donde D₁₀ es la dosis que elimina el 90 % de ese microorganismo.</p>
+          <p class="note">Modelo simplificado con fines didácticos. Los equipos reales se validan con biodosimetría (por ejemplo, protocolos tipo USEPA UVDGM / ÖNORM) y trabajan con factores de seguridad.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="rx" style="margin-top:24px">
+      <div class="panel"><h4>Dónde se instala en un RAS</h4><p>Después del filtro mecánico y del biofiltro, antes de que el agua vuelva a los estanques. Así el agua llega limpia (UVT alto) y la luz no se gasta en partículas. También se usa en el agua de entrada a la piscicultura y en el agua de ovas.</p></div>
+      <div class="panel"><h4>Media presión vs baja presión</h4><p>Las lámparas de <b>media presión</b> emiten un espectro amplio (200–400 nm) con alta intensidad: pocas lámparas tratan mucho caudal y dificultan que los microorganismos reparen el daño. Las de <b>baja presión</b> emiten casi solo 254 nm, gastan menos energía por lámpara pero necesitan muchas más.</p></div>
+      <div class="panel"><h4>Lo que hace que la dosis baje</h4><p>Agua turbia o con color (UVT bajo), cuarzo sucio, lámparas viejas (pierden 20–30 % de salida al final de su vida útil), caudal mayor al de diseño y agua fría en lámparas de baja presión.</p></div>
+      <div class="panel"><h4>UV y ozono juntos</h4><p>Cuando se usa ozono, el reactor UV va después: la luz UV descompone el ozono residual que quedaría en el agua y que es tóxico para el salmón incluso en centésimas de mg/L.</p></div>
+    </div>
+
+    <div class="tbl-wrap" style="margin-top:24px">
+      <table style="min-width:620px">
+        <thead><tr><th>Patógeno del salmón</th><th>Tipo</th><th>Dosis para 99,9 % (3 log)</th><th>Comentario</th></tr></thead>
+        <tbody id="uPatTbl"></tbody>
+      </table>
+    </div>
+    <p class="note" style="margin-top:10px">Dosis orientativas de literatura (Liltved et al. 1995; Øye &amp; Rimstad 2001); varían con la cepa, la salinidad y el método de ensayo. En RAS de salmón es común diseñar para ≥ 40 mJ/cm² y para ≥ 100 mJ/cm² cuando el objetivo incluye IPNV.</p>
+  </div>
+</section>
+
 <section class="block" id="reacciones">
   <div class="wrap">
     <div class="sec-head">
-      <div class="eyebrow">06 · Química de fondo</div>
+      <div class="eyebrow">07 · Química de fondo</div>
       <h2>Reacciones que explican las interacciones</h2>
     </div>
     <div class="rx">
@@ -674,7 +763,7 @@ footer b{font-family:var(--f-display);font-size:1.2rem;color:#fff;font-weight:60
 <section class="block" id="etapas">
   <div class="wrap">
     <div class="sec-head">
-      <div class="eyebrow">07 · Sensibilidad por etapa</div>
+      <div class="eyebrow">08 · Sensibilidad por etapa</div>
       <h2>No todas las etapas toleran lo mismo</h2>
     </div>
     <div class="stages">
@@ -690,7 +779,7 @@ footer b{font-family:var(--f-display);font-size:1.2rem;color:#fff;font-weight:60
 <section class="block" id="fuentes">
   <div class="wrap">
     <div class="sec-head">
-      <div class="eyebrow">08 · Fuentes y limitaciones</div>
+      <div class="eyebrow">09 · Fuentes y limitaciones</div>
       <h2>De dónde salen los números</h2>
     </div>
     <ol class="refs">
@@ -712,6 +801,8 @@ footer b{font-family:var(--f-display);font-size:1.2rem;color:#fff;font-weight:60
       <li>Chen, S., Ling, J. &amp; Blancheton, J.-P. (2006). Nitrification kinetics of biofilm as affected by water quality factors. <i>Aquacultural Engineering</i> 34: 179–197.</li>
       <li>Kinyage, J.P.H., Pedersen, P.B. &amp; Pedersen, L.-F. (2019). Effects of abrupt salinity increase on nitrification processes in a freshwater moving bed biofilter. <i>Aquacultural Engineering</i> 84: 91–98.</li>
       <li>Daims, H. et al. (2015). Complete nitrification by <i>Nitrospira</i> bacteria. <i>Nature</i> 528: 504–509.</li>
+      <li>Liltved, H., Hektoen, H. &amp; Efraimsen, H. (1995). Inactivation of bacterial and viral fish pathogens by ozonation or UV irradiation in water of different salinity. <i>Aquacultural Engineering</i> 14: 107–122.</li>
+      <li>Øye, A.K. &amp; Rimstad, E. (2001). Inactivation of infectious salmon anaemia virus, viral haemorrhagic septicaemia virus and infectious pancreatic necrosis virus in water using UVC irradiation and ozone. <i>Diseases of Aquatic Organisms</i> 48: 1–5.</li>
     </ol>
     <div class="caveat">
       <b>Limitaciones</b>
@@ -1379,6 +1470,302 @@ function build3D(){
     // etiquetas
     const w=host.clientWidth,h=host.clientHeight;
     STEPS.forEach((st,i)=>{const e=pins[i];if(!e)return;pv.copy(st.pin).project(camera);if(pv.z>1||Math.abs(pv.x)>1.05||Math.abs(pv.y)>1.05){e.style.display='none';return;}e.style.display='';e.style.left=((pv.x+1)/2*w).toFixed(0)+'px';e.style.top=((1-pv.y)/2*h).toFixed(0)+'px';});
+  };
+}
+})();
+</script>
+
+<script>
+/* ======================= REACTOR UV ======================= */
+(function(){
+const $=id=>document.getElementById(id);
+const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const fmt=(v,d)=>Number(v).toLocaleString('es-CL',{minimumFractionDigits:d,maximumFractionDigits:d});
+const PAT=[
+  {n:'Aeromonas salmonicida',t:'Bacteria',d3:3,c:'Furunculosis. Muy sensible a la luz UV.'},
+  {n:'Yersinia ruckeri',t:'Bacteria',d3:3,c:'Boca roja entérica (ERM).'},
+  {n:'Vibrio anguillarum',t:'Bacteria',d3:3,c:'Vibriosis en agua salobre o de mar.'},
+  {n:'Virus ISA (ISAV)',t:'Virus',d3:7,c:'Anemia infecciosa del salmón.'},
+  {n:'Virus IPN (IPNV)',t:'Virus',d3:150,c:'Muy resistente: necesita 120–250 mJ/cm² según el estudio.'}
+];
+const sel=$('uPat');
+PAT.forEach((p,i)=>{const o=document.createElement('option');o.value=i;o.textContent=p.n+' · '+p.t;sel.appendChild(o);});
+$('uPatTbl').innerHTML=PAT.map(p=>`<tr><td><b>${p.n}</b></td><td>${p.t}</td><td class="n">≈ ${p.d3} mJ/cm²</td><td>${p.c}</td></tr>`).join('');
+
+const VOL=70.7; // litros de la cámara (DN300 × 1 m)
+const st={l1:true,l2:true,pow:100,q:300,uvt:90,foul:0,pat:0};
+let R=null, dirty=true;
+function calc(){
+  const nL=(st.l1?1:0)+(st.l2?1:0), T=st.uvt/100, L=15;
+  const f=(1-Math.pow(T,L))/(L*Math.log(1/T));
+  const I=47*nL*(st.pow/100)*f*(1-st.foul/100);
+  const t=VOL/(st.q/3.6);
+  const D=I*t, p=PAT[st.pat], d10=p.d3/3, lg=D/d10;
+  return {nL,f,I,t,D,lg,p,d10};
+}
+function render(){
+  R=calc();dirty=true;
+  $('uPowO').textContent=st.pow+' %';$('uQO').textContent=st.q+' m³/h';$('uTO').textContent=st.uvt+' %';$('uFoulO').textContent=st.foul+' %';
+  $('uD').innerHTML=fmt(R.D,R.D<10?1:0)+'<small>mJ/cm²</small>';
+  $('uLog').innerHTML=(R.lg>6?'> 6':fmt(R.lg,1))+'<small>log</small>';
+  const pct=(1-Math.pow(10,-R.lg))*100;
+  $('uPct').textContent=R.lg>=4?'más de 99,99 % inactivado':fmt(pct,R.lg>=2?2:1)+' % inactivado';
+  $('uTr').innerHTML=fmt(R.t,2)+'<small>s</small>';
+  $('uIm').textContent='Intensidad media ≈ '+fmt(R.I,1)+' mW/cm²';
+  const pill=$('uDp');let cls,txt,col;
+  if(R.nL===0||st.pow===0){cls='crit';txt='Lámparas apagadas';col='var(--crit)';}
+  else if(R.lg>=3){cls='ok';txt='Cumple 99,9 % (3 log)';col='var(--ok)';}
+  else if(R.lg>=1){cls='warn';txt='Parcial: falta dosis';col='var(--warn)';}
+  else{cls='crit';txt='Insuficiente';col='var(--crit)';}
+  pill.className='pill '+cls;pill.textContent=txt;$('uRoD').style.setProperty('--st',col);
+}
+[['uPow','pow'],['uQ','q'],['uT','uvt'],['uFoul','foul']].forEach(([id,k])=>$(id).addEventListener('input',e=>{st[k]=+e.target.value;render();}));
+sel.addEventListener('change',e=>{st.pat=+e.target.value;render();});
+const tg=(id,fn)=>{const b=$(id);b.addEventListener('click',()=>{const on=b.getAttribute('aria-pressed')!=='true';b.setAttribute('aria-pressed',on);fn(on);});};
+tg('uL1',on=>{st.l1=on;render();});
+tg('uL2',on=>{st.l2=on;render();});
+render();
+
+const host=$('uvViewer');
+if(!window.THREE){$('uvFallback').hidden=false;return;}
+let tick=null;
+try{tick=build();}catch(e){console.warn(e);$('uvFallback').hidden=false;return;}
+let visible=true,last=performance.now();
+function loop(now){const dt=Math.min(0.05,(now-last)/1000);last=now;if(visible&&tick)tick(dt);requestAnimationFrame(loop);}
+if('IntersectionObserver' in window)new IntersectionObserver(es=>{visible=es.some(e=>e.isIntersecting);},{rootMargin:'100px'}).observe(host);
+requestAnimationFrame(loop);
+
+function build(){
+  const T=THREE;
+  const renderer=new T.WebGLRenderer({antialias:true,alpha:true});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
+  renderer.outputEncoding=T.sRGBEncoding;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;
+  host.prepend(renderer.domElement);
+  const scene=new T.Scene(), camera=new T.PerspectiveCamera(36,1,0.1,100);
+  const pm=new T.PMREMGenerator(renderer), env=new T.Scene();
+  env.add(new T.Mesh(new T.SphereGeometry(20,32,16),new T.MeshBasicMaterial({color:0x7d8a96,side:T.BackSide})));
+  [[0,12,0,16,16],[12,5,2,6,12],[-12,5,4,6,12],[0,5,-12,12,6],[0,4,12,10,5]].forEach(p=>{const m=new T.Mesh(new T.PlaneGeometry(p[3],p[4]),new T.MeshBasicMaterial({color:0xffffff,side:T.DoubleSide}));m.position.set(p[0],p[1],p[2]);m.lookAt(0,0,0);env.add(m);});
+  scene.environment=pm.fromScene(env,0.04).texture;
+  scene.add(new T.HemisphereLight(0xffffff,0x40505a,0.5));
+  const dl=new T.DirectionalLight(0xffffff,0.8);dl.position.set(4,9,6);scene.add(dl);
+
+  const M={
+    body:new T.MeshStandardMaterial({color:0xb7c0c8,metalness:0.9,roughness:0.28,envMapIntensity:0.75,side:T.DoubleSide}),
+    flange:new T.MeshStandardMaterial({color:0xaeb8c1,metalness:0.9,roughness:0.32,envMapIntensity:0.75,side:T.DoubleSide}),
+    bolt:new T.MeshStandardMaterial({color:0x8d979e,metalness:0.8,roughness:0.4}),
+    pipe:new T.MeshStandardMaterial({color:0x6f8aa6,metalness:0.1,roughness:0.55,side:T.DoubleSide}),
+    box:new T.MeshStandardMaterial({color:0xc9d0d6,metalness:0.05,roughness:0.6,envMapIntensity:0.6}),
+    seam:new T.MeshStandardMaterial({color:0x9aa4ab,metalness:0.2,roughness:0.6}),
+    black:new T.MeshStandardMaterial({color:0x1b2024,metalness:0.4,roughness:0.55}),
+    ballast:new T.MeshStandardMaterial({color:0x15191d,metalness:0.3,roughness:0.55,envMapIntensity:0.5}),
+    cab:new T.MeshStandardMaterial({color:0x1259c3,metalness:0.1,roughness:0.45,envMapIntensity:0.5}),
+    sensor:new T.MeshStandardMaterial({color:0x1565c0,metalness:0.3,roughness:0.4}),
+    white:new T.MeshStandardMaterial({color:0xf2f5f7,roughness:0.5}),
+    stand:new T.MeshStandardMaterial({color:0x5b6f84,metalness:0.4,roughness:0.5}),
+    base:new T.MeshStandardMaterial({color:0xdbe7f3,metalness:0,roughness:0.9}),
+    baseEdge:new T.MeshStandardMaterial({color:0x1565c0,metalness:0.2,roughness:0.5}),
+    quartz:new T.MeshStandardMaterial({color:0xeaf5ff,metalness:0,roughness:0.05,transparent:true,opacity:0.28,depthWrite:false}),
+    water:new T.MeshStandardMaterial({color:0x4aa3ff,metalness:0,roughness:0.2,transparent:true,opacity:0.1,depthWrite:false}),
+    microbe:new T.MeshStandardMaterial({color:0xffffff,roughness:0.45})
+  };
+  const Y0=1.0;
+  const add=(g,m,x,y,z,par)=>{const o=new T.Mesh(g,m);o.position.set(x,y,z);(par||scene).add(o);return o;};
+  const cylX=(r1,r2,len,x,m,seg,closed)=>{const o=add(new T.CylinderGeometry(r1,r2,len,seg||56,1,!closed),m,x,Y0,0);o.rotation.z=Math.PI/2;return o;};
+
+  // base
+  add(new T.CylinderGeometry(5.6,5.7,0.14,64),M.base,0,-0.08,0);
+  add(new T.TorusGeometry(5.65,0.035,8,96),M.baseEdge,0,-0.01,0).rotation.x=Math.PI/2;
+  const sc=document.createElement('canvas');sc.width=sc.height=128;const sx=sc.getContext('2d');const gr=sx.createRadialGradient(64,64,10,64,64,64);gr.addColorStop(0,'rgba(0,0,0,0.32)');gr.addColorStop(1,'rgba(0,0,0,0)');sx.fillStyle=gr;sx.fillRect(0,0,128,128);
+  add(new T.PlaneGeometry(8,3),new T.MeshBasicMaterial({map:new T.CanvasTexture(sc),transparent:true,depthWrite:false}),0,0.001,0).rotation.x=-Math.PI/2;
+
+  // cuerpo de acero inoxidable
+  cylX(0.55,0.55,2.6,0,M.body);
+  cylX(0.55,0.45,0.4,1.5,M.body);cylX(0.45,0.55,0.4,-1.5,M.body);
+  cylX(0.45,0.45,0.4,1.9,M.body);cylX(0.45,0.45,0.4,-1.9,M.body);
+  [-1.3,1.3,-1.7,1.7].forEach(x=>cylX(x*x>2?0.465:0.568,x*x>2?0.465:0.568,0.03,x,M.flange));
+  [-2.15,2.15].forEach(x=>{cylX(0.8,0.8,0.1,x,M.flange);[-0.05,0.05].forEach(o=>{const r=add(new T.RingGeometry(0.45,0.8,56),M.flange,x+o,Y0,0);r.rotation.y=Math.PI/2;});
+    for(let k=0;k<12;k++){const a=k/12*Math.PI*2;const b=add(new T.CylinderGeometry(0.035,0.035,0.16,10),M.bolt,x,Y0+Math.cos(a)*0.68,Math.sin(a)*0.68);b.rotation.z=Math.PI/2;}});
+  // tuberías de conexión
+  cylX(0.45,0.45,1.0,2.7,M.pipe);cylX(0.45,0.45,1.0,-2.7,M.pipe);
+  // soportes
+  [-1.0,1.0].forEach(x=>{add(new T.BoxGeometry(0.14,0.48,0.16),M.stand,x,0.24,0.32);add(new T.BoxGeometry(0.14,0.48,0.16),M.stand,x,0.24,-0.32);add(new T.BoxGeometry(0.2,0.05,0.9),M.stand,x,0.47,0);});
+
+  // lámparas: puertos, cajas de conexión, vainas de cuarzo
+  const LX=[-0.65,0.65];
+  const lamps=LX.map((x,i)=>{
+    add(new T.CylinderGeometry(0.2,0.22,0.3,40),M.flange,x,Y0+0.62,0);
+    add(new T.CylinderGeometry(0.26,0.26,0.05,40),M.flange,x,Y0+0.78,0);
+    const by=Y0+0.8+0.22;
+    add(new T.BoxGeometry(0.86,0.44,0.62),M.box,x,by,0);
+    add(new T.BoxGeometry(0.88,0.05,0.64),M.seam,x,by+0.12,0);
+    [-0.2,0.2].forEach(dx=>{const g=add(new T.CylinderGeometry(0.05,0.05,0.08,16),M.black,x+dx,by-0.04,0.34);g.rotation.x=Math.PI/2;});
+    [[-0.3,0.15],[0.3,0.15],[-0.3,-0.15],[0.3,-0.15]].forEach(p=>add(new T.CylinderGeometry(0.03,0.03,0.03,10),M.bolt,x+p[0],by+0.235,p[1]));
+    // sensor de intensidad (lado frontal)
+    const s1=add(new T.CylinderGeometry(0.06,0.06,0.2,20),M.flange,x+0.28,Y0,0.6);s1.rotation.x=Math.PI/2;
+    const c1=add(new T.CylinderGeometry(0.068,0.068,0.06,20),M.sensor,x+0.28,Y0,0.72);c1.rotation.x=Math.PI/2;
+    // vaina de cuarzo + lámpara
+    add(new T.CylinderGeometry(0.085,0.085,1.12,24,1,true),M.quartz,x,Y0,0);
+    const core=add(new T.CylinderGeometry(0.035,0.035,1.0,16),new T.MeshBasicMaterial({color:0xd9c8ff}),x,Y0,0);
+    const glowM=new T.MeshBasicMaterial({color:0x8e5cff,transparent:true,opacity:0.2,depthWrite:false,side:T.DoubleSide});
+    const glow=add(new T.CylinderGeometry(0.3,0.3,1.02,32,1,true),glowM,x,Y0,0);
+    const g2M=glowM.clone();g2M.color.set(0xb388ff);const glow2=add(new T.CylinderGeometry(0.15,0.15,1.04,32,1,true),g2M,x,Y0,0);
+    const pl=new T.PointLight(0xa57cff,0,2.4,2);pl.position.set(x,Y0,0);scene.add(pl);
+    return {core,glow,glow2,pl,on:1};
+  });
+  // sensor UVT en la entrada
+  const s2=add(new T.CylinderGeometry(0.06,0.06,0.22,20),M.flange,-1.05,Y0+0.6,0);
+  add(new T.CylinderGeometry(0.07,0.07,0.06,20),M.sensor,-1.05,Y0+0.73,0);
+  // agua interior
+  const water=cylX(0.5,0.5,2.55,0,M.water);water.visible=false;
+
+  // balasto con aletas
+  const BX=-2.1,BY=2.45,BZ=-1.45;
+  add(new T.BoxGeometry(0.1,2.3,0.1),M.stand,BX,1.15,BZ-0.05);
+  add(new T.BoxGeometry(0.6,0.05,0.5),M.stand,BX,0.03,BZ-0.05);
+  add(new T.BoxGeometry(1.0,0.62,0.3),M.ballast,BX,BY,BZ);
+  for(let k=0;k<11;k++)add(new T.BoxGeometry(0.035,0.62,0.12),M.ballast,BX-0.45+k*0.09,BY,BZ+0.21);
+  add(new T.BoxGeometry(0.3,0.14,0.14),M.box,BX,BY-0.38,BZ+0.05);
+
+  // panel de control azul con pantalla táctil
+  const CX=2.35,CY=1.95,CZ=-1.45;
+  add(new T.BoxGeometry(0.1,1.4,0.1),M.stand,CX,0.7,CZ-0.05);
+  add(new T.BoxGeometry(0.6,0.05,0.5),M.stand,CX,0.03,CZ-0.05);
+  add(new T.BoxGeometry(1.05,1.2,0.34),M.cab,CX,CY,CZ);
+  add(new T.BoxGeometry(0.88,0.7,0.02),M.black,CX,CY+0.12,CZ+0.175);
+  const scr=document.createElement('canvas');scr.width=512;scr.height=400;const sg=scr.getContext('2d');
+  const scrT=new T.CanvasTexture(scr);scrT.encoding=T.sRGBEncoding;
+  add(new T.PlaneGeometry(0.8,0.625),new T.MeshBasicMaterial({map:scrT,toneMapped:false}),CX,CY+0.12,CZ+0.187);
+  for(let k=0;k<5;k++)add(new T.CylinderGeometry(0.03,0.03,0.03,12),k===0?M.sensor:M.white,CX-0.3+k*0.15,CY-0.42,CZ+0.18).rotation.x=Math.PI/2;
+  for(let k=0;k<5;k++)add(new T.CylinderGeometry(0.035,0.035,0.06,12),M.black,CX-0.3+k*0.15,CY-0.62,CZ);
+
+  // cables
+  const V=(x,y,z)=>new T.Vector3(x,y,z);
+  const cable=(pts,r)=>scene.add(new T.Mesh(new T.TubeGeometry(new T.CatmullRomCurve3(pts),80,r||0.022,8,false),M.black));
+  LX.forEach((x,i)=>{cable([V(x-0.2,Y0+0.98,0.38),V(x-0.2,Y0+0.95,0.55),V(x-0.5,2.0,0.3),V(BX+0.4,1.9,BZ+0.4),V(BX+0.1,BY-0.45,BZ+0.05)]);
+    cable([V(x+0.2,Y0+0.98,0.38),V(x+0.2,Y0+0.9,0.6),V(x+0.6,1.7,0.2),V(CX-0.6,1.5,CZ+0.4),V(CX-0.25,CY-0.65,CZ)],0.016);});
+  cable([V(BX+0.5,BY,BZ-0.05),V(-0.5,2.15,BZ-0.1),V(1.2,2.15,BZ-0.1),V(CX-0.53,CY+0.3,CZ-0.05)],0.026);
+
+  // microorganismos
+  const NP=reduce?140:220;
+  const mic=new T.InstancedMesh(new T.IcosahedronGeometry(0.038,0),M.microbe,NP);scene.add(mic);
+  const P=[];const newP=(p,x)=>{p.x=x;const r=Math.sqrt(Math.random())*0.36,a=Math.random()*Math.PI*2;p.y=Math.cos(a)*r;p.z=Math.sin(a)*r;p.alive=true;p.passed=[false,false];p.sp=0.85+Math.random()*0.3;return p;};
+  for(let i=0;i<NP;i++)P.push(newP({q:new T.Quaternion().setFromEuler(new T.Euler(Math.random()*6,Math.random()*6,0)),ax:new T.Vector3(Math.random()-.5,Math.random()-.5,Math.random()-.5).normalize()},-3.15+Math.random()*6.3));
+  const cAlive=new T.Color('#E8613C').convertSRGBToLinear(),cDead=new T.Color('#8FA3B8').convertSRGBToLinear();
+
+  // pantalla
+  function drawScreen(){
+    const w=512,h=400,g=sg;g.fillStyle='#071a33';g.fillRect(0,0,w,h);
+    g.fillStyle='#0f2c55';g.fillRect(0,0,w,52);
+    g.fillStyle='#e3f2fd';g.font='600 26px Fredoka, Nunito, sans-serif';g.textAlign='left';g.fillText('DOSIS UV',18,35);
+    g.textAlign='right';g.font='500 20px Nunito, sans-serif';g.fillStyle=(R.lg>=3&&R.nL)?'#5DC48B':(R.lg>=1&&R.nL?'#E3B440':'#EE6C6C');
+    g.fillText(R.nL===0||st.pow===0?'● ALARMA':(R.lg>=3?'● OK':'● BAJA'),w-18,34);
+    const cx=w/2,cy=250,rr=135,max=Math.max(60,R.p.d3*2);
+    const ang=v=>Math.PI+Math.min(1,v/max)*Math.PI;
+    g.lineWidth=30;g.lineCap='butt';
+    [[0,R.p.d3/3,'#C23A3A'],[R.p.d3/3,R.p.d3,'#E3B440'],[R.p.d3,max,'#2C8A57']].forEach(z=>{g.strokeStyle=z[2];g.beginPath();g.arc(cx,cy,rr,ang(z[0]),ang(z[1]));g.stroke();});
+    const a=ang(R.D);g.strokeStyle='#ffffff';g.lineWidth=6;g.beginPath();g.moveTo(cx,cy);g.lineTo(cx+Math.cos(a)*(rr-8),cy+Math.sin(a)*(rr-8));g.stroke();
+    g.fillStyle='#ffffff';g.beginPath();g.arc(cx,cy,12,0,Math.PI*2);g.fill();
+    g.textAlign='center';g.font='700 52px Fredoka, Nunito, sans-serif';g.fillText(fmt(R.D,R.D<10?1:0),cx,cy-40);
+    g.font='500 20px Nunito, sans-serif';g.fillStyle='#90caf9';g.fillText('mJ/cm²',cx,cy-12);
+    g.font='500 21px Nunito, sans-serif';g.fillStyle='#e3f2fd';g.textAlign='left';
+    g.fillText('UVT '+st.uvt+' %',18,h-48);g.fillText('Q '+st.q+' m³/h',18,h-18);
+    g.textAlign='right';
+    g.fillStyle=st.l1&&st.pow?'#B388FF':'#4a5a70';g.fillText('L1 ●',w-90,h-18);
+    g.fillStyle=st.l2&&st.pow?'#B388FF':'#4a5a70';g.fillText('L2 ●',w-18,h-18);
+    g.fillStyle='#e3f2fd';g.fillText(fmt(Math.min(R.lg,9.9),1)+' log',w-18,h-48);
+    scrT.needsUpdate=true;
+  }
+
+  // recorrido guiado
+  const STEPS=[
+    {t:'Vista general',k:'Recorrido guiado',p:'Un <b>reactor UV en línea</b> se instala dentro de la tubería: el agua entra por un lado, pasa junto a las lámparas y sale desinfectada por el otro. Toca <b>Siguiente</b> o un número para conocer cada parte.',tg:V(0,1.4,-0.3),az:0.55,el:0.3,d:null,hl:[]},
+    {t:'Cámara de acero y bridas',k:'Paso 1 de 6',p:'El cuerpo es de <b>acero inoxidable</b> y se une a la tubería con <b>bridas</b> apernadas. Por dentro es pulido para que la luz rebote y llegue a toda el agua. Las bolitas <b style="color:var(--salmon)">rojas</b> son microorganismos activos que vienen con el agua.',tg:V(-1.9,1.0,0),az:-0.95,el:0.25,d:5,hl:['body','flange'],pin:V(-2.15,1.95,0)},
+    {t:'Lámparas de media presión',k:'Paso 2 de 6',p:'Dentro de una <b>vaina de cuarzo</b> (vidrio que deja pasar la luz UV) está la lámpara. Emite luz <b>UV-C</b> muy intensa que daña el ADN de los microorganismos: al pasar junto a ella se vuelven <b style="color:#8FA3B8">grises</b> (inactivados). Activé la vista interior para que la veas.',tg:V(-0.2,1.0,0),az:0.3,el:0.18,d:4.6,hl:['quartz'],pin:V(-0.65,1.62,0),inside:true},
+    {t:'Sensores UV',k:'Paso 3 de 6',p:'Cada lámpara tiene un <b>sensor de intensidad</b> (tapa azul) que mide cuánta luz llega al agua. Otro sensor mide la <b>UVT</b>, es decir, qué tan transparente es el agua a la luz UV. Con ambos datos el sistema calcula la dosis real.',tg:V(0.2,1.1,0.4),az:0.25,el:0.22,d:4.4,hl:['sensor'],pin:V(0.93,1.0,0.8)},
+    {t:'Cajas de conexión',k:'Paso 4 de 6',p:'Sobre cada lámpara hay una <b>caja de conexión</b> hermética (IP65 o más). Protege los contactos eléctricos del agua y permite cambiar la lámpara sin desmontar la tubería.',tg:V(0,2.0,0),az:0.5,el:0.35,d:4.8,hl:['box'],pin:V(0.65,2.35,0)},
+    {t:'Balasto',k:'Paso 5 de 6',p:'El <b>balasto</b> es la fuente de poder de las lámparas. Sus <b>aletas</b> disipan el calor. Sube o baja la potencia según la dosis que se necesita, ahorrando energía cuando el agua está limpia o el caudal es bajo.',tg:V(BX,BY-0.2,BZ),az:0.3,el:0.18,d:4.2,hl:['ballast'],pin:V(BX,BY+0.45,BZ)},
+    {t:'Panel de control',k:'Paso 6 de 6',p:'El <b>panel táctil</b> muestra en tiempo real la dosis, la UVT, el caudal y el estado de cada lámpara. Tiene <b>alarmas</b> si la dosis baja del mínimo y guarda registros para control de calidad. Mueve los controles del simulador y mira cómo cambia la pantalla.',tg:V(CX,CY+0.05,CZ),az:0.12,el:0.08,d:3.4,hl:['cab'],pin:V(CX,CY+0.72,CZ)}
+  ];
+  const HL={body:[M.body],flange:[M.flange],quartz:[M.quartz],sensor:[M.sensor],box:[M.box],ballast:[M.ballast],cab:[M.cab]};
+  const lw=$('uvLbls');
+  const pins=STEPS.map((s,i)=>{if(!s.pin)return null;const b=document.createElement('button');b.type='button';b.className='pin';b.innerHTML='<b>'+i+'</b><span>'+s.t+'</span>';b.addEventListener('click',()=>goStep(i));lw.appendChild(b);return b;});
+  const dots=$('uDots');STEPS.forEach((_,i)=>{const d=document.createElement('button');d.type='button';d.setAttribute('aria-label','Paso '+i);d.addEventListener('click',()=>goStep(i));dots.appendChild(d);});
+
+  const tgt=V(0,1.4,-0.3);let az,el,dist,auto=true,goal=null,step=0,inside=false;
+  const narrow=()=>host.clientWidth<620;
+  const shortest=(a,b)=>{let d=(b-a)%(Math.PI*2);if(d>Math.PI)d-=Math.PI*2;if(d<-Math.PI)d+=Math.PI*2;return a+d;};
+  function resetView(){az=0.55;el=0.3;dist=narrow()?13:9.8;tgt.set(0,1.4,-0.3);goal=null;}
+  resetView();
+  function setInside(on){inside=on;$('uIn').setAttribute('aria-pressed',on);
+    M.body.transparent=on;M.body.opacity=on?0.16:1;M.body.depthWrite=!on;M.body.side=on?T.DoubleSide:T.FrontSide;M.body.needsUpdate=true;water.visible=on;}
+  function goStep(i){
+    step=Math.max(0,Math.min(STEPS.length-1,i));const s=STEPS[step];
+    $('uTourN').textContent=step===0?'★':step;$('uTourT').textContent=s.t;$('uTourK').textContent=s.k;$('uTourP').innerHTML=s.p;
+    $('uPrev').disabled=step===0;$('uNext').textContent=step===STEPS.length-1?'Volver al inicio ⟲':'Siguiente →';
+    [].forEach.call(dots.children,(d,j)=>d.setAttribute('aria-current',j===step?'true':'false'));
+    pins.forEach((p,j)=>p&&p.classList.toggle('on',j===step));
+    goal={tg:s.tg.clone(),az:s.az,el:s.el,d:s.d?s.d*(narrow()?1.45:1):(narrow()?13:9.8)};
+    if(s.inside)setInside(true);
+    if(step>0){auto=false;$('uRot').setAttribute('aria-pressed','false');}
+  }
+  $('uPrev').addEventListener('click',()=>goStep(step-1));
+  $('uNext').addEventListener('click',()=>goStep(step===STEPS.length-1?0:step+1));
+  tg('uIn',on=>setInside(on));
+  tg('uLbl',on=>lw.classList.toggle('off',!on));
+  tg('uRot',on=>{auto=on;});
+  $('uReset').addEventListener('click',()=>{goStep(0);});
+  const shell=$('uvShell');
+  const setFull=on=>{shell.classList.toggle('full',on);$('uFs').textContent=on?'✕':'⛶';document.body.style.overflow=on?'hidden':'';};
+  $('uFs').addEventListener('click',()=>setFull(!shell.classList.contains('full')));
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&shell.classList.contains('full'))setFull(false);});
+
+  const cv=renderer.domElement,ptr=new Map();let pinch0=0,dist0=0;
+  const hint=$('uvHint');const killHint=()=>hint.classList.add('gone');setTimeout(killHint,6000);
+  cv.addEventListener('pointerdown',e=>{goal=null;killHint();cv.setPointerCapture(e.pointerId);ptr.set(e.pointerId,{x:e.clientX,y:e.clientY});if(ptr.size===2){const a=[...ptr.values()];pinch0=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y);dist0=dist;}});
+  cv.addEventListener('pointermove',e=>{if(!ptr.has(e.pointerId))return;const p=ptr.get(e.pointerId);const dx=e.clientX-p.x,dy=e.clientY-p.y;p.x=e.clientX;p.y=e.clientY;
+    if(ptr.size===1){az-=dx*0.008;el=Math.max(0.02,Math.min(1.35,el+dy*0.006));}
+    else if(ptr.size===2&&pinch0>0){const a=[...ptr.values()];dist=Math.max(3,Math.min(18,dist0*pinch0/Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y)));}});
+  const up=e=>{ptr.delete(e.pointerId);if(ptr.size<2)pinch0=0;};
+  cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
+  cv.addEventListener('wheel',e=>{e.preventDefault();goal=null;dist=Math.max(3,Math.min(18,dist*(1+e.deltaY*0.001)));},{passive:false});
+
+  function resize(){host.classList.toggle('narrow',narrow());const w=host.clientWidth,h=host.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();}
+  new ResizeObserver(resize).observe(host);resize();
+
+  goStep(0);goal=null;
+  const m4=new T.Matrix4(),pos=new T.Vector3(),one=new T.Vector3(1,1,1),qa=new T.Quaternion(),pv=new T.Vector3();
+  const cOff=new T.Color(0x3a3550),cOn=new T.Color(0xc9b3ff),qClean=new T.Color(0xeaf5ff),qDirty=new T.Color(0x9c8a5a);
+  let clk=0;
+  return function(dt){
+    clk+=dt;
+    if(auto)az+=dt*0.15;
+    if(goal){const k=1-Math.exp(-dt*3);az+=(shortest(az,goal.az)-az)*k;el+=(goal.el-el)*k;dist+=(goal.d-dist)*k;tgt.lerp(goal.tg,k);}
+    camera.position.set(tgt.x+dist*Math.cos(el)*Math.sin(az),tgt.y+dist*Math.sin(el),tgt.z+dist*Math.cos(el)*Math.cos(az));camera.lookAt(tgt);
+    const pulse=0.3+0.3*Math.sin(clk*4);
+    Object.keys(HL).forEach(key=>{const on=STEPS[step].hl.indexOf(key)>=0;HL[key].forEach(m=>{m.emissive.setHex(on?0x1e88e5:0);m.emissiveIntensity=on?pulse:0;});});
+    // lámparas
+    const foulK=1-st.foul/100;
+    lamps.forEach((L,i)=>{const on=(i===0?st.l1:st.l2)?st.pow/100:0;L.on+=(on-L.on)*Math.min(1,dt*6);
+      const fl=1+0.04*Math.sin(clk*37+i*2);
+      L.core.material.color.copy(cOff).lerp(cOn,L.on);
+      const s=0.45+R.f*0.9;L.glow.scale.set(s,1,s);
+      L.glow.material.opacity=0.22*L.on*foulK*fl;L.glow2.material.opacity=0.42*L.on*foulK*fl;
+      L.pl.intensity=inside?2.2*L.on*foulK:0;});
+    M.quartz.color.copy(qClean).lerp(qDirty,st.foul/60);M.quartz.opacity=0.28+st.foul/60*0.45;
+    // microorganismos
+    const v=(0.25+st.q/600*1.1);
+    const perLamp=R.nL?R.D/R.nL:0;
+    for(let i=0;i<NP;i++){const p=P[i];p.x+=v*p.sp*dt;
+      for(let j=0;j<2;j++){if(!p.passed[j]&&p.x>=LX[j]){p.passed[j]=true;const lampOn=j===0?st.l1:st.l2;
+        if(p.alive&&lampOn&&st.pow>0){const pk=1-Math.pow(10,-perLamp/R.d10);if(Math.random()<pk)p.alive=false;}}}
+      if(p.x>3.15)newP(p,-3.15);
+      qa.setFromAxisAngle(p.ax,dt*2);p.q.multiply(qa);
+      pos.set(p.x,Y0+p.y,p.z);m4.compose(pos,p.q,one);mic.setMatrixAt(i,m4);mic.setColorAt(i,p.alive?cAlive:cDead);}
+    mic.instanceMatrix.needsUpdate=true;if(mic.instanceColor)mic.instanceColor.needsUpdate=true;
+    if(dirty){drawScreen();dirty=false;}
+    renderer.render(scene,camera);
+    const w=host.clientWidth,h=host.clientHeight;
+    STEPS.forEach((s,i)=>{const e=pins[i];if(!e)return;pv.copy(s.pin).project(camera);if(pv.z>1||Math.abs(pv.x)>1.05||Math.abs(pv.y)>1.05){e.style.display='none';return;}e.style.display='';e.style.left=((pv.x+1)/2*w).toFixed(0)+'px';e.style.top=((1-pv.y)/2*h).toFixed(0)+'px';});
   };
 }
 })();
