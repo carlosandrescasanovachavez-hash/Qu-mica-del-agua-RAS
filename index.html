@@ -308,6 +308,40 @@ footer{background:linear-gradient(160deg,var(--blue-1),var(--blue-2));color:#DCE
 footer .wrap{display:grid;gap:8px;font-size:.92rem}
 footer b{font-family:var(--f-display);font-size:1.2rem;color:#fff;font-weight:600}
 
+/* Fichas en pestañas, índice y tablas */
+.chips-k{font-family:var(--f-display);font-weight:600;color:var(--muted);margin-bottom:10px}
+.chips{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:8px;margin-bottom:20px;scroll-margin-top:72px}
+.chip{display:grid;gap:2px;justify-items:start;text-align:left;padding:9px 12px;border-radius:14px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;font-family:var(--f-body);min-height:58px;transition:transform .15s,border-color .15s,background .15s}
+.chip b{font-family:var(--f-display);font-weight:700;font-size:1.15rem;color:var(--fjord);line-height:1.1}
+.chip span{font-size:.72rem;color:var(--muted);line-height:1.2}
+.chip:hover{border-color:var(--fjord);transform:translateY(-1px)}
+.chip[aria-pressed="true"]{background:var(--fjord);border-color:var(--fjord);box-shadow:0 4px 14px rgba(21,101,192,.3)}
+.chip[aria-pressed="true"] b,.chip[aria-pressed="true"] span{color:#fff}
+.cards.one .card{display:none}
+.cards.one .card.sel{display:grid}
+@media (prefers-reduced-motion:no-preference){.cards.one .card.sel{animation:sIn .35s ease both}}
+.fnav{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:16px}
+.fcnt{font-size:.9rem;color:var(--muted);text-align:center}
+.linkb{border:0;background:none;padding:0;color:var(--fjord);font:inherit;font-weight:700;text-decoration:underline;cursor:pointer}
+.xwrap{grid-column:1/-1;border-top:1px solid var(--line);padding-top:18px;min-width:0}
+.xcalc h4{margin:0 0 12px;font-family:var(--f-display);font-weight:600;font-size:1.15rem;color:var(--fjord)}
+.xgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 24px}
+@media (max-width:640px){.xgrid{grid-template-columns:minmax(0,1fr)}}
+input[type=range]{height:28px;cursor:pointer}
+.tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:28px}
+.tile{display:grid;gap:2px;padding:14px 16px;border-radius:16px;background:var(--surface);border:1px solid var(--line);text-decoration:none;color:var(--ink);box-shadow:0 2px 10px rgba(21,101,192,.06);transition:transform .15s,box-shadow .15s,border-color .15s}
+.tile:hover{transform:translateY(-3px);border-color:var(--fjord);box-shadow:0 8px 20px rgba(21,101,192,.16)}
+.tile span{font-size:1.6rem;line-height:1.2}
+.tile b{font-family:var(--f-display);font-weight:600;font-size:1.05rem;color:var(--fjord)}
+.tile small{font-size:.8rem;color:var(--muted)}
+@media (max-width:860px){.tiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.tbl-hint{display:none;font-size:.85rem;color:var(--muted);margin-bottom:8px}
+@media (max-width:860px){.tbl-hint{display:block}}
+.tbl-wrap th:first-child,.tbl-wrap td:first-child{position:sticky;left:0;z-index:1;box-shadow:2px 0 0 var(--line)}
+.tbl-wrap td:first-child{background:var(--surface);max-width:42vw}
+.tbl-wrap tbody tr:nth-child(even) td:first-child{background:var(--alt)}
+.tbl-wrap th:first-child{background:var(--fjord)}
+
 /* Presentación */
 .pres{position:relative;min-height:100vh;min-height:100svh;display:grid;align-content:center;color:#fff;overflow:hidden;
   background:radial-gradient(120% 80% at 80% 0%,#42A5F5 0%,transparent 55%),linear-gradient(160deg,#0A2A5E 0%,#1565C0 60%,#1E88E5 100%);
@@ -387,7 +421,7 @@ footer b{font-family:var(--f-display);font-size:1.2rem;color:#fff;font-weight:60
         <h2>En esta guía encontrarás</h2>
         <ul>
           <li><span class="ico">01</span><span><b>Simulador</b> del dilema pH–CO₂–amoníaco.</span></li>
-          <li><span class="ico">12</span><span><b>Fichas</b> de doce parámetros con rangos seguros y críticos.</span></li>
+          <li><span class="ico">13</span><span><b>Fichas</b> de trece parámetros, incluida la presión total de gases (TGP).</span></li>
           <li><span class="ico">3D</span><span><b>Biofiltro en 3D</b> y calculadora de nitrificación.</span></li>
           <li><span class="ico">UV</span><span><b>Reactor UV en 3D</b> con simulador de dosis.</span></li>
           <li><span class="ico">⚗</span><span><b>Reacciones</b> químicas clave y fuentes científicas.</span></li>
@@ -427,11 +461,23 @@ footer b{font-family:var(--f-display);font-size:1.2rem;color:#fff;font-weight:60
     <div>
       <div class="eyebrow">Guía didáctica · Salmo salar · RAS agua dulce / salobre</div>
       <h1>Calidad de agua en<br>piscicultura <em>RAS</em></h1>
-      <p class="lede">Doce parámetros que definen si un salmón crece o se enferma: qué son, en qué rango trabajar, cuándo es crítico, cómo se controlan y cómo se afectan entre sí. En recirculación nada se mueve solo: el alimento genera NAT, CO₂ y sólidos, y el biofiltro consume oxígeno y alcalinidad.</p>
+      <p class="lede">Trece parámetros que definen si un salmón crece o se enferma: qué son, en qué rango trabajar, cuándo es crítico, cómo se controlan y cómo se afectan entre sí. En recirculación nada se mueve solo: el alimento genera NAT, CO₂ y sólidos, y el biofiltro consume oxígeno y alcalinidad.</p>
     </div>
     <div class="hero-note">
       <p><b>Cómo leer los rangos.</b> Son referencias de literatura y práctica RAS para salmónidos, no límites legales ni universales. Cambian con la etapa (ova, alevín, smolt), la temperatura, la dureza y la salinidad.</p>
       <p><b>Simulador</b> configurado por defecto a 12 °C y 3 ppt. Calcula NH₃, CO₂ y saturación de O₂ con ecuaciones publicadas.</p>
+    </div>
+  </div>
+  <div class="wrap">
+    <div class="tiles">
+      <a class="tile" href="#simulador"><span>🎛</span><b>Simulador</b><small>pH, CO₂ y amoníaco</small></a>
+      <a class="tile" href="#resumen"><span>📋</span><b>Tabla de rangos</b><small>Óptimo, precaución, crítico</small></a>
+      <a class="tile" href="#fichas"><span>🧪</span><b>13 fichas</b><small>pH, O₂, TGP, NH₃ y más</small></a>
+      <a class="tile" href="#interacciones"><span>🕸</span><b>Interacciones</b><small>Cómo se afectan entre sí</small></a>
+      <a class="tile" href="#biofiltro"><span>🦠</span><b>Biofiltro 3D</b><small>Maqueta y nitrificación</small></a>
+      <a class="tile" href="#uv"><span>💡</span><b>Reactor UV 3D</b><small>Desinfección y dosis</small></a>
+      <a class="tile" href="#reacciones"><span>⚗</span><b>Reacciones</b><small>La química de fondo</small></a>
+      <a class="tile" href="#etapas"><span>🐟</span><b>Etapas</b><small>Ova, alevín, smolt</small></a>
     </div>
   </div>
 </header>
@@ -440,12 +486,12 @@ footer b{font-family:var(--f-display);font-size:1.2rem;color:#fff;font-weight:60
   <div class="wrap">
     <a class="sec" href="#simulador">Simulador</a>
     <a class="sec" href="#resumen">Tabla de rangos</a>
-    <a href="#ph">pH</a><a href="#alc">Alcalinidad</a><a href="#co2">CO₂</a><a href="#o2">O₂</a><a href="#nh3">NH₃</a>
-    <a href="#dbo">DBO</a><a href="#ntu">Turbidez</a><a href="#dur">Dureza</a><a href="#cu">Cobre</a><a href="#fe">Hierro</a><a href="#al">Aluminio</a><a href="#o3">Ozono</a>
+    <a class="sec" href="#fichas">Fichas</a>
     <a class="sec" href="#interacciones">Interacciones</a>
     <a class="sec" href="#biofiltro">Biofiltro 3D</a>
     <a class="sec" href="#uv">Desinfección UV</a>
     <a class="sec" href="#reacciones">Reacciones</a>
+    <a class="sec" href="#etapas">Etapas</a>
     <a class="sec" href="#fuentes">Fuentes</a>
   </div>
 </nav>
@@ -506,6 +552,7 @@ footer b{font-family:var(--f-display);font-size:1.2rem;color:#fff;font-weight:60
       <h2>Rangos de referencia para salmón en RAS</h2>
       <p>Valores orientativos para engorda en agua dulce o salobre baja. En incubación los márgenes son más estrechos para sólidos, hierro y metales.</p>
     </div>
+    <p class="tbl-hint">👉 Desliza la tabla hacia el lado para ver todas las columnas.</p>
     <div class="tbl-wrap">
       <table>
         <thead><tr><th>Parámetro</th><th>Unidad</th><th>Óptimo</th><th>Precaución</th><th>Crítico</th><th>Principal control</th></tr></thead>
@@ -521,8 +568,16 @@ footer b{font-family:var(--f-display);font-size:1.2rem;color:#fff;font-weight:60
     <div class="sec-head">
       <div class="eyebrow">03 · Fichas por parámetro</div>
       <h2>Qué es, qué le hace al salmón y cómo se controla</h2>
+      <p>Trece fichas, una por parámetro. Cada una explica qué es, cómo afecta al salmón, cómo se controla y en qué rango trabajar.</p>
     </div>
-    <div class="cards" id="cards"></div>
+    <p class="chips-k">Elige un parámetro:</p>
+    <div class="chips" id="chips"></div>
+    <div class="cards one" id="cards"></div>
+    <div class="fnav">
+      <button type="button" class="tbtn ghost" id="fPrev">←</button>
+      <span class="fcnt"><span id="fCnt"></span> · <button type="button" class="linkb" id="fAll" aria-pressed="false">Ver todas las fichas</button></span>
+      <button type="button" class="tbtn solid" id="fNext">→</button>
+    </div>
   </div>
 </section>
 
@@ -801,6 +856,8 @@ footer b{font-family:var(--f-display);font-size:1.2rem;color:#fff;font-weight:60
       <li>Chen, S., Ling, J. &amp; Blancheton, J.-P. (2006). Nitrification kinetics of biofilm as affected by water quality factors. <i>Aquacultural Engineering</i> 34: 179–197.</li>
       <li>Kinyage, J.P.H., Pedersen, P.B. &amp; Pedersen, L.-F. (2019). Effects of abrupt salinity increase on nitrification processes in a freshwater moving bed biofilter. <i>Aquacultural Engineering</i> 84: 91–98.</li>
       <li>Daims, H. et al. (2015). Complete nitrification by <i>Nitrospira</i> bacteria. <i>Nature</i> 528: 504–509.</li>
+      <li>Weitkamp, D.E. &amp; Katz, M. (1980). A review of dissolved gas supersaturation literature. <i>Transactions of the American Fisheries Society</i> 109: 659–702.</li>
+      <li>Colt, J. (1984). <i>Computation of dissolved gas concentrations in water as functions of temperature, salinity and pressure</i>. American Fisheries Society, Special Publication 14.</li>
       <li>Liltved, H., Hektoen, H. &amp; Efraimsen, H. (1995). Inactivation of bacterial and viral fish pathogens by ozonation or UV irradiation in water of different salinity. <i>Aquacultural Engineering</i> 14: 107–122.</li>
       <li>Øye, A.K. &amp; Rimstad, E. (2001). Inactivation of infectious salmon anaemia virus, viral haemorrhagic septicaemia virus and infectious pancreatic necrosis virus in water using UVC irradiation and ozone. <i>Diseases of Aquatic Organisms</i> 48: 1–5.</li>
     </ol>
@@ -870,6 +927,26 @@ const P = [
   control:['Oxígeno puro con conos, columnas o LHO, regulado por sonda de salida.','Ajustar oxigenación a la hora y cantidad de alimentación (pico postprandial).','Desgasificar N₂ en columnas para controlar TGP.','No olvidar el consumo del biofiltro y de la materia orgánica (DBO).'],
   bar:{min:40,max:200,z:[[40,60,'crit'],[60,85,'warn'],[85,120,'ok'],[120,150,'acc'],[150,200,'warn']],ticks:[40,60,85,120,150,200]},
   opt:'85 – 120 % (salida > 80 %)', warn:'60 – 85 % · > 150 %', crit:'< 60 %', ctl:'Oxígeno puro + control por sonda', links:['co2','dbo','nh3','fe']},
+ {id:'tgp', sym:'TGP', name:'Presión total de gases', unit:'% de saturación total', stage:'Alevín con saco vitelino', tags:['Medir: saturómetro (TDG)','Diario / online'],
+  what:'Es la suma de las presiones de todos los gases disueltos en el agua (N₂, O₂, argón, CO₂ y vapor de agua) comparada con la presión atmosférica. 100 % significa equilibrio con el aire. Sobre 100 % el agua está sobresaturada y el gas tiende a salir formando burbujas, incluso dentro del pez. También se expresa como ΔP (mmHg) = presión de gases − presión barométrica.',
+  effect:['Enfermedad de la burbuja de gas: burbujas en aletas, piel, ojos (exoftalmia), branquias y vasos sanguíneos (embolias).','Alevines con saco vitelino son los más sensibles: burbujas en el saco, flotan y mueren. Daño crónico desde TGP ~102–103 %.','Sobre ~110 % se esperan mortalidades agudas en juveniles, sobre todo en estanques poco profundos.','El nitrógeno (N₂ + Ar) es el más peligroso porque el pez no lo consume. Un TGP alto solo por O₂ se tolera mejor.','La profundidad protege: cada metro de agua compensa cerca de un 10 % de sobresaturación.'],
+  control:['Desgasificar: columnas de relleno, torres de goteo o desgasificadores de vacío antes de los estanques.','Revisar entradas de aire en la succión de las bombas (sellos, uniones, vórtices): el aire aspirado se disuelve a presión.','Cuidado al calentar el agua o al usar agua de pozo o vertiente: suelen venir sobresaturadas en N₂.','Al inyectar O₂ puro a presión (conos, LHO), verificar el TGP a la salida y desgasificar N₂ antes.','Medir con saturómetro en la entrada del estanque y calcular el % de N₂ + Ar, no solo el TGP.'],
+  bar:{min:95,max:120,z:[[95,100,'ok'],[100,102,'acc'],[102,110,'warn'],[110,120,'crit']],ticks:[95,100,102,110,120]},
+  opt:'≤ 100 % (hasta 102 % tolerable)', warn:'102 – 110 %', crit:'> 110 % · alevín con saco > 102–103 %', ctl:'Desgasificación + sin aire en bombas', links:['o2','co2'],
+  note:'Valores orientativos (Colt 1984, 2006; Weitkamp & Katz 1980). Los límites dependen de la especie, la etapa, la profundidad y de cuánto del exceso es N₂.',
+  extra:`<div class="xcalc"><h4>Calculadora de TGP y nitrógeno</h4>
+   <div class="xgrid">
+    <div class="ctl"><label for="gBP">Presión barométrica <output id="gBPo"></output></label><input type="range" id="gBP" min="600" max="780" step="1" value="760"><small>760 mmHg a nivel del mar; baja con la altitud.</small></div>
+    <div class="ctl"><label for="gDP">ΔP del saturómetro <output id="gDPo"></output></label><input type="range" id="gDP" min="-40" max="120" step="1" value="20"><small>Lectura directa del equipo (mmHg sobre la atmósfera).</small></div>
+    <div class="ctl"><label for="gO2">Oxígeno disuelto <output id="gO2o"></output></label><input type="range" id="gO2" min="50" max="250" step="1" value="110"><small>% de saturación medido con el oxímetro.</small></div>
+    <div class="ctl"><label for="gT">Temperatura <output id="gTo"></output></label><input type="range" id="gT" min="2" max="20" step="0.5" value="12"></div>
+   </div>
+   <div class="readouts" style="margin-top:14px">
+    <div class="ro" id="gR1"><span class="k">TGP</span><span class="v">–</span><span class="pill">–</span><span class="d"></span></div>
+    <div class="ro" id="gR2"><span class="k">N₂ + Ar</span><span class="v">–</span><span class="pill">–</span><span class="d"></span></div>
+    <div class="ro" id="gR3"><span class="k">Profundidad de compensación</span><span class="v">–</span><span class="pill">–</span><span class="d"></span></div>
+   </div>
+   <div class="eq" style="margin-top:12px;white-space:normal">TGP % = (PB + ΔP) / PB × 100 &nbsp;·&nbsp; N₂+Ar % = (PB + ΔP − pO₂ − pH₂O) / [0,7905 × (PB − pH₂O)] × 100</div></div>`},
  {id:'nh3', sym:'NH₃', name:'Amoníaco no ionizado', unit:'mg/L N-NH₃', stage:'Alevín', tags:['Medir: NAT 2–3 veces/semana','Calcular NH₃'],
   what:'El NAT (nitrógeno amoniacal total) es la suma de NH₄⁺ y NH₃. El salmón lo excreta por la branquia como producto del metabolismo de la proteína. La forma NH₃, sin carga, atraviesa membranas y es la tóxica; su proporción depende de pH y temperatura.',
   effect:['Hiperplasia y lesiones branquiales, menor crecimiento y menor resistencia a patógenos.','Altera la excreción de amoníaco propio y la función neurológica en exposiciones altas.','Toxicidad aguda en salmónidos desde ~0,08 mg/L NH₃ según la literatura (CL50 muy variable).','En RAS el NAT normal se mantiene bajo 1–2 mg/L N.'],
@@ -955,7 +1032,30 @@ document.getElementById('cards').innerHTML=P.map(p=>`
     <div><h4>Se relaciona con</h4><div class="links">${p.links.map(l=>`<a href="#${l}">${nameOf(l)}</a>`).join('')}<a href="#interacciones" data-net="${p.id}">ver en la red →</a></div></div>
     ${p.note?`<p class="note">${p.note}</p>`:''}
   </div>
+  ${p.extra?`<div class="xwrap">${p.extra}</div>`:''}
 </article>`).join('');
+
+/* ---------- FICHAS: una a la vez ---------- */
+(function(){
+  const cardsEl=document.getElementById('cards'),chips=document.getElementById('chips'),ids=P.map(p=>p.id);
+  let cur=0;
+  chips.innerHTML=P.map((p,i)=>`<button type="button" class="chip" data-i="${i}"><b>${p.sym}</b><span>${p.name}</span></button>`).join('');
+  const prev=document.getElementById('fPrev'),next=document.getElementById('fNext'),cnt=document.getElementById('fCnt'),allB=document.getElementById('fAll');
+  function pick(i){cur=(i+P.length)%P.length;
+    [].forEach.call(cardsEl.children,(c,j)=>c.classList.toggle('sel',j===cur));
+    [].forEach.call(chips.children,(c,j)=>c.setAttribute('aria-pressed',j===cur));
+    prev.textContent='← '+P[(cur-1+P.length)%P.length].sym;next.textContent=P[(cur+1)%P.length].sym+' →';cnt.textContent=(cur+1)+' de '+P.length;}
+  function go(id,scroll){const i=ids.indexOf(id);if(i<0)return false;pick(i);
+    if(scroll)requestAnimationFrame(()=>document.getElementById(id).scrollIntoView({behavior:'smooth',block:'start'}));return true;}
+  chips.addEventListener('click',e=>{const b=e.target.closest('.chip');if(b){pick(+b.dataset.i);if(!cardsEl.classList.contains('one'))document.getElementById(P[cur].id).scrollIntoView({behavior:'smooth',block:'start'});}});
+  prev.addEventListener('click',()=>{pick(cur-1);document.getElementById('chips').scrollIntoView({behavior:'smooth',block:'nearest'});});
+  next.addEventListener('click',()=>{pick(cur+1);document.getElementById(P[cur].id).scrollIntoView({behavior:'smooth',block:'start'});});
+  allB.addEventListener('click',()=>{const one=cardsEl.classList.toggle('one');allB.setAttribute('aria-pressed',!one);allB.textContent=one?'Ver todas las fichas':'Ver de a una';});
+  document.addEventListener('click',e=>{const a=e.target.closest('a[href^="#"]');if(!a||a.dataset.net)return;const id=a.getAttribute('href').slice(1);
+    if(ids.indexOf(id)>=0){e.preventDefault();go(id,true);try{history.replaceState(null,'','#'+id)}catch(_){}}});
+  addEventListener('hashchange',()=>go(location.hash.slice(1),true));
+  pick(0);if(location.hash)go(location.hash.slice(1),true);
+})();
 
 /* ---------- CHEMISTRY ---------- */
 function nh3(TAN,pH,T,S){
@@ -1037,11 +1137,27 @@ function drawRisk(T,alk,TAN,S,pHnow){
 ['iT','ipH','iAlk','iTAN','iS','iDO','iF','iPC'].forEach(id=>$(id).addEventListener('input',update));
 update();
 
+/* ---------- TGP ---------- */
+function updTGP(){
+  const BP=+$('gBP').value,DP=+$('gDP').value,O2=+$('gO2').value,T=+$('gT').value,Tk=T+273.15;
+  $('gBPo').textContent=BP+' mmHg';$('gDPo').textContent=(DP>0?'+':'')+DP+' mmHg';$('gO2o').textContent=O2+' %';$('gTo').textContent=n(T,1)+' °C';
+  const pw=760*Math.exp(11.8571-3840.70/Tk-216961/(Tk*Tk));
+  const tgp=(BP+DP)/BP*100, pO2=O2/100*0.20946*(BP-pw), n2=(BP+DP-pO2-pw)/(0.79054*(BP-pw))*100;
+  const s1=tgp<=102?['ok',tgp<=100?'Óptimo':'Tolerable']:tgp<=110?['warn','Precaución']:['crit','Crítico'];
+  setRO($('gR1'),n(tgp,1),'%',`ΔP ${(DP>0?'+':'')+DP} mmHg sobre ${BP} mmHg`,s1[0],s1[1]);
+  const s2=n2<=102?['ok','Óptimo']:n2<=107?['warn','Precaución']:['crit','Crítico'];
+  setRO($('gR2'),n(n2,1),'%',`pO₂ ${n(pO2,0)} mmHg · vapor de agua ${n(pw,1)} mmHg`,s2[0],s2[1]);
+  const dep=Math.max(0,DP/73.55);
+  setRO($('gR3'),n(dep,2),'m',DP>0?'Bajo esta profundidad el gas ya no forma burbujas.':'Sin sobresaturación: no hay riesgo de burbujas.',DP>0?'warn':'ok',DP>0?'Riesgo sobre este nivel':'Sin riesgo');
+}
+['gBP','gDP','gO2','gT'].forEach(id=>$(id).addEventListener('input',updTGP));
+updTGP();
+
 /* ---------- NETWORK ---------- */
 const N={
  alim:{t:'Alimento',x:380,y:50,d:1}, dbo:{t:'DBO',x:160,y:50}, ntu:{t:'Turbidez',x:600,y:50},
  co2:{t:'CO₂',x:250,y:165}, o2:{t:'O₂',x:510,y:165}, o3:{t:'Ozono',x:700,y:155},
- dur:{t:'Dureza',x:80,y:270}, ph:{t:'pH',x:380,y:270}, temp:{t:'Temperatura',x:690,y:285,d:1},
+ dur:{t:'Dureza',x:80,y:270}, ph:{t:'pH',x:380,y:270}, temp:{t:'Temperatura',x:690,y:285,d:1}, tgp:{t:'TGP',x:590,y:232},
  cu:{t:'Cobre',x:80,y:390}, alc:{t:'Alcalinidad',x:250,y:375}, nh3:{t:'NH₃',x:510,y:375}, fe:{t:'Hierro',x:700,y:420},
  al:{t:'Aluminio',x:175,y:480}, bio:{t:'Biofiltro',x:400,y:480,d:1}
 };
@@ -1064,6 +1180,8 @@ const E=[
  ['temp','nh3','+','Sube la fracción NH₃ (baja el pKa).'],
  ['temp','o2','-','Baja la solubilidad del O₂ y aumenta el consumo metabólico.'],
  ['temp','bio','+','Más temperatura acelera la nitrificación dentro del rango de cultivo.'],
+ ['temp','tgp','+','Al calentar el agua baja la solubilidad de los gases: el mismo gas disuelto pasa a ser sobresaturación.'],
+ ['o2','tgp','+','Inyectar O₂ puro a presión sube la presión total si antes no se desgasifica el N₂.'],
  ['bio','nh3','-','Oxida NAT a nitrito y nitrato.'],
  ['bio','alc','-','Consume 7,05 g CaCO₃ por g de N nitrificado.'],
  ['bio','o2','-','Consume 4,18 g O₂ por g de N nitrificado.'],
@@ -1108,7 +1226,7 @@ function sel(k){
 }
 svg.addEventListener('click',ev=>{const g=ev.target.closest('.node');if(g)sel(g.dataset.k);});
 svg.addEventListener('keydown',ev=>{if(ev.key==='Enter'||ev.key===' '){const g=ev.target.closest('.node');if(g){ev.preventDefault();sel(g.dataset.k);}}});
-document.addEventListener('click',ev=>{const a=ev.target.closest('[data-net]');if(a){const map={ph:'ph',alc:'alc',co2:'co2',o2:'o2',nh3:'nh3',dbo:'dbo',ntu:'ntu',dur:'dur',cu:'cu',fe:'fe',al:'al',o3:'o3'};sel(map[a.dataset.net]);}});
+document.addEventListener('click',ev=>{const a=ev.target.closest('[data-net]');if(a){const map={ph:'ph',alc:'alc',co2:'co2',o2:'o2',nh3:'nh3',dbo:'dbo',ntu:'ntu',dur:'dur',cu:'cu',fe:'fe',al:'al',o3:'o3',tgp:'tgp'};sel(map[a.dataset.net]);}});
 sel('ph');
 })();
 </script>
