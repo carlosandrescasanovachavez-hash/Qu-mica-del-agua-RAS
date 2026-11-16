@@ -342,6 +342,8 @@ input[type=range]{height:28px;cursor:pointer}
 .tbl-wrap tbody tr:nth-child(even) td:first-child{background:var(--alt)}
 .tbl-wrap th:first-child{background:var(--fjord)}
 
+#simulador .readouts{grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}
+
 /* Presentación */
 .pres{position:relative;min-height:100vh;min-height:100svh;display:grid;align-content:center;color:#fff;overflow:hidden;
   background:radial-gradient(120% 80% at 80% 0%,#42A5F5 0%,transparent 55%),linear-gradient(160deg,#0A2A5E 0%,#1565C0 60%,#1E88E5 100%);
@@ -414,6 +416,7 @@ input[type=range]{height:28px;cursor:pointer}
           <li><span class="ico">NH₃</span><span>Amoníaco: tóxico incluso en cantidades muy pequeñas.</span></li>
           <li><span class="ico">O₂</span><span>Oxígeno: el salmón lo necesita en abundancia.</span></li>
           <li><span class="ico">pH</span><span>El pH regula el equilibrio entre CO₂ y amoníaco.</span></li>
+          <li><span class="ico">TGP</span><span>Gases totales y nitrógeno (N₂): si sobran, forman burbujas en el pez.</span></li>
         </ul>
       </div>
       <div class="slide">
@@ -421,7 +424,7 @@ input[type=range]{height:28px;cursor:pointer}
         <h2>En esta guía encontrarás</h2>
         <ul>
           <li><span class="ico">01</span><span><b>Simulador</b> del dilema pH–CO₂–amoníaco.</span></li>
-          <li><span class="ico">13</span><span><b>Fichas</b> de trece parámetros, incluida la presión total de gases (TGP).</span></li>
+          <li><span class="ico">14</span><span><b>Fichas</b> de catorce parámetros, incluidos <b>TGP %</b> y <b>N₂ %</b>.</span></li>
           <li><span class="ico">3D</span><span><b>Biofiltro en 3D</b> y calculadora de nitrificación.</span></li>
           <li><span class="ico">UV</span><span><b>Reactor UV en 3D</b> con simulador de dosis.</span></li>
           <li><span class="ico">⚗</span><span><b>Reacciones</b> químicas clave y fuentes científicas.</span></li>
@@ -461,7 +464,7 @@ input[type=range]{height:28px;cursor:pointer}
     <div>
       <div class="eyebrow">Guía didáctica · Salmo salar · RAS agua dulce / salobre</div>
       <h1>Calidad de agua en<br>piscicultura <em>RAS</em></h1>
-      <p class="lede">Trece parámetros que definen si un salmón crece o se enferma: qué son, en qué rango trabajar, cuándo es crítico, cómo se controlan y cómo se afectan entre sí. En recirculación nada se mueve solo: el alimento genera NAT, CO₂ y sólidos, y el biofiltro consume oxígeno y alcalinidad.</p>
+      <p class="lede">Catorce parámetros que definen si un salmón crece o se enferma: qué son, en qué rango trabajar, cuándo es crítico, cómo se controlan y cómo se afectan entre sí. En recirculación nada se mueve solo: el alimento genera NAT, CO₂ y sólidos, y el biofiltro consume oxígeno y alcalinidad.</p>
     </div>
     <div class="hero-note">
       <p><b>Cómo leer los rangos.</b> Son referencias de literatura y práctica RAS para salmónidos, no límites legales ni universales. Cambian con la etapa (ova, alevín, smolt), la temperatura, la dureza y la salinidad.</p>
@@ -470,9 +473,9 @@ input[type=range]{height:28px;cursor:pointer}
   </div>
   <div class="wrap">
     <div class="tiles">
-      <a class="tile" href="#simulador"><span>🎛</span><b>Simulador</b><small>pH, CO₂ y amoníaco</small></a>
+      <a class="tile" href="#simulador"><span>🎛</span><b>Simulador</b><small>NH₃, CO₂, O₂, TGP % y N₂ %</small></a>
       <a class="tile" href="#resumen"><span>📋</span><b>Tabla de rangos</b><small>Óptimo, precaución, crítico</small></a>
-      <a class="tile" href="#fichas"><span>🧪</span><b>13 fichas</b><small>pH, O₂, TGP, NH₃ y más</small></a>
+      <a class="tile" href="#fichas"><span>🧪</span><b>14 fichas</b><small>pH, O₂, TGP %, N₂ % y más</small></a>
       <a class="tile" href="#interacciones"><span>🕸</span><b>Interacciones</b><small>Cómo se afectan entre sí</small></a>
       <a class="tile" href="#biofiltro"><span>🦠</span><b>Biofiltro 3D</b><small>Maqueta y nitrificación</small></a>
       <a class="tile" href="#uv"><span>💡</span><b>Reactor UV 3D</b><small>Desinfección y dosis</small></a>
@@ -503,7 +506,7 @@ input[type=range]{height:28px;cursor:pointer}
     <div class="sec-head">
       <div class="eyebrow">01 · Simulador</div>
       <h2>El dilema del pH en RAS</h2>
-      <p>Subir el pH baja el CO₂ libre pero aumenta la fracción tóxica NH₃. Bajarlo hace lo contrario. Mueve los controles y mira dónde queda tu ventana segura.</p>
+      <p>Subir el pH baja el CO₂ libre pero aumenta la fracción tóxica NH₃. Bajarlo hace lo contrario. Mueve los controles y mira dónde queda tu ventana segura. El simulador también calcula el <b>TGP %</b> y el <b>N₂ %</b> a partir del oxígeno y del ΔP del saturómetro.</p>
     </div>
     <div class="sim">
       <div class="panel controls">
@@ -513,12 +516,15 @@ input[type=range]{height:28px;cursor:pointer}
         <div class="ctl"><label for="iTAN">NAT (N-NH₃ + N-NH₄⁺) <output id="oTAN"></output></label><input type="range" id="iTAN" min="0" max="5" step="0.05" value="1"><small>mg/L como N</small></div>
         <div class="ctl"><label for="iS">Salinidad <output id="oS"></output></label><input type="range" id="iS" min="0" max="15" step="0.5" value="3"></div>
         <div class="ctl"><label for="iDO">O₂ medido <output id="oDO"></output></label><input type="range" id="iDO" min="3" max="18" step="0.1" value="9.5"><small>mg/L, presión 1 atm</small></div>
+        <div class="ctl"><label for="iDP">ΔP del saturómetro <output id="oDP"></output></label><input type="range" id="iDP" min="-40" max="120" step="1" value="-15"><small>mmHg sobre la presión atmosférica (760 mmHg). Con esto se calcula el TGP % y el N₂ %.</small></div>
       </div>
       <div style="min-width:0">
         <div class="readouts">
           <div class="ro" id="rNH3"><span class="k">NH₃ LIBRE</span><span class="v"></span><span class="d"></span><span class="pill"></span></div>
           <div class="ro" id="rCO2"><span class="k">CO₂ LIBRE</span><span class="v"></span><span class="d"></span><span class="pill"></span></div>
           <div class="ro" id="rO2"><span class="k">SATURACIÓN O₂</span><span class="v"></span><span class="d"></span><span class="pill"></span></div>
+          <div class="ro" id="rTGP"><span class="k">TGP % (GASES TOTALES)</span><span class="v"></span><span class="d"></span><span class="pill"></span></div>
+          <div class="ro" id="rN2"><span class="k">N₂ % (NITRÓGENO)</span><span class="v"></span><span class="d"></span><span class="pill"></span></div>
         </div>
         <div class="panel chart-box">
           <h4>Riesgo relativo según pH</h4>
@@ -568,7 +574,7 @@ input[type=range]{height:28px;cursor:pointer}
     <div class="sec-head">
       <div class="eyebrow">03 · Fichas por parámetro</div>
       <h2>Qué es, qué le hace al salmón y cómo se controla</h2>
-      <p>Trece fichas, una por parámetro. Cada una explica qué es, cómo afecta al salmón, cómo se controla y en qué rango trabajar.</p>
+      <p>Catorce fichas, una por parámetro. Cada una explica qué es, cómo afecta al salmón, cómo se controla y en qué rango trabajar.</p>
     </div>
     <p class="chips-k">Elige un parámetro:</p>
     <div class="chips" id="chips"></div>
@@ -932,7 +938,7 @@ const P = [
   effect:['Enfermedad de la burbuja de gas: burbujas en aletas, piel, ojos (exoftalmia), branquias y vasos sanguíneos (embolias).','Alevines con saco vitelino son los más sensibles: burbujas en el saco, flotan y mueren. Daño crónico desde TGP ~102–103 %.','Sobre ~110 % se esperan mortalidades agudas en juveniles, sobre todo en estanques poco profundos.','El nitrógeno (N₂ + Ar) es el más peligroso porque el pez no lo consume. Un TGP alto solo por O₂ se tolera mejor.','La profundidad protege: cada metro de agua compensa cerca de un 10 % de sobresaturación.'],
   control:['Desgasificar: columnas de relleno, torres de goteo o desgasificadores de vacío antes de los estanques.','Revisar entradas de aire en la succión de las bombas (sellos, uniones, vórtices): el aire aspirado se disuelve a presión.','Cuidado al calentar el agua o al usar agua de pozo o vertiente: suelen venir sobresaturadas en N₂.','Al inyectar O₂ puro a presión (conos, LHO), verificar el TGP a la salida y desgasificar N₂ antes.','Medir con saturómetro en la entrada del estanque y calcular el % de N₂ + Ar, no solo el TGP.'],
   bar:{min:95,max:120,z:[[95,100,'ok'],[100,102,'acc'],[102,110,'warn'],[110,120,'crit']],ticks:[95,100,102,110,120]},
-  opt:'≤ 100 % (hasta 102 % tolerable)', warn:'102 – 110 %', crit:'> 110 % · alevín con saco > 102–103 %', ctl:'Desgasificación + sin aire en bombas', links:['o2','co2'],
+  opt:'≤ 100 % (hasta 102 % tolerable)', warn:'102 – 110 %', crit:'> 110 % · alevín con saco > 102–103 %', ctl:'Desgasificación + sin aire en bombas', links:['n2','o2','co2'],
   note:'Valores orientativos (Colt 1984, 2006; Weitkamp & Katz 1980). Los límites dependen de la especie, la etapa, la profundidad y de cuánto del exceso es N₂.',
   extra:`<div class="xcalc"><h4>Calculadora de TGP y nitrógeno</h4>
    <div class="xgrid">
@@ -947,6 +953,13 @@ const P = [
     <div class="ro" id="gR3"><span class="k">Profundidad de compensación</span><span class="v">–</span><span class="pill">–</span><span class="d"></span></div>
    </div>
    <div class="eq" style="margin-top:12px;white-space:normal">TGP % = (PB + ΔP) / PB × 100 &nbsp;·&nbsp; N₂+Ar % = (PB + ΔP − pO₂ − pH₂O) / [0,7905 × (PB − pH₂O)] × 100</div></div>`},
+ {id:'n2', sym:'N₂', name:'Nitrógeno disuelto', unit:'% de saturación (N₂ + Ar)', stage:'Alevín con saco vitelino', tags:['Calcular desde TGP y O₂','Diario / online'],
+  what:'El nitrógeno es el 78 % del aire y se disuelve en el agua igual que el oxígeno. La diferencia es que el pez no lo consume ni lo produce: si entra de más, se queda. El N₂ % indica cuánto nitrógeno (más argón) hay disuelto comparado con el equilibrio con el aire. No se mide directo: se calcula con el TGP del saturómetro, el oxígeno y la temperatura.',
+  effect:['Es el principal responsable de la enfermedad de la burbuja de gas: sobre 100 % forma burbujas en sangre y tejidos.','Daño crónico en alevines con saco vitelino desde ~102–103 %; mortalidad aguda en juveniles sobre ~107–110 %.','Un TGP de 105 % con N₂ de 100 % (exceso solo de O₂) es mucho menos riesgoso que un TGP de 105 % con N₂ de 106 %.','Bajo 100 % no causa daño: al oxigenar con O₂ puro el N₂ suele bajar, y eso deja margen de seguridad.'],
+  control:['Desgasificar con columnas de relleno, torres de goteo o vacío: el N₂ sale al poner el agua en contacto con aire o con O₂ puro.','Oxigenadores de baja presión (LHO) desplazan N₂ mientras agregan O₂.','Eliminar entradas de aire en la succión de bombas y tuberías presurizadas.','Desgasificar siempre el agua de pozo, de vertiente o calentada antes de usarla.'],
+  bar:{min:90,max:115,z:[[90,100,'ok'],[100,102,'acc'],[102,107,'warn'],[107,115,'crit']],ticks:[90,100,102,107,115]},
+  opt:'≤ 100 % (hasta 102 % tolerable)', warn:'102 – 107 %', crit:'> 107 % · alevín con saco > 102–103 %', ctl:'Desgasificación + LHO', links:['tgp','o2'],
+  note:'Valores orientativos (Colt 1984; Weitkamp & Katz 1980). Usa la calculadora de la ficha TGP o el simulador del inicio para obtener el N₂ % con tus mediciones.'},
  {id:'nh3', sym:'NH₃', name:'Amoníaco no ionizado', unit:'mg/L N-NH₃', stage:'Alevín', tags:['Medir: NAT 2–3 veces/semana','Calcular NH₃'],
   what:'El NAT (nitrógeno amoniacal total) es la suma de NH₄⁺ y NH₃. El salmón lo excreta por la branquia como producto del metabolismo de la proteína. La forma NH₃, sin carga, atraviesa membranas y es la tóxica; su proporción depende de pH y temperatura.',
   effect:['Hiperplasia y lesiones branquiales, menor crecimiento y menor resistencia a patógenos.','Altera la excreción de amoníaco propio y la función neurológica en exposiciones altas.','Toxicidad aguda en salmónidos desde ~0,08 mg/L NH₃ según la literatura (CL50 muy variable).','En RAS el NAT normal se mantiene bajo 1–2 mg/L N.'],
@@ -1046,7 +1059,7 @@ document.getElementById('cards').innerHTML=P.map(p=>`
     [].forEach.call(chips.children,(c,j)=>c.setAttribute('aria-pressed',j===cur));
     prev.textContent='← '+P[(cur-1+P.length)%P.length].sym;next.textContent=P[(cur+1)%P.length].sym+' →';cnt.textContent=(cur+1)+' de '+P.length;}
   function go(id,scroll){const i=ids.indexOf(id);if(i<0)return false;pick(i);
-    if(scroll)requestAnimationFrame(()=>document.getElementById(id).scrollIntoView({behavior:'smooth',block:'start'}));return true;}
+    if(scroll)requestAnimationFrame(()=>document.getElementById(id).scrollIntoView({block:'start'}));return true;}
   chips.addEventListener('click',e=>{const b=e.target.closest('.chip');if(b){pick(+b.dataset.i);if(!cardsEl.classList.contains('one'))document.getElementById(P[cur].id).scrollIntoView({behavior:'smooth',block:'start'});}});
   prev.addEventListener('click',()=>{pick(cur-1);document.getElementById('chips').scrollIntoView({behavior:'smooth',block:'nearest'});});
   next.addEventListener('click',()=>{pick(cur+1);document.getElementById(P[cur].id).scrollIntoView({behavior:'smooth',block:'start'});});
@@ -1100,6 +1113,15 @@ function update(){
   const cs=o2sat(T,S), pct=DO/cs*100;
   const sO=pct<60?['crit','Crítico']:pct<85?['warn','Precaución']:pct<=150?['ok','Óptimo']:['warn','Hiperoxia'];
   setRO($('rO2'),n(pct,0),'%',`Saturación a ${n(T,1)} °C y ${n(S,1)} ppt: ${n(cs,2)} mg/L`,sO[0],sO[1]);
+  // gases totales
+  const DP=+$('iDP').value, BP=760, Tk=T+273.15;
+  $('oDP').textContent=(DP>0?'+':'')+DP+' mmHg';
+  const pw=760*Math.exp(11.8571-3840.70/Tk-216961/(Tk*Tk));
+  const tgp=(BP+DP)/BP*100, pO2=pct/100*0.20946*(BP-pw), n2=(BP+DP-pO2-pw)/(0.79054*(BP-pw))*100;
+  const sG=tgp<=102?['ok',tgp<=100?'Óptimo':'Tolerable']:tgp<=110?['warn','Precaución']:['crit','Crítico'];
+  setRO($('rTGP'),n(tgp,1),'%',`(760 ${DP<0?'−':'+'} ${Math.abs(DP)}) / 760 × 100`,sG[0],sG[1]);
+  const sN2=n2<=102?['ok','Óptimo']:n2<=107?['warn','Precaución']:['crit','Crítico'];
+  setRO($('rN2'),n(n2,1),'%',`N₂ + Ar · descontando O₂ (${n(pO2,0)} mmHg) y vapor de agua`,sN2[0],sN2[1]);
   // feed balance
   const tanKg=F*PC/100*0.092;
   $('fTAN').innerHTML=n(tanKg,1)+'<small>kg N/d</small>';
@@ -1134,7 +1156,7 @@ function drawRisk(T,alk,TAN,S,pHnow){
   g+=`<circle cx="${X(pHnow)}" cy="${Y(rcN)}" r="5" fill="var(--fjord)" stroke="var(--surface)" stroke-width="2"/><circle cx="${X(pHnow)}" cy="${Y(rnN)}" r="5" fill="var(--salmon)" stroke="var(--surface)" stroke-width="2"/>`;
   svg.innerHTML=g;
 }
-['iT','ipH','iAlk','iTAN','iS','iDO','iF','iPC'].forEach(id=>$(id).addEventListener('input',update));
+['iT','ipH','iAlk','iTAN','iS','iDO','iDP','iF','iPC'].forEach(id=>$(id).addEventListener('input',update));
 update();
 
 /* ---------- TGP ---------- */
@@ -1226,7 +1248,7 @@ function sel(k){
 }
 svg.addEventListener('click',ev=>{const g=ev.target.closest('.node');if(g)sel(g.dataset.k);});
 svg.addEventListener('keydown',ev=>{if(ev.key==='Enter'||ev.key===' '){const g=ev.target.closest('.node');if(g){ev.preventDefault();sel(g.dataset.k);}}});
-document.addEventListener('click',ev=>{const a=ev.target.closest('[data-net]');if(a){const map={ph:'ph',alc:'alc',co2:'co2',o2:'o2',nh3:'nh3',dbo:'dbo',ntu:'ntu',dur:'dur',cu:'cu',fe:'fe',al:'al',o3:'o3',tgp:'tgp'};sel(map[a.dataset.net]);}});
+document.addEventListener('click',ev=>{const a=ev.target.closest('[data-net]');if(a){const map={ph:'ph',alc:'alc',co2:'co2',o2:'o2',nh3:'nh3',dbo:'dbo',ntu:'ntu',dur:'dur',cu:'cu',fe:'fe',al:'al',o3:'o3',tgp:'tgp',n2:'tgp'};sel(map[a.dataset.net]);}});
 sel('ph');
 })();
 </script>
