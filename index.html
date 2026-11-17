@@ -346,6 +346,21 @@ input[type=range]{height:28px;cursor:pointer}
 
 .v3msg{position:absolute;inset:0;z-index:4;display:grid;place-content:center;justify-items:center;gap:12px;padding:24px;text-align:center;background:color-mix(in srgb,var(--bg) 88%,transparent);font-family:var(--f-display);color:var(--ink)}
 
+.nit{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 18px;display:grid;gap:12px;box-shadow:0 2px 12px rgba(21,101,192,.07)}
+.nit-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px}
+.nit-head b{font-family:var(--f-display);font-weight:600;font-size:1.1rem;color:var(--ink)}
+.nit-eff{font-family:var(--f-display);font-weight:600;font-size:.85rem;padding:3px 12px;border-radius:999px}
+.nit-eff.ok{background:var(--ok-bg);color:var(--ok)}.nit-eff.warn{background:var(--warn-bg);color:var(--warn)}.nit-eff.crit{background:var(--crit-bg);color:var(--crit)}
+.nit-chain{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;font-size:.85rem}
+.nit-chain .m{font-family:var(--f-display);font-weight:600;color:#fff;padding:3px 11px;border-radius:999px}
+.nit-chain em{font-style:normal;color:var(--muted)}
+.nit .a{background:var(--salmon)}.nit .b{background:var(--warn)}.nit .c{background:var(--no3)}
+.nit-rows{display:grid;gap:8px}
+.nit-row{display:grid;grid-template-columns:70px 1fr;gap:10px;align-items:center;font-family:var(--f-display);font-size:.9rem;color:var(--muted)}
+.nit-bar{display:flex;height:18px;border-radius:999px;overflow:hidden;background:var(--sunk)}
+.nit-bar i{display:block;height:100%;width:0;transition:width .35s}
+.nit small{color:var(--muted);font-size:.8rem}
+
 /* Presentación */
 .pres{position:relative;min-height:100vh;min-height:100svh;display:grid;align-content:center;color:#fff;overflow:hidden;
   background:radial-gradient(120% 80% at 80% 0%,#42A5F5 0%,transparent 55%),linear-gradient(160deg,#0A2A5E 0%,#1565C0 60%,#1E88E5 100%);
@@ -610,7 +625,7 @@ input[type=range]{height:28px;cursor:pointer}
     <div class="sec-head">
       <div class="eyebrow">05 · Biofiltro</div>
       <h2>Maqueta de biofiltro MBBR y nitrificación</h2>
-      <p>En un biofiltro de lecho móvil (MBBR), miles de piezas plásticas (biocarriers) giran impulsadas por el aire. Sobre ellas crece una biopelícula de bacterias que transforma el NAT tóxico en nitrato. Arrastra para girar la maqueta y apaga la aireación para ver qué pasa.</p>
+      <p>En un biofiltro de lecho móvil (MBBR), miles de piezas plásticas (biocarriers) giran impulsadas por el aire. Sobre ellas crece una biopelícula de bacterias que transforma el NAT tóxico en nitrato. Sigue las moléculas: entran como amonio (NH₄⁺), pasan a nitrito (NO₂⁻) y salen como nitrato (NO₃⁻). Arrastra para girar la maqueta y apaga la aireación para ver qué pasa.</p>
     </div>
 
     <div class="bio-shell" id="bioShell">
@@ -636,6 +651,17 @@ input[type=range]{height:28px;cursor:pointer}
         </div>
       </div>
 
+      <div class="nit" id="nitHud">
+        <div class="nit-head"><b>Transformación del nitrógeno, en vivo</b><span class="nit-eff" id="nitEff"></span></div>
+        <div class="nit-chain"><span class="m a">NH₄⁺ amonio</span><em>Nitrosomonas + O₂ →</em><span class="m b">NO₂⁻ nitrito</span><em>Nitrobacter + O₂ →</em><span class="m c">NO₃⁻ nitrato</span></div>
+        <div class="nit-rows">
+          <div class="nit-row"><span>Entrada</span><div class="nit-bar" id="nb0"><i class="a"></i><i class="b"></i><i class="c"></i></div></div>
+          <div class="nit-row"><span>Centro</span><div class="nit-bar" id="nb1"><i class="a"></i><i class="b"></i><i class="c"></i></div></div>
+          <div class="nit-row"><span>Salida</span><div class="nit-bar" id="nb2"><i class="a"></i><i class="b"></i><i class="c"></i></div></div>
+        </div>
+        <small>Cada barra muestra qué proporción de las moléculas de ese tramo del estanque es amonio, nitrito o nitrato. Apaga la aireación y mira cómo cambia.</small>
+      </div>
+
       <div class="vbar" role="toolbar" aria-label="Controles de la maqueta">
         <button class="tbtn" id="bAer" aria-pressed="true"><span>💨</span>Aireación</button>
         <button class="tbtn" id="bWall" aria-pressed="true"><span>🔍</span>Ver interior</button>
@@ -644,8 +670,8 @@ input[type=range]{height:28px;cursor:pointer}
         <button class="tbtn" id="bPlay" aria-pressed="true"><span>▶</span>Animación</button>
         <button class="tbtn" id="bReset"><span>⌂</span>Vista inicial</button>
       </div>
-      <div class="vleg"><b>Colores del agua:</b><span><i style="background:var(--salmon)"></i>NH₄⁺ / NAT (entra)</span><span><i style="background:var(--warn)"></i>NO₂⁻ (intermedio)</span><span><i style="background:var(--no3)"></i>NO₃⁻ (sale)</span><span><i style="background:#ffffff;border:1px solid var(--muted)"></i>burbujas de aire</span></div>
-      <p class="note" id="aerMsg">Biocarriers dibujados a escala aumentada (un K1 real mide ~9 mm) y colores del agua exagerados para mostrar la transformación; en una pasada real solo se remueve una fracción del NAT.</p>
+      <div class="vleg"><b>Moléculas:</b><span><i style="background:var(--salmon)"></i>NH₄⁺ amonio (rojo, con 4 H blancos)</span><span><i style="background:var(--warn)"></i>NO₂⁻ nitrito (amarillo, con 2 O)</span><span><i style="background:var(--no3)"></i>NO₃⁻ nitrato (verde, con 3 O)</span><span><i style="background:#64B5F6"></i>O₂ oxígeno</span><span><i style="background:#ffffff;border:1px solid var(--muted)"></i>burbujas de aire</span></div>
+      <p class="note" id="aerMsg">Biocarriers y moléculas dibujados a escala muy aumentada (un K1 real mide ~9 mm) y transformación exagerada para que se vea; en una pasada real solo se remueve una fracción del NAT.</p>
     </div>
 
     <div class="bio2">
@@ -1424,146 +1450,236 @@ function build3D(){
   env.add(new T.Mesh(new T.SphereGeometry(20,32,16),new T.MeshBasicMaterial({color:0x7d878c,side:T.BackSide})));
   [[0,12,0,16,16],[12,5,2,6,12],[-12,5,4,6,12],[0,5,-12,12,6]].forEach(p=>{const m=new T.Mesh(new T.PlaneGeometry(p[3],p[4]),new T.MeshBasicMaterial({color:0xffffff,side:T.DoubleSide}));m.position.set(p[0],p[1],p[2]);m.lookAt(0,0,0);env.add(m);});
   scene.environment=pm.fromScene(env,0.04).texture;
-  scene.add(new T.HemisphereLight(0xffffff,0x40505a,0.45));
+  scene.add(new T.HemisphereLight(0xffffff,0x40505a,0.5));
   const dl=new T.DirectionalLight(0xffffff,0.85);dl.position.set(4,9,6);scene.add(dl);
 
   const lin=c=>new T.Color(c).convertSRGBToLinear();
+  const std=o=>new T.MeshStandardMaterial(o);
   const M={
-    steel:new T.MeshStandardMaterial({color:0xb9c3c9,metalness:0.88,roughness:0.3}),
-    dark:new T.MeshStandardMaterial({color:0x3a464c,metalness:0.6,roughness:0.45}),
-    pvc:new T.MeshStandardMaterial({color:0x7b878e,metalness:0.15,roughness:0.5}),
-    floor:new T.MeshStandardMaterial({color:0x4f6f8f,metalness:0.1,roughness:0.8}),
-    base:new T.MeshStandardMaterial({color:0xdbe7f3,metalness:0,roughness:0.9}),
-    baseEdge:new T.MeshStandardMaterial({color:0x1565c0,metalness:0.2,roughness:0.5}),
-    wall:new T.MeshStandardMaterial({color:0xcfe3f7,metalness:0,roughness:0.08,transparent:true,opacity:0.16,depthWrite:false,side:T.DoubleSide}),
-    water:new T.MeshStandardMaterial({color:0x2f80d0,metalness:0,roughness:0.2,transparent:true,opacity:0.16,depthWrite:false}),
-    surf:new T.MeshStandardMaterial({color:0x6fb6f2,metalness:0.1,roughness:0.05,transparent:true,opacity:0.32,depthWrite:false,side:T.DoubleSide}),
-    membrane:new T.MeshStandardMaterial({color:0x22292d,metalness:0,roughness:0.9}),
-    bubble:new T.MeshStandardMaterial({color:0xffffff,metalness:0,roughness:0.1,transparent:true,opacity:0.6,depthWrite:false}),
-    carrier:new T.MeshStandardMaterial({color:0xffffff,metalness:0,roughness:0.65,side:T.DoubleSide}),
-    part:new T.MeshStandardMaterial({color:0xffffff,metalness:0,roughness:0.35}),
-    bandIn:new T.MeshStandardMaterial({color:0xffffff,roughness:0.4}),
-    bandOut:new T.MeshStandardMaterial({color:0xffffff,roughness:0.4})
+    steel:std({color:0xb4bec6,metalness:0.88,roughness:0.3,envMapIntensity:0.8}),
+    dark:std({color:0x2f3a41,metalness:0.5,roughness:0.5}),
+    pvc:std({color:0x6f7f8c,metalness:0.1,roughness:0.5}),
+    concrete:std({color:0xaeb4b9,metalness:0,roughness:0.95}),
+    floor:std({color:0x4f6f8f,metalness:0.1,roughness:0.8}),
+    base:std({color:0xdbe7f3,metalness:0,roughness:0.9}),
+    baseEdge:std({color:0x1565c0,metalness:0.2,roughness:0.5}),
+    wall:std({color:0xcfe3f7,metalness:0,roughness:0.08,transparent:true,opacity:0.16,depthWrite:false,side:T.DoubleSide}),
+    water:std({color:0x2f80d0,metalness:0,roughness:0.2,transparent:true,opacity:0.15,depthWrite:false}),
+    surf:std({color:0x6fb6f2,metalness:0.1,roughness:0.05,transparent:true,opacity:0.34,depthWrite:false,side:T.DoubleSide}),
+    bubble:std({color:0xffffff,metalness:0,roughness:0.1,transparent:true,opacity:0.55,depthWrite:false}),
+    carrier:std({color:0xffffff,metalness:0,roughness:0.7,side:T.DoubleSide}),
+    motor:std({color:0x1e5aa8,metalness:0.35,roughness:0.45}),
+    red:std({color:0xd23b2f,metalness:0.2,roughness:0.5}),
+    yellow:std({color:0xf2c200,metalness:0.1,roughness:0.6}),
+    white:std({color:0xf4f6f8,roughness:0.5}),
+    mol:std({color:0xffffff,roughness:0.35,metalness:0,vertexColors:true}),
+    bigc:std({color:0xf1ecdd,metalness:0,roughness:0.6,side:T.DoubleSide}),
+    film:std({color:0x9a7b3c,roughness:0.9,transparent:true,opacity:0.35,depthWrite:false,side:T.DoubleSide}),
+    aob:std({color:0xd9822b,roughness:0.6}),
+    nob:std({color:0x6a9a3b,roughness:0.6})
   };
+  M.pIn=M.pvc.clone();M.pOut=M.pvc.clone();M.pAir=M.steel.clone();M.blow=M.dark.clone();M.sieveF=M.steel.clone();
   const W=4,H=2.6,D=2.2,hx=W/2,hz=D/2,WL=2.3;
-  const add=(g,m,x,y,z)=>{const o=new T.Mesh(g,m);o.position.set(x,y,z);scene.add(o);return o;};
+  const add=(g,m,x,y,z,par)=>{const o=new T.Mesh(g,m);o.position.set(x,y,z);(par||scene).add(o);return o;};
+  const V=(x,y,z)=>new T.Vector3(x,y,z);
+  const gridTex=(n,col,lw)=>{const c=document.createElement('canvas');c.width=c.height=128;const g=c.getContext('2d');g.clearRect(0,0,128,128);g.strokeStyle=col;g.lineWidth=lw;for(let i=0;i<=128;i+=128/n){g.beginPath();g.moveTo(i,0);g.lineTo(i,128);g.stroke();g.beginPath();g.moveTo(0,i);g.lineTo(128,i);g.stroke();}const t=new T.CanvasTexture(c);t.wrapS=t.wrapT=T.RepeatWrapping;return t;};
+
+  // plataforma y losa
+  add(new T.CylinderGeometry(5.6,5.7,0.14,64),M.base,0,-0.08,0);
+  add(new T.TorusGeometry(5.65,0.035,8,96),M.baseEdge,0,-0.01,0).rotation.x=Math.PI/2;
+  add(new T.BoxGeometry(W+0.5,0.1,D+0.5),M.concrete,0,0.0,0);
+  const sc=document.createElement('canvas');sc.width=sc.height=128;const sx=sc.getContext('2d');const gr=sx.createRadialGradient(64,64,10,64,64,64);gr.addColorStop(0,'rgba(0,0,0,0.34)');gr.addColorStop(1,'rgba(0,0,0,0)');sx.fillStyle=gr;sx.fillRect(0,0,128,128);
+  add(new T.PlaneGeometry(10,6.5),new T.MeshBasicMaterial({map:new T.CanvasTexture(sc),transparent:true,depthWrite:false}),0,-0.005,0).rotation.x=-Math.PI/2;
 
   // estanque
-  const plat=add(new T.CylinderGeometry(5.4,5.5,0.14,64),M.base,0,-0.08,0);
-  add(new T.TorusGeometry(5.45,0.035,8,96),M.baseEdge,0,-0.01,0).rotation.x=Math.PI/2;
-  add(new T.BoxGeometry(W,0.06,D),M.floor,0,0.03,0);
-  const walls=[add(new T.BoxGeometry(W,H,0.03),M.wall,0,H/2,hz),add(new T.BoxGeometry(W,H,0.03),M.wall,0,H/2,-hz),add(new T.BoxGeometry(0.03,H,D),M.wall,hx,H/2,0),add(new T.BoxGeometry(0.03,H,D),M.wall,-hx,H/2,0)];
-  const fr=0.06;
-  [[hx,hz],[hx,-hz],[-hx,hz],[-hx,-hz]].forEach(p=>add(new T.BoxGeometry(fr,H,fr),M.steel,p[0],H/2,p[1]));
-  [H,0.03].forEach(y=>{add(new T.BoxGeometry(W+fr,fr,fr),M.steel,0,y,hz);add(new T.BoxGeometry(W+fr,fr,fr),M.steel,0,y,-hz);add(new T.BoxGeometry(fr,fr,D+fr),M.steel,hx,y,0);add(new T.BoxGeometry(fr,fr,D+fr),M.steel,-hx,y,0);});
-  add(new T.BoxGeometry(W-0.06,WL-0.06,D-0.06),M.water,0,WL/2+0.03,0);
-  const surfG=new T.PlaneGeometry(W-0.06,D-0.06,40,22);const surf=add(surfG,M.surf,0,WL,0); surf.rotation.x=-Math.PI/2;
-  const sPos=surfG.attributes.position;
+  add(new T.BoxGeometry(W,0.06,D),M.floor,0,0.08,0);
+  [add(new T.BoxGeometry(W,H,0.04),M.wall,0,H/2+0.05,hz),add(new T.BoxGeometry(W,H,0.04),M.wall,0,H/2+0.05,-hz),add(new T.BoxGeometry(0.04,H,D),M.wall,hx,H/2+0.05,0),add(new T.BoxGeometry(0.04,H,D),M.wall,-hx,H/2+0.05,0)];
+  const fr=0.07;
+  [[hx,hz],[hx,-hz],[-hx,hz],[-hx,-hz]].forEach(p=>add(new T.BoxGeometry(fr,H,fr),M.steel,p[0],H/2+0.05,p[1]));
+  [H+0.05,0.08,H*0.5].forEach((y,k)=>{const t=k===2?0.045:fr;add(new T.BoxGeometry(W+fr,t,t),M.steel,0,y,hz);add(new T.BoxGeometry(W+fr,t,t),M.steel,0,y,-hz);add(new T.BoxGeometry(t,t,D+fr),M.steel,hx,y,0);add(new T.BoxGeometry(t,t,D+fr),M.steel,-hx,y,0);});
+  add(new T.BoxGeometry(W-0.08,WL-0.08,D-0.08),M.water,0,WL/2+0.07,0);
+  const surfG=new T.PlaneGeometry(W-0.08,D-0.08,40,22);const surf=add(surfG,M.surf,0,WL,0);surf.rotation.x=-Math.PI/2;const sPos=surfG.attributes.position;
 
-  // sombra de contacto
-  const sc=document.createElement('canvas');sc.width=sc.height=128;const sx=sc.getContext('2d');const gr=sx.createRadialGradient(64,64,10,64,64,64);gr.addColorStop(0,'rgba(0,0,0,0.38)');gr.addColorStop(1,'rgba(0,0,0,0)');sx.fillStyle=gr;sx.fillRect(0,0,128,128);
-  const sh=add(new T.PlaneGeometry(10,6),new T.MeshBasicMaterial({map:new T.CanvasTexture(sc),transparent:true,depthWrite:false}),0,-0.001,0);sh.rotation.x=-Math.PI/2;
+  // pasarela con baranda (atrás)
+  const wz=-hz-0.45,wy=H-0.25;
+  add(new T.BoxGeometry(W+0.7,0.05,0.7),std({map:gridTex(10,'#8f9aa3',5),transparent:true,alphaTest:0.3,metalness:0.7,roughness:0.5,side:T.DoubleSide}),0,wy,wz).material.map.repeat.set(8,1.4);
+  [[-hx-0.3],[hx+0.3],[0]].forEach(p=>{add(new T.BoxGeometry(0.07,wy,0.07),M.steel,p[0],wy/2,wz-0.3);add(new T.BoxGeometry(0.05,0.95,0.05),M.yellow,p[0],wy+0.47,wz-0.33);});
+  [0.5,0.95].forEach(h=>{const r=add(new T.CylinderGeometry(0.025,0.025,W+0.7,10),M.yellow,0,wy+h,wz-0.33);r.rotation.z=Math.PI/2;});
+  [[-hx-0.3],[hx+0.3]].forEach(p=>add(new T.BoxGeometry(0.07,wy,0.07),M.steel,p[0],wy/2,wz+0.3));
+  // sonda de O2
+  add(new T.CylinderGeometry(0.02,0.02,1.5,8),M.steel,0.9,WL-0.35,-hz+0.22);
+  add(new T.CylinderGeometry(0.045,0.045,0.18,12),M.dark,0.9,WL-1.15,-hz+0.22);
+  add(new T.BoxGeometry(0.22,0.28,0.12),M.white,0.9,wy+0.75,wz-0.33);add(new T.BoxGeometry(0.14,0.1,0.02),M.motor,0.9,wy+0.8,wz-0.26);
 
   // tuberías
-  const V=(x,y,z)=>new T.Vector3(x,y,z);
   const cpath=segs=>{const p=new T.CurvePath();segs.forEach(s=>p.add(s.length===2?new T.LineCurve3(s[0],s[1]):new T.QuadraticBezierCurve3(s[0],s[1],s[2])));return p;};
-  const pIn=cpath([[V(-3.7,0.05,-0.55),V(-3.7,1.55,-0.55)],[V(-3.7,1.55,-0.55),V(-3.7,1.9,-0.55),V(-3.35,1.9,-0.55)],[V(-3.35,1.9,-0.55),V(-1.95,1.9,-0.55)]]);
-  const pOut=cpath([[V(1.95,1.7,-0.5),V(3.3,1.7,-0.5)],[V(3.3,1.7,-0.5),V(3.7,1.7,-0.5),V(3.7,1.3,-0.5)],[V(3.7,1.3,-0.5),V(3.7,0.05,-0.5)]]);
-  const pAir=cpath([[V(-3.2,0.6,0.7),V(-3.2,2.8,0.7)],[V(-3.2,2.8,0.7),V(-3.2,3.0,0.7),V(-3.0,3.0,0.7)],[V(-3.0,3.0,0.7),V(-2.05,3.0,0.7)],[V(-2.05,3.0,0.7),V(-1.85,3.0,0.7),V(-1.85,2.8,0.7)],[V(-1.85,2.8,0.7),V(-1.85,0.3,0.7)],[V(-1.85,0.3,0.7),V(-1.85,0.13,0.7),V(-1.68,0.13,0.7)],[V(-1.68,0.13,0.7),V(1.85,0.13,0.7)]]);
-  M.pIn=M.pvc.clone();M.pOut=M.pvc.clone();M.pAir=M.pvc.clone();M.blow=M.dark.clone();M.mem=M.membrane.clone();
-  scene.add(new T.Mesh(new T.TubeGeometry(pIn,120,0.1,20,false),M.pIn));
-  scene.add(new T.Mesh(new T.TubeGeometry(pOut,120,0.1,20,false),M.pOut));
-  scene.add(new T.Mesh(new T.TubeGeometry(pAir,240,0.045,14,false),M.pAir));
-  const flange=(x,y,z)=>{const f=add(new T.CylinderGeometry(0.17,0.17,0.05,28),M.steel,x,y,z);f.rotation.z=Math.PI/2;};
-  flange(-2.05,1.9,-0.55); flange(2.05,1.7,-0.5);
-  const band=(x,y,z,m)=>{const b=add(new T.CylinderGeometry(0.106,0.106,0.12,24),m,x,y,z);b.rotation.z=Math.PI/2;};
-  band(-2.6,1.9,-0.55,M.bandIn); band(2.7,1.7,-0.5,M.bandOut);
-  for(let x=-1.5;x<=1.51;x+=0.5){add(new T.CylinderGeometry(0.11,0.11,0.035,24),M.mem,x,0.19,0.7);add(new T.CylinderGeometry(0.03,0.03,0.04,10),M.pvc,x,0.16,0.7);}
+  const pIn=cpath([[V(-3.9,0.1,-0.55),V(-3.9,1.6,-0.55)],[V(-3.9,1.6,-0.55),V(-3.9,1.95,-0.55),V(-3.55,1.95,-0.55)],[V(-3.55,1.95,-0.55),V(-1.7,1.95,-0.55)],[V(-1.7,1.95,-0.55),V(-1.5,1.95,-0.55),V(-1.5,1.75,-0.55)],[V(-1.5,1.75,-0.55),V(-1.5,1.55,-0.55)]]);
+  const pOut=cpath([[V(1.95,1.7,-0.5),V(3.4,1.7,-0.5)],[V(3.4,1.7,-0.5),V(3.8,1.7,-0.5),V(3.8,1.3,-0.5)],[V(3.8,1.3,-0.5),V(3.8,0.1,-0.5)]]);
+  const pAir=cpath([[V(-3.1,0.85,0.75),V(-3.1,2.85,0.75)],[V(-3.1,2.85,0.75),V(-3.1,3.05,0.75),V(-2.9,3.05,0.75)],[V(-2.9,3.05,0.75),V(-2.0,3.05,0.75)],[V(-2.0,3.05,0.75),V(-1.82,3.05,0.75),V(-1.82,2.85,0.75)],[V(-1.82,2.85,0.75),V(-1.82,0.2,0.75)]]);
+  scene.add(new T.Mesh(new T.TubeGeometry(pIn,140,0.1,18,false),M.pIn));
+  scene.add(new T.Mesh(new T.TubeGeometry(pOut,120,0.1,18,false),M.pOut));
+  scene.add(new T.Mesh(new T.TubeGeometry(pAir,160,0.05,14,false),M.pAir));
+  const flange=(x,y,z,m)=>{const f=add(new T.CylinderGeometry(0.17,0.17,0.05,24),m||M.steel,x,y,z);f.rotation.z=Math.PI/2;return f;};
+  flange(-2.06,1.95,-0.55);flange(2.06,1.7,-0.5);
+  // válvulas mariposa
+  const valve=(x,y,z,m)=>{flange(x-0.07,y,z,M.dark);flange(x+0.07,y,z,M.dark);add(new T.CylinderGeometry(0.03,0.03,0.3,10),M.steel,x,y+0.25,z);add(new T.BoxGeometry(0.36,0.035,0.05),M.red,x+0.12,y+0.41,z);const b=add(new T.CylinderGeometry(0.106,0.106,0.12,24),m,x-0.32,y,z);b.rotation.z=Math.PI/2;};
+  M.bandIn=std({color:0xffffff,roughness:0.4});M.bandOut=std({color:0xffffff,roughness:0.4});
+  valve(-2.9,1.95,-0.55,M.bandIn);valve(3.0,1.7,-0.5,M.bandOut);
+  // parrilla de aireación
+  const AY=0.2,LZ=[-0.78,-0.26,0.26,0.78];
+  const hd=add(new T.CylinderGeometry(0.05,0.05,1.75,12),M.pAir,-1.82,AY,0);hd.rotation.x=Math.PI/2;
+  LZ.forEach(z=>{const l=add(new T.CylinderGeometry(0.035,0.035,3.6,10),M.pAir,-0.02,AY,z);l.rotation.z=Math.PI/2;
+    for(let x=-1.6;x<=1.61;x+=0.4)add(new T.CylinderGeometry(0.045,0.045,0.03,10),M.dark,x,AY+0.035,z);});
+  [-1.2,0,1.2].forEach(x=>add(new T.BoxGeometry(0.06,0.09,1.8),M.steel,x,0.14,0));
   // soplador
-  add(new T.BoxGeometry(0.75,0.5,0.55),M.blow,-3.2,0.3,0.7);
-  const mot=add(new T.CylinderGeometry(0.2,0.2,0.45,24),M.steel,-3.2,0.3,1.2);mot.rotation.x=Math.PI/2;
-  // tamiz de salida
-  const tc=document.createElement('canvas');tc.width=tc.height=128;const tx=tc.getContext('2d');tx.clearRect(0,0,128,128);tx.strokeStyle='#cfd8dc';tx.lineWidth=3;for(let i=0;i<=128;i+=8){tx.beginPath();tx.moveTo(i,0);tx.lineTo(i,128);tx.stroke();tx.beginPath();tx.moveTo(0,i);tx.lineTo(128,i);tx.stroke();}
-  const tt=new T.CanvasTexture(tc);tt.wrapS=tt.wrapT=T.RepeatWrapping;tt.repeat.set(3,3);
-  M.sieve=new T.MeshStandardMaterial({map:tt,transparent:true,alphaTest:0.3,metalness:0.8,roughness:0.35,side:T.DoubleSide});const sieve=add(new T.PlaneGeometry(0.8,0.8),new T.MeshStandardMaterial({map:tt,transparent:true,alphaTest:0.3,metalness:0.8,roughness:0.35,side:T.DoubleSide}),1.9,1.7,-0.5);sieve.rotation.y=Math.PI/2;sieve.material=M.sieve;
-  [[0,0.42,0.86,0.05],[0,-0.42,0.86,0.05]].forEach(b=>add(new T.BoxGeometry(0.05,b[3],b[2]),M.steel,1.9,1.7+b[1],-0.5));
-  [-0.42,0.42].forEach(dz=>add(new T.BoxGeometry(0.05,0.86,0.05),M.steel,1.9,1.7,-0.5+dz));
+  const bx=-3.2,bz=0.75;
+  add(new T.BoxGeometry(1.2,0.08,0.75),M.steel,bx,0.09,bz);
+  add(new T.BoxGeometry(0.5,0.5,0.5),M.blow,bx+0.28,0.4,bz);
+  for(let k=0;k<5;k++)add(new T.BoxGeometry(0.52,0.03,0.52),M.blow,bx+0.28,0.22+k*0.09,bz);
+  const mot=add(new T.CylinderGeometry(0.2,0.2,0.5,24),M.motor,bx-0.25,0.38,bz);mot.rotation.z=Math.PI/2;
+  for(let k=0;k<6;k++){const r=add(new T.CylinderGeometry(0.215,0.215,0.025,24),M.motor,bx-0.42+k*0.07,0.38,bz);r.rotation.z=Math.PI/2;}
+  add(new T.BoxGeometry(0.16,0.12,0.16),M.motor,bx-0.25,0.63,bz);
+  add(new T.CylinderGeometry(0.11,0.11,0.35,16),M.steel,bx+0.1,0.82,bz);
+  const gauge=add(new T.CylinderGeometry(0.075,0.075,0.03,20),M.white,bx+0.1,1.35,bz+0.07);gauge.rotation.x=Math.PI/2;
+  add(new T.TorusGeometry(0.075,0.012,8,24),M.dark,bx+0.1,1.35,bz+0.085);
 
-  // biocarriers (geometría unida: anillo + cruz)
-  function merge(gs){const pos=[],nor=[];gs.forEach(g=>{const n=g.index?g.toNonIndexed():g;pos.push(...n.attributes.position.array);nor.push(...n.attributes.normal.array);});const o=new T.BufferGeometry();o.setAttribute('position',new T.Float32BufferAttribute(pos,3));o.setAttribute('normal',new T.Float32BufferAttribute(nor,3));return o;}
-  const cg=merge([new T.CylinderGeometry(0.065,0.065,0.055,16,1,true),new T.BoxGeometry(0.128,0.05,0.01),new T.BoxGeometry(0.01,0.05,0.128)]);
-  const NC=reduce?260:380;
-  const car=new T.InstancedMesh(cg,M.carrier,NC); scene.add(car);
-  const cP=[], base=lin('#ECE7D8'), film=lin('#8C7A3E'), tmpC=new T.Color();
-  for(let i=0;i<NC;i++){
-    const r=0.15+Math.sqrt(Math.random())*0.7;
-    const q=new T.Quaternion().setFromEuler(new T.Euler(Math.random()*6.3,Math.random()*6.3,Math.random()*6.3));
-    cP.push({x:-1.75+Math.random()*3.5,r,ph:Math.random()*Math.PI*2,w:0.8+Math.random()*0.4,fy:WL-0.06-Math.random()*0.22,fz:-0.95+Math.random()*1.9,q,ax:new T.Vector3(Math.random()-0.5,Math.random()-0.5,Math.random()-0.5).normalize(),sp:0.8+Math.random()*1.6});
-    tmpC.copy(base).lerp(film,0.25+Math.random()*0.5); car.setColorAt(i,tmpC);
-  }
+  // tamiz cilíndrico de salida
+  const sv=add(new T.CylinderGeometry(0.3,0.3,0.7,28,1,true),std({map:gridTex(12,'#dfe6ea',4),transparent:true,alphaTest:0.3,metalness:0.8,roughness:0.35,side:T.DoubleSide}),1.6,1.7,-0.5);sv.rotation.z=Math.PI/2;sv.material.map.repeat.set(6,2);M.sieve=sv.material;
+  [1.25,1.95].forEach(x=>{const r=add(new T.TorusGeometry(0.3,0.022,8,28),M.sieveF,x,1.7,-0.5);r.rotation.y=Math.PI/2;});
+  const cap=add(new T.CircleGeometry(0.3,28),M.sieveF,1.25,1.7,-0.5);cap.rotation.y=-Math.PI/2;cap.material.side=T.DoubleSide;
+
+  // biocarriers tipo K1
+  function merge(gs){const pos=[],nor=[],col=[];let hasC=false;gs.forEach(o=>{const g0=o.g||o;let g=g0.index?g0.toNonIndexed():g0;if(o.m)g.applyMatrix4(o.m);pos.push(...g.attributes.position.array);nor.push(...g.attributes.normal.array);if(o.c){hasC=true;const c=lin(o.c);for(let i=0;i<g.attributes.position.count;i++)col.push(c.r,c.g,c.b);}});
+    const out=new T.BufferGeometry();out.setAttribute('position',new T.Float32BufferAttribute(pos,3));out.setAttribute('normal',new T.Float32BufferAttribute(nor,3));if(hasC)out.setAttribute('color',new T.Float32BufferAttribute(col,3));return out;}
+  const mat4=(x,y,z,ry)=>{const m=new T.Matrix4();if(ry)m.makeRotationY(ry);m.setPosition(x,y,z);return m;};
+  const fins=[];for(let k=0;k<8;k++){const a=k/8*Math.PI*2;fins.push({g:new T.BoxGeometry(0.022,0.05,0.008),m:mat4(Math.cos(a)*0.078,0,Math.sin(a)*0.078,-a)});}
+  const cg=merge([new T.CylinderGeometry(0.068,0.068,0.055,16,1,true),new T.BoxGeometry(0.132,0.05,0.009),new T.BoxGeometry(0.009,0.05,0.132)].concat(fins));
+  const NC=reduce?240:340;
+  const car=new T.InstancedMesh(cg,M.carrier,NC);scene.add(car);
+  const cP=[],cBase=lin('#EFE9D8'),cFilm=lin('#8A7436'),tmpC=new T.Color();
+  for(let i=0;i<NC;i++){const r=0.15+Math.sqrt(Math.random())*0.7;
+    cP.push({x:-1.75+Math.random()*3.5,r,ph:Math.random()*Math.PI*2,w:0.8+Math.random()*0.4,fy:WL-0.06-Math.random()*0.22,fz:-0.95+Math.random()*1.9,q:new T.Quaternion().setFromEuler(new T.Euler(Math.random()*6.3,Math.random()*6.3,Math.random()*6.3)),ax:V(Math.random()-0.5,Math.random()-0.5,Math.random()-0.5).normalize(),sp:0.8+Math.random()*1.6});
+    tmpC.copy(cBase).lerp(cFilm,0.3+Math.random()*0.55);car.setColorAt(i,tmpC);}
   // burbujas
-  const NB=reduce?140:240;
-  const bub=new T.InstancedMesh(new T.SphereGeometry(0.026,8,6),M.bubble,NB); scene.add(bub);
-  const bP=[];for(let i=0;i<NB;i++)bP.push({x:-1.6+Math.floor(Math.random()*7)*0.5+(Math.random()-0.5)*0.18,z:0.7+(Math.random()-0.5)*0.22,y:0.22+Math.random()*2,sp:0.7+Math.random()*0.6,dr:(Math.random()-0.5)*0.35});
-  // partículas de agua
-  const NI=36,NT=reduce?110:170,NO=36,NP=NI+NT+NO;
-  const prt=new T.InstancedMesh(new T.SphereGeometry(0.036,10,8),M.part,NP); scene.add(prt);
-  const pP=[];for(let i=0;i<NP;i++)pP.push({u:Math.random(),r:0.15+Math.sqrt(Math.random())*0.72,ph:Math.random()*Math.PI*2,w:0.8+Math.random()*0.4});
-  let C={};
-  function readColors(){C.nh=lin(css('--salmon')||'#DC5F42');C.no2=lin(css('--warn')||'#C68A0A');C.no3=lin(css('--no3')||'#1F9E8A');M.bandIn.color.copy(C.nh);M.bandOut.color.copy(C.no3);}
+  const NB=reduce?150:260;
+  const bub=new T.InstancedMesh(new T.SphereGeometry(0.024,8,6),M.bubble,NB);scene.add(bub);
+  const bP=[];for(let i=0;i<NB;i++)bP.push({x:-1.7+Math.random()*3.4,z:LZ[i%4]+(Math.random()-0.5)*0.12,y:AY+Math.random()*2,sp:0.7+Math.random()*0.6,dr:(Math.random()-0.5)*0.3});
+
+  // moléculas con forma real
+  const COL={n0:'#E8613C',n1:'#E2A400',n2:'#1F9E8A',h:'#FFFFFF',oa:'#F7DC8C',ob:'#8FD6C8',o2:'#64B5F6'};
+  const sph=r=>new T.IcosahedronGeometry(r,1);
+  const dirs4=[[1,1,1],[1,-1,-1],[-1,1,-1],[-1,-1,1]].map(d=>V(d[0],d[1],d[2]).normalize());
+  const gNH4=merge([{g:sph(0.05),c:COL.n0}].concat(dirs4.map(d=>({g:sph(0.027),c:COL.h,m:mat4(d.x*0.062,d.y*0.062,d.z*0.062)}))));
+  const gNO2=merge([{g:sph(0.05),c:COL.n1}].concat([-1,1].map(s=>({g:sph(0.04),c:COL.oa,m:mat4(s*0.066,-0.04,0)}))));
+  const gNO3=merge([{g:sph(0.05),c:COL.n2}].concat([0,1,2].map(k=>{const a=Math.PI/2+k*Math.PI*2/3;return {g:sph(0.04),c:COL.ob,m:mat4(Math.cos(a)*0.074,Math.sin(a)*0.074,0)};})));
+  const gO2=merge([-1,1].map(s=>({g:sph(0.036),c:COL.o2,m:mat4(s*0.03,0,0)})));
+  const NI=reduce?18:28,NT=reduce?90:140,NO=reduce?18:28,NL=10,NP=NI+NT+NO+NL;
+  const molM=[gNH4,gNO2,gNO3].map(g=>{const m=new T.InstancedMesh(g,M.mol,NP);m.frustumCulled=false;scene.add(m);return m;});
+  const NOX=8;const o2M=new T.InstancedMesh(gO2,M.mol,NOX);o2M.frustumCulled=false;scene.add(o2M);
+  const pP=[];
+  const newTank=p=>{p.u=0;p.stage=0;p.t1=0.16+Math.random()*0.3;p.t2=p.t1+0.14+Math.random()*0.26;p.r=0.15+Math.sqrt(Math.random())*0.72;p.fl=0;return p;};
+  for(let i=0;i<NI+NT+NO;i++){const p={u:Math.random(),ph:Math.random()*Math.PI*2,w:0.8+Math.random()*0.4,stage:0,fl:0,q:new T.Quaternion().setFromEuler(new T.Euler(Math.random()*6,Math.random()*6,0)),ax:V(Math.random()-0.5,Math.random()-0.5,Math.random()-0.5).normalize()};
+    if(i>=NI&&i<NI+NT){const u=p.u;newTank(p);p.u=u;p.stage=u>p.t2?2:u>p.t1?1:0;}
+    if(i>=NI+NT)p.stage=2;
+    pP.push(p);}
+  const exitF=[0,0,1];
+
+  // lupa: biocarrier ampliado con biopelícula
+  const lupa=new T.Group();lupa.position.set(3.7,0,1.7);lupa.rotation.y=-0.25;scene.add(lupa);
+  const LY=1.15,LR=0.62,LD=0.34;
+  add(new T.CylinderGeometry(0.75,0.8,0.12,40),M.baseEdge,0,0.06,0,lupa);
+  add(new T.CylinderGeometry(0.05,0.05,LY-LR-0.1,12),M.steel,0,(LY-LR)/2+0.05,0,lupa);
+  const ringO=add(new T.CylinderGeometry(LR,LR,LD,48,1,true),M.bigc,0,LY,0,lupa);ringO.rotation.x=Math.PI/2;
+  const ringI=add(new T.CylinderGeometry(LR-0.05,LR-0.05,LD,48,1,true),M.bigc,0,LY,0,lupa);ringI.rotation.x=Math.PI/2;
+  [-LD/2,LD/2].forEach(z=>add(new T.RingGeometry(LR-0.05,LR,48),M.bigc,0,LY,z,lupa));
+  add(new T.BoxGeometry((LR-0.05)*2,0.05,LD),M.bigc,0,LY,0,lupa);add(new T.BoxGeometry(0.05,(LR-0.05)*2,LD),M.bigc,0,LY,0,lupa);
+  for(let k=0;k<16;k++){const a=k/16*Math.PI*2;const f=add(new T.BoxGeometry(0.12,0.03,LD),M.bigc,Math.cos(a)*(LR+0.05),LY+Math.sin(a)*(LR+0.05),0,lupa);f.rotation.z=a;}
+  const filmR=add(new T.CylinderGeometry(LR-0.075,LR-0.075,LD-0.02,48,1,true),M.film,0,LY,0,lupa);filmR.rotation.x=Math.PI/2;
+  // bacterias: Nitrosomonas (izquierda) y Nitrobacter (derecha)
+  const NBAC=150,bg=new T.SphereGeometry(0.03,8,6);
+  const aobM=new T.InstancedMesh(bg,M.aob,NBAC),nobM=new T.InstancedMesh(bg,M.nob,NBAC);lupa.add(aobM);lupa.add(nobM);
+  {const m4=new T.Matrix4(),q=new T.Quaternion(),s=V(1.7,1,1),p=V(0,0,0);let na=0,nb=0,guard=0;
+    while((na<NBAC||nb<NBAC)&&guard++<5000){const k=Math.random();let x,y;const z=(Math.random()-0.5)*(LD-0.06);
+      if(k<0.35){x=(Math.random()*2-1)*(LR-0.1);y=(Math.random()<0.5?1:-1)*0.05;}
+      else if(k<0.7){y=(Math.random()*2-1)*(LR-0.1);x=(Math.random()<0.5?1:-1)*0.05;}
+      else{const a=Math.random()*Math.PI*2;x=Math.cos(a)*(LR-0.09);y=Math.sin(a)*(LR-0.09);}
+      q.setFromEuler(new T.Euler(Math.random()*6,Math.random()*6,Math.random()*6));p.set(x,LY+y,z);m4.compose(p,q,s);
+      if(x<0){if(na<NBAC)aobM.setMatrixAt(na++,m4);}else if(nb<NBAC)nobM.setMatrixAt(nb++,m4);}
+    aobM.count=na;nobM.count=nb;}
+  // rótulos
+  const label=(txt,col,w)=>{const c=document.createElement('canvas');c.width=512;c.height=96;const g=c.getContext('2d');g.font='600 40px Fredoka, Nunito, Arial, sans-serif';const tw=Math.min(480,g.measureText(txt).width+44);
+    g.fillStyle='rgba(255,255,255,0.95)';const x0=(512-tw)/2;g.beginPath();if(g.roundRect)g.roundRect(x0,10,tw,76,38);else g.rect(x0,10,tw,76);g.fill();g.lineWidth=5;g.strokeStyle=col;g.stroke();
+    g.fillStyle=col;g.textAlign='center';g.textBaseline='middle';g.fillText(txt,256,50,440);
+    const t=new T.CanvasTexture(c);t.encoding=T.sRGBEncoding;const s=new T.Sprite(new T.SpriteMaterial({map:t,transparent:true,depthWrite:false,toneMapped:false}));s.scale.set(w,w*96/512,1);return s;};
+  const lab=(txt,col,w,x,y,z)=>{const s=label(txt,col,w);s.position.set(x,y,z);lupa.add(s);return s;};
+  lab('Nitrosomonas','#B8651A',1.15,-0.62,LY+LR+0.36,0);
+  lab('Nitrobacter','#4E7A26',1.05,0.62,LY+LR+0.36,0);
+  lab('Biocarrier ampliado','#1565C0',1.3,0,0.3,0.78);
+  const lNH=lab('NH₄⁺','#C24A28',0.72,-1.25,LY+0.62,0.3),lNO2=lab('NO₂⁻','#A07400',0.72,0,LY-LR-0.2,0.3),lNO3=lab('NO₃⁻','#14786A',0.72,1.25,LY-0.3,0.3);
+  lupa.updateMatrixWorld(true);
+  // líneas de "zoom" desde el estanque
+  {const a=V(1.2,1.3,hz),p1=V(0,LY+LR,0).applyMatrix4(lupa.matrixWorld),p2=V(0,LY-LR,0).applyMatrix4(lupa.matrixWorld);
+    const g=new T.BufferGeometry().setFromPoints([a,p1,a,p2]);scene.add(new T.LineSegments(g,new T.LineBasicMaterial({color:0x1565c0,transparent:true,opacity:0.55})));
+    add(new T.TorusGeometry(0.09,0.012,8,24),M.baseEdge,a.x,a.y,a.z+0.03);}
+  const LPATH=[V(-1.25,LY+0.38,0.3),V(-0.3,LY+0.3,0.26),V(0.3,LY-0.3,0.26),V(1.25,LY-0.55,0.3)];
+  const lP=[];for(let i=0;i<NL;i++)lP.push({t:i/NL,jx:(Math.random()-0.5)*0.22,jy:(Math.random()-0.5)*0.22,q:new T.Quaternion(),ax:V(Math.random()-0.5,Math.random()-0.5,Math.random()-0.5).normalize(),fl:0,stage:0});
+  const oP=[];for(let i=0;i<NOX;i++)oP.push({t:Math.random(),x:(i%2?0.3:-0.3)+(Math.random()-0.5)*0.2,q:new T.Quaternion().setFromEuler(new T.Euler(0,0,Math.random()*3))});
+
+  function readColors(){M.bandIn.color.copy(lin(COL.n0));M.bandOut.color.copy(lin(COL.n2));}
   readColors();
-  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',readColors);
-  new MutationObserver(readColors).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
 
   // recorrido guiado y marcadores
+  const lupaC=V(0,LY,0).applyMatrix4(lupa.matrixWorld);
   const STEPS=[
-    {t:'Vista general',k:'Recorrido guiado',p:'Un biofiltro <b>MBBR</b> es un estanque con miles de piezas plásticas que giran en el agua. Sobre ellas viven bacterias que limpian el agua. Toca <b>Siguiente</b> o un número de la maqueta para ver cada parte.',tg:V(0,1.15,0),az:0.72,el:0.36,d:null,hl:[]},
-    {t:'Entrada del agua',k:'Paso 1 de 5',p:'Llega el agua desde los estanques de peces con <b>NAT alto</b> (amonio + amoníaco), producido por la digestión del alimento. Las bolitas <b style="color:var(--salmon)">rojas</b> representan ese amonio.',tg:V(-3.0,1.6,-0.55),az:-0.55,el:0.3,d:6.2,hl:['pIn'],pin:V(-3.7,2.15,-0.55)},
-    {t:'Soplador y difusores',k:'Paso 2 de 5',p:'El <b>soplador</b> empuja aire hasta los <b>difusores</b> del fondo. Las burbujas hacen dos trabajos: entregan el <b>oxígeno</b> que necesitan las bacterias y mueven los biocarriers para que no se amontonen.',tg:V(-2.2,0.6,0.7),az:0.25,el:0.28,d:6.4,hl:['pAir','blow','mem'],pin:V(-3.2,0.75,0.7)},
-    {t:'Biocarriers y bacterias',k:'Paso 3 de 5',p:'En cada pieza crece una <b>biopelícula</b>. Primero las <b>Nitrosomonas</b> transforman NH₄⁺ en NO₂⁻ (amarillo) y luego las <b>Nitrobacter</b> lo pasan a NO₃⁻ (verde), mucho menos tóxico. Este proceso consume O₂ y alcalinidad.',tg:V(0,1.2,0),az:0.9,el:0.5,d:6.8,hl:['car'],pin:V(-0.4,1.75,0)},
-    {t:'Tamiz de salida',k:'Paso 4 de 5',p:'Una <b>rejilla</b> deja pasar el agua pero retiene los biocarriers dentro del estanque, para que las bacterias no se pierdan.',tg:V(1.9,1.7,-0.5),az:1.6,el:0.22,d:5.2,hl:['sieve'],pin:V(1.9,2.25,-0.5)},
-    {t:'Salida del agua',k:'Paso 5 de 5',p:'Sale agua con <b>NO₃⁻ (nitrato)</b>, que el salmón tolera en concentraciones mucho mayores. Desde aquí el agua sigue hacia la desgasificación (quitar CO₂) y la oxigenación antes de volver a los peces.',tg:V(3.0,1.3,-0.5),az:1.25,el:0.3,d:6.2,hl:['pOut'],pin:V(3.4,2.0,-0.5)}
+    {t:'Vista general',k:'Recorrido guiado',p:'Un biofiltro <b>MBBR</b> es un estanque con miles de piezas plásticas que giran en el agua. Sobre ellas viven bacterias que transforman el amonio tóxico en nitrato. Mira cómo las moléculas cambian de forma y color al avanzar. Toca <b>Siguiente</b> o un número.',tg:V(0.6,1.15,0.3),az:-0.38,el:0.34,d:null,hl:[]},
+    {t:'Entrada del agua',k:'Paso 1 de 6',p:'Llega el agua desde los estanques de peces con <b>NAT alto</b>. Cada molécula <b style="color:var(--salmon)">NH₄⁺</b> (amonio) se dibuja con un centro rojo y cuatro hidrógenos blancos. Una fracción pequeña está como <b>NH₃</b>, la forma tóxica para el salmón.',tg:V(-3.0,1.6,-0.55),az:-0.55,el:0.3,d:6.2,hl:['pIn'],pin:V(-3.9,2.2,-0.55)},
+    {t:'Soplador y parrilla de aire',k:'Paso 2 de 6',p:'El <b>soplador</b> empuja aire hasta la <b>parrilla</b> del fondo. Las burbujas entregan el <b>oxígeno</b> que necesitan las bacterias y mueven los biocarriers. Apaga la <b>Aireación</b> y verás que la transformación se detiene.',tg:V(-2.2,0.7,0.75),az:0.25,el:0.28,d:6.4,hl:['pAir','blow'],pin:V(-3.2,1.0,0.75)},
+    {t:'Biocarriers en movimiento',k:'Paso 3 de 6',p:'Miles de piezas tipo <b>K1</b> giran con el agua. En su interior protegido crece la <b>biopelícula</b> (color café). Al pasar entre ellas, el amonio <b style="color:var(--salmon)">rojo</b> se vuelve nitrito <b style="color:var(--warn)">amarillo</b> y luego nitrato <b style="color:var(--no3)">verde</b>.',tg:V(0,1.2,0),az:0.9,el:0.5,d:6.8,hl:['car'],pin:V(-0.4,1.75,0)},
+    {t:'Lupa: dentro de la biopelícula',k:'Paso 4 de 6',p:'Un biocarrier ampliado. <b style="color:#B8651A">Nitrosomonas</b> toma NH₄⁺ y oxígeno y libera <b>NO₂⁻</b> (nitrito, tóxico). Luego <b style="color:#4E7A26">Nitrobacter</b> toma ese nitrito y más oxígeno y libera <b>NO₃⁻</b> (nitrato, poco tóxico). Las bolitas celestes son el O₂ que consumen.',tg:lupaC.clone(),az:-0.25,el:0.12,d:4.6,hl:[],pin:V(lupaC.x,lupaC.y+LR+0.75,lupaC.z)},
+    {t:'Tamiz de salida',k:'Paso 5 de 6',p:'Un <b>tamiz cilíndrico</b> de acero deja pasar el agua pero retiene los biocarriers dentro del estanque, para que las bacterias no se pierdan.',tg:V(1.6,1.7,-0.5),az:0.95,el:0.3,d:4.6,hl:['sieve','sieveF'],pin:V(1.6,2.15,-0.5)},
+    {t:'Salida del agua',k:'Paso 6 de 6',p:'Sale agua con <b style="color:var(--no3)">NO₃⁻ (nitrato)</b>: centro verde y tres oxígenos. El salmón lo tolera en concentraciones mucho mayores. El agua sigue hacia la desgasificación (quitar CO₂) y la oxigenación antes de volver a los peces.',tg:V(3.0,1.3,-0.5),az:1.25,el:0.3,d:6.2,hl:['pOut'],pin:V(3.5,2.05,-0.5)}
   ];
-  const HL={pIn:[M.pIn],pAir:[M.pAir],blow:[M.blow],mem:[M.mem],car:[M.carrier],sieve:[M.sieve],pOut:[M.pOut]};
+  const HL={pIn:[M.pIn],pAir:[M.pAir],blow:[M.blow,M.motor],car:[M.carrier],sieve:[M.sieve],sieveF:[M.sieveF],pOut:[M.pOut]};
   const lw=$('bioLbls');
   const pins=STEPS.map((st,i)=>{if(!st.pin)return null;const b=document.createElement('button');b.type='button';b.className='pin';b.innerHTML='<b>'+i+'</b><span>'+st.t+'</span>';b.addEventListener('click',()=>goStep(i));lw.appendChild(b);return b;});
   const tDots=$('tDots');
   STEPS.forEach((_,i)=>{const d=document.createElement('button');d.type='button';d.setAttribute('aria-label','Paso '+i);d.addEventListener('click',()=>goStep(i));tDots.appendChild(d);});
-  let step=0, goal=null;
+  let step=0,goal=null;
+  const tgt=V(0.6,1.15,0.3);
+  let az,el,dist,auto=true;
+  const narrow=()=>host.clientWidth<620;
+  const shortest=(a,b)=>{let d=(b-a)%(Math.PI*2);if(d>Math.PI)d-=Math.PI*2;if(d<-Math.PI)d+=Math.PI*2;return a+d;};
+  const D0=()=>narrow()?14.5:11;
+  function resetView(){az=-0.38;el=0.34;dist=D0();tgt.set(0.6,1.15,0.3);goal=null;}
+  resetView();
   function goStep(i){
     step=Math.max(0,Math.min(STEPS.length-1,i));const st=STEPS[step];
     $('tourN').textContent=step===0?'★':step;$('tourT').textContent=st.t;$('tourK').textContent=st.k;$('tourP').innerHTML=st.p;
     $('tPrev').disabled=step===0;$('tNext').textContent=step===STEPS.length-1?'Volver al inicio ⟲':'Siguiente →';
     [].forEach.call(tDots.children,(d,j)=>d.setAttribute('aria-current',j===step?'true':'false'));
     pins.forEach((p,j)=>p&&p.classList.toggle('on',j===step));
-    goal={tg:st.tg.clone(),az:st.az,el:st.el,d:st.d?st.d*(narrow()?1.45:1):(narrow()?12.5:9.6)};
+    goal={tg:st.tg.clone(),az:st.az,el:st.el,d:st.d?st.d*(narrow()?1.45:1):D0()};
     if(step>0){auto=false;$('bRot').setAttribute('aria-pressed','false');}
   }
   $('tPrev').addEventListener('click',()=>goStep(step-1));
   $('tNext').addEventListener('click',()=>goStep(step===STEPS.length-1?0:step+1));
 
   // cámara orbital
-  const tgt=V(0,1.15,0);
-  let az,el,dist,auto=true;
-  const shortest=(a,b)=>{let d=(b-a)%(Math.PI*2);if(d>Math.PI)d-=Math.PI*2;if(d<-Math.PI)d+=Math.PI*2;return a+d;};
-  const narrow=()=>host.clientWidth<620;
-  function resetView(){az=0.72;el=0.36;dist=narrow()?12.5:9.6;tgt.set(0,1.15,0);goal=null;}
-  resetView();
   const ptr=new Map();let pinch0=0,dist0=0;
   const cv=renderer.domElement;
   const hint=$('vHint');const killHint=()=>hint.classList.add('gone');setTimeout(killHint,6000);
   cv.addEventListener('pointerdown',e=>{goal=null;killHint();cv.setPointerCapture(e.pointerId);ptr.set(e.pointerId,{x:e.clientX,y:e.clientY});if(ptr.size===2){const a=[...ptr.values()];pinch0=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y);dist0=dist;}});
   cv.addEventListener('pointermove',e=>{if(!ptr.has(e.pointerId))return;const p=ptr.get(e.pointerId);const dx=e.clientX-p.x,dy=e.clientY-p.y;p.x=e.clientX;p.y=e.clientY;
     if(ptr.size===1){az-=dx*0.008;el=Math.max(0.04,Math.min(1.35,el+dy*0.006));}
-    else if(ptr.size===2&&pinch0>0){const a=[...ptr.values()];const pd=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y);dist=Math.max(5,Math.min(18,dist0*pinch0/pd));}});
+    else if(ptr.size===2&&pinch0>0){const a=[...ptr.values()];const pd=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y)||1;dist=Math.max(3,Math.min(20,dist0*pinch0/pd));}});
   const up=e=>{ptr.delete(e.pointerId);if(ptr.size<2)pinch0=0;};
   cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
-  cv.addEventListener('wheel',e=>{e.preventDefault();goal=null;dist=Math.max(5,Math.min(18,dist*(1+e.deltaY*0.001)));},{passive:false});
+  cv.addEventListener('wheel',e=>{e.preventDefault();goal=null;dist=Math.max(3,Math.min(20,dist*(1+e.deltaY*0.001)));},{passive:false});
 
   // controles
-  let aerT=1,aer=1,wallOn=true;
-  tg('bAer',on=>{aerT=on?1:0;$('aerMsg').textContent=on?'Biocarriers dibujados a escala aumentada (un K1 real mide ~9 mm) y colores del agua exagerados para mostrar la transformación; en una pasada real solo se remueve una fracción del NAT.':'Sin aire el medio (densidad ~0,95 g/cm³) flota y se compacta en la superficie: deja de mezclarse, el O₂ cae y la biopelícula pierde contacto con el agua. Por eso un corte de soplador es una emergencia para el biofiltro.';});
-  tg('bWall',on=>{wallOn=on;M.wall.opacity=on?0.16:0.82;M.wall.color.set(on?0xcfe3f7:0x7f97b0);M.wall.depthWrite=!on;});
+  let aerT=1,aer=1;
+  tg('bAer',on=>{aerT=on?1:0;$('aerMsg').textContent=on?'Biocarriers y moléculas dibujados a escala muy aumentada (un K1 real mide ~9 mm) y transformación exagerada para que se vea; en una pasada real solo se remueve una fracción del NAT.':'Sin aire no hay oxígeno: las bacterias dejan de transformar el amonio y este sale del biofiltro sin cambiar (rojo). Además el medio flota y se compacta en la superficie. Por eso un corte de soplador es una emergencia.';});
+  tg('bWall',on=>{M.wall.opacity=on?0.16:0.85;M.wall.color.set(on?0xcfe3f7:0x7f97b0);M.wall.depthWrite=!on;});
   tg('bLbl',on=>lw.classList.toggle('off',!on));
   tg('bRot',on=>{auto=on;});
   $('bReset').addEventListener('click',()=>{goStep(0);});
@@ -1575,47 +1691,73 @@ function build3D(){
   function resize(){host.classList.toggle('narrow',narrow());const w=host.clientWidth,h=host.clientHeight;if(w<2||h<2)return;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();}
   new ResizeObserver(resize).observe(host);resize();
 
-  const m4=new T.Matrix4(),pos=new T.Vector3(),scl=new T.Vector3(),qa=new T.Quaternion(),one=new T.Vector3(1,1,1),col=new T.Color(),pv=new T.Vector3();
+  // medidor en vivo
+  const hud=[0,1,2].map(z=>{const b=$('nb'+z);return b?[].slice.call(b.children):null;}),effEl=$('nitEff');
+  let hudT=0;
+  function drawHud(){
+    const cnt=[[0,0,0],[0,0,0],[0,0,0]];
+    for(let i=NI;i<NI+NT;i++){const p=pP[i];cnt[Math.min(2,Math.floor(p.u*3))][p.stage]++;}
+    cnt.forEach((c,z)=>{if(!hud[z])return;const s=c[0]+c[1]+c[2]||1;c.forEach((v,k)=>{hud[z][k].style.width=(v/s*100).toFixed(1)+'%';});});
+    if(effEl){const e=Math.round((1-exitF[0])*100);effEl.textContent='NAT transformado a la salida: '+e+' %';effEl.className='nit-eff '+(e>=70?'ok':e>=30?'warn':'crit');}
+  }
+
+  const m4=new T.Matrix4(),pos=new T.Vector3(),scl=new T.Vector3(),qa=new T.Quaternion(),one=V(1,1,1),pv=new T.Vector3(),tmp=new T.Vector3();
+  const lerp3=(a,b,t,out)=>out.copy(a).lerp(b,t);
   let time=0,clk=0;
   goStep(0);goal=null;
   return function(dt,rdt){
     if(rdt===undefined)rdt=dt;
     time+=dt;clk+=rdt;
     if(!isFinite(az+el+dist+tgt.x+tgt.y+tgt.z)){resetView();}
-    if(auto)az+=rdt*0.15;
+    if(auto)az+=rdt*0.12;
     if(goal){const k=1-Math.exp(-rdt*3);az+=(shortest(az,goal.az)-az)*k;el+=(goal.el-el)*k;dist+=(goal.d-dist)*k;tgt.lerp(goal.tg,k);}
-    // resaltado del componente activo
-    const pulse=0.35+0.35*Math.sin(clk*4);
-    Object.keys(HL).forEach(key=>{const on=STEPS[step].hl.indexOf(key)>=0;HL[key].forEach(m=>{m.emissive.setHex(on?0x1e88e5:0x000000);m.emissiveIntensity=on?pulse:0;});});
-    // ondas en la superficie
-    for(let i=0;i<sPos.count;i++){const x=sPos.getX(i),y=sPos.getY(i);sPos.setZ(i,(Math.sin(x*3+time*2.2)+Math.cos(y*4-time*1.7))*0.012*(0.3+aer));}
-    sPos.needsUpdate=true;
     aer+=(aerT-aer)*Math.min(1,dt*1.1);
     camera.position.set(tgt.x+dist*Math.cos(el)*Math.sin(az),tgt.y+dist*Math.sin(el),tgt.z+dist*Math.cos(el)*Math.cos(az));
     camera.lookAt(tgt);
+    const pulse=0.35+0.35*Math.sin(clk*4);
+    Object.keys(HL).forEach(key=>{const on=STEPS[step].hl.indexOf(key)>=0;HL[key].forEach(m=>{m.emissive.setHex(on?0x1e88e5:0x000000);m.emissiveIntensity=on?pulse:0;});});
+    for(let i=0;i<sPos.count;i++){const x=sPos.getX(i),y=sPos.getY(i);sPos.setZ(i,(Math.sin(x*3+time*2.2)+Math.cos(y*4-time*1.7))*0.014*(0.25+aer));}
+    sPos.needsUpdate=true;
     // carriers
     for(let i=0;i<NC;i++){const c=cP[i];
       c.ph+=dt*0.55*c.w*aer;
-      const ly=1.15+c.r*1.05*Math.sin(c.ph), lz=c.r*1.1*Math.cos(c.ph);
+      const ly=1.2+c.r*1.05*Math.sin(c.ph),lz=c.r*1.1*Math.cos(c.ph);
       const wob=Math.sin(time*1.3+i)*0.03;
-      pos.set(c.x+wob*aer, c.fy+(ly-c.fy)*aer, c.fz+(lz-c.fz)*aer);
+      pos.set(c.x+wob*aer,c.fy+(ly-c.fy)*aer,c.fz+(lz-c.fz)*aer);
       qa.setFromAxisAngle(c.ax,dt*c.sp*(0.15+aer));c.q.multiply(qa);
       m4.compose(pos,c.q,one);car.setMatrixAt(i,m4);}
     car.instanceMatrix.needsUpdate=true;
     // burbujas
-    for(let i=0;i<NB;i++){const b=bP[i];b.y+=dt*b.sp*(0.3+aer);if(b.y>WL-0.02)b.y=0.22;
+    for(let i=0;i<NB;i++){const b=bP[i];b.y+=dt*b.sp*(0.3+aer);if(b.y>WL-0.02){b.y=AY+0.05;b.x=-1.7+Math.random()*3.4;}
       pos.set(b.x+Math.sin(b.y*4+i)*0.04,b.y,b.z+b.dr*(b.y/WL));const s=Math.max(0.0001,aer);scl.set(s,s,s);qa.identity();m4.compose(pos,qa,scl);bub.setMatrixAt(i,m4);}
     bub.instanceMatrix.needsUpdate=true;
-    // agua
-    qa.identity();
-    for(let i=0;i<NP;i++){const p=pP[i];
-      if(i<NI){p.u=(p.u+dt*0.16)%1;pos.copy(pIn.getPointAt(p.u));col.copy(C.nh);}
-      else if(i<NI+NT){p.u+=dt*0.045;if(p.u>=1)p.u=0;p.ph+=dt*0.55*p.w*Math.max(aer,0.12);
-        pos.set(-1.8+3.6*p.u,1.15+p.r*1.05*Math.sin(p.ph),p.r*1.1*Math.cos(p.ph));
-        if(p.u<0.5)col.copy(C.nh).lerp(C.no2,p.u/0.5);else col.copy(C.no2).lerp(C.no3,(p.u-0.5)/0.5);}
-      else{p.u=(p.u+dt*0.16)%1;pos.copy(pOut.getPointAt(p.u));col.copy(C.no3);}
-      m4.compose(pos,qa,one);prt.setMatrixAt(i,m4);prt.setColorAt(i,col);}
-    prt.instanceMatrix.needsUpdate=true;if(prt.instanceColor)prt.instanceColor.needsUpdate=true;
+    // moléculas
+    const cnt=[0,0,0],put=(stage,p,sc)=>{const s=sc*(1+p.fl*1.3);scl.set(s,s,s);m4.compose(pos,p.q,scl);molM[stage].setMatrixAt(cnt[stage]++,m4);};
+    const oxy=aer>0.5;
+    for(let i=0;i<NI+NT+NO;i++){const p=pP[i];
+      qa.setFromAxisAngle(p.ax,dt*1.6);p.q.multiply(qa);if(p.fl>0)p.fl=Math.max(0,p.fl-dt*2.2);
+      if(i<NI){p.u=(p.u+dt*0.13)%1;pos.copy(pIn.getPointAt(p.u));p.stage=0;}
+      else if(i<NI+NT){p.u+=dt*0.07;p.ph+=dt*0.55*p.w*Math.max(aer,0.12);
+        if(oxy){if(p.stage===0&&p.u>p.t1){p.stage=1;p.fl=1;}else if(p.stage===1&&p.u>p.t2){p.stage=2;p.fl=1;}}
+        if(p.u>=1){for(let k=0;k<3;k++)exitF[k]+=((p.stage===k?1:0)-exitF[k])*0.1;newTank(p);}
+        pos.set(-1.8+3.6*p.u,1.2+p.r*1.05*Math.sin(p.ph),p.r*1.1*Math.cos(p.ph));}
+      else{const u0=p.u;p.u=(p.u+dt*0.13)%1;if(p.u<u0){const r=Math.random();p.stage=r<exitF[0]?0:r<exitF[0]+exitF[1]?1:2;}pos.copy(pOut.getPointAt(p.u));}
+      put(p.stage,p,i<NI||i>=NI+NT?0.95:1.15);}
+    // lupa
+    for(let i=0;i<NL;i++){const p=lP[i];
+      let nt=p.t+dt*0.085;
+      if(!oxy){if(p.t<0.32&&nt>=0.32)nt=p.t;if(p.t<0.64&&p.t>=0.34&&nt>=0.64)nt=p.t;}
+      if(nt>=1){nt-=1;}
+      const st=nt<0.33?0:nt<0.66?1:2;if(st!==p.stage){if(st>p.stage)p.fl=1;p.stage=st;}
+      p.t=nt;if(p.fl>0)p.fl=Math.max(0,p.fl-dt*2);
+      const seg=Math.min(2,Math.floor(nt*3)),f=nt*3-seg,e=f*f*(3-2*f);
+      lerp3(LPATH[seg],LPATH[seg+1],e,tmp);tmp.x+=p.jx*Math.sin(Math.PI*nt);tmp.y+=p.jy+Math.sin(time*2+i)*0.03;
+      pos.copy(tmp).applyMatrix4(lupa.matrixWorld);qa.setFromAxisAngle(p.ax,dt*1.2);p.q.multiply(qa);put(p.stage,p,1.7);}
+    for(let k=0;k<3;k++){molM[k].count=cnt[k];molM[k].instanceMatrix.needsUpdate=true;}
+    for(let i=0;i<NOX;i++){const o=oP[i];o.t=(o.t+dt*0.35)%1;const s=Math.max(0.0001,(1-o.t*o.t)*2.0*aer);
+      tmp.set(o.x*(1-o.t*0.3),LY+LR+0.55-o.t*(LR+0.3-(o.x<0?0.3:-0.1)),0.26);pos.copy(tmp).applyMatrix4(lupa.matrixWorld);scl.set(s,s,s);m4.compose(pos,o.q,scl);o2M.setMatrixAt(i,m4);}
+    o2M.instanceMatrix.needsUpdate=true;
+    hudT+=rdt;if(hudT>0.3){hudT=0;drawHud();}
     renderer.render(scene,camera);
     // etiquetas
     const w=host.clientWidth,h=host.clientHeight;
