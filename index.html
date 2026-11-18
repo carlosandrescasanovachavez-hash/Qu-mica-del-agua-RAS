@@ -361,6 +361,9 @@ input[type=range]{height:28px;cursor:pointer}
 .nit-bar i{display:block;height:100%;width:0;transition:width .35s}
 .nit small{color:var(--muted);font-size:.8rem}
 
+.hp-frame{border-radius:20px;overflow:hidden;border:1px solid var(--line);box-shadow:0 6px 24px rgba(10,42,94,.12);background:var(--bg)}
+.hp-frame iframe{display:block;width:100%;height:1900px;border:0}
+
 /* Presentación */
 .pres{position:relative;min-height:100vh;min-height:100svh;display:grid;align-content:center;color:#fff;overflow:hidden;
   background:radial-gradient(120% 80% at 80% 0%,#42A5F5 0%,transparent 55%),linear-gradient(160deg,#0A2A5E 0%,#1565C0 60%,#1E88E5 100%);
@@ -444,6 +447,7 @@ input[type=range]{height:28px;cursor:pointer}
           <li><span class="ico">14</span><span><b>Fichas</b> de catorce parámetros, incluidos <b>TGP %</b> y <b>N₂ %</b>.</span></li>
           <li><span class="ico">3D</span><span><b>Biofiltro en 3D</b> y calculadora de nitrificación.</span></li>
           <li><span class="ico">UV</span><span><b>Reactor UV en 3D</b> con simulador de dosis.</span></li>
+          <li><span class="ico">🌡</span><span><b>Bomba de calor en 3D</b> para controlar la temperatura del agua.</span></li>
           <li><span class="ico">⚗</span><span><b>Reacciones</b> químicas clave y fuentes científicas.</span></li>
         </ul>
       </div>
@@ -496,6 +500,7 @@ input[type=range]{height:28px;cursor:pointer}
       <a class="tile" href="#interacciones"><span>🕸</span><b>Interacciones</b><small>Cómo se afectan entre sí</small></a>
       <a class="tile" href="#biofiltro"><span>🦠</span><b>Biofiltro 3D</b><small>Maqueta y nitrificación</small></a>
       <a class="tile" href="#uv"><span>💡</span><b>Reactor UV 3D</b><small>Desinfección y dosis</small></a>
+      <a class="tile" href="#bomba"><span>🌡</span><b>Bomba de calor 3D</b><small>Control de temperatura</small></a>
       <a class="tile" href="#reacciones"><span>⚗</span><b>Reacciones</b><small>La química de fondo</small></a>
       <a class="tile" href="#etapas"><span>🐟</span><b>Etapas</b><small>Ova, alevín, smolt</small></a>
     </div>
@@ -510,6 +515,7 @@ input[type=range]{height:28px;cursor:pointer}
     <a class="sec" href="#interacciones">Interacciones</a>
     <a class="sec" href="#biofiltro">Biofiltro 3D</a>
     <a class="sec" href="#uv">Desinfección UV</a>
+    <a class="sec" href="#bomba">Bomba de calor</a>
     <a class="sec" href="#reacciones">Reacciones</a>
     <a class="sec" href="#etapas">Etapas</a>
     <a class="sec" href="#fuentes">Fuentes</a>
@@ -831,10 +837,34 @@ input[type=range]{height:28px;cursor:pointer}
   </div>
 </section>
 
+<!-- BOMBA DE CALOR -->
+<section class="block" id="bomba">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">07 · Control de temperatura</div>
+      <h2>Bomba de calor agua-agua en 3D</h2>
+      <p>En un RAS la temperatura del agua se controla con bombas de calor: mueven calor desde un agua hacia otra usando un refrigerante que se evapora y se condensa en circuito cerrado. Explora el compresor, los intercambiadores de placas y la válvula de expansión, y calcula cuánto calor entrega con tus condiciones.</p>
+    </div>
+    <div class="hp-frame">
+      <iframe id="hpFrame" src="bomba-de-calor.html" title="Bomba de calor agua-agua en 3D" loading="lazy" scrolling="no"></iframe>
+    </div>
+    <p style="margin-top:12px"><a class="tbtn solid" href="bomba-de-calor.html" style="text-decoration:none">⛶ Abrir la bomba de calor en pantalla completa</a></p>
+  </div>
+</section>
+<script>
+(function(){
+  var f=document.getElementById('hpFrame');if(!f)return;
+  function fit(){try{var d=f.contentDocument;if(!d||!d.body)return;var h=d.documentElement.scrollHeight;if(h>200)f.style.height=h+'px';}catch(e){}}
+  f.addEventListener('load',function(){fit();try{var d=f.contentDocument;if(window.ResizeObserver)new ResizeObserver(fit).observe(d.body);
+      var tb=document.getElementById('themeBtn');if(tb)tb.addEventListener('click',function(){d.documentElement.setAttribute('data-theme',document.documentElement.getAttribute('data-theme')||'light');});}catch(e){}});
+  addEventListener('resize',fit);
+})();
+</script>
+
 <section class="block" id="reacciones">
   <div class="wrap">
     <div class="sec-head">
-      <div class="eyebrow">07 · Química de fondo</div>
+      <div class="eyebrow">08 · Química de fondo</div>
       <h2>Reacciones que explican las interacciones</h2>
     </div>
     <div class="rx">
@@ -852,7 +882,7 @@ input[type=range]{height:28px;cursor:pointer}
 <section class="block" id="etapas">
   <div class="wrap">
     <div class="sec-head">
-      <div class="eyebrow">08 · Sensibilidad por etapa</div>
+      <div class="eyebrow">09 · Sensibilidad por etapa</div>
       <h2>No todas las etapas toleran lo mismo</h2>
     </div>
     <div class="stages">
@@ -868,7 +898,7 @@ input[type=range]{height:28px;cursor:pointer}
 <section class="block" id="fuentes">
   <div class="wrap">
     <div class="sec-head">
-      <div class="eyebrow">09 · Fuentes y limitaciones</div>
+      <div class="eyebrow">10 · Fuentes y limitaciones</div>
       <h2>De dónde salen los números</h2>
     </div>
     <ol class="refs">
