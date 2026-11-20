@@ -1,0 +1,366 @@
+[
+ [
+  "← Volver a la guía de química del agua",
+  "← Back to the water chemistry guide"
+ ],
+ [
+  "<title>Bomba de calor 3D</title>",
+  "<title>3D Heat Pump</title>"
+ ],
+ [
+  "<h1>Bomba de calor agua-agua</h1>",
+  "<h1>Water-to-water heat pump</h1>"
+ ],
+ [
+  "El refrigerante da vueltas en circuito cerrado: se evapora quitándole calor a un agua y se condensa entregándoselo a otra. Arrastra para girar, pellizca o usa la rueda para acercar. Desmarca «Ver interior» para ver el equipo cerrado.",
+  "The refrigerant circulates in a closed loop: it evaporates by taking heat from one water stream and condenses by giving it to another. Drag to rotate, pinch or use the wheel to zoom. Untick “See inside” to view the closed unit."
+ ],
+ [
+  "<span>Agua de proceso</span>",
+  "<span>Process water</span>"
+ ],
+ [
+  ">Calentar<",
+  ">Heat<"
+ ],
+ [
+  ">Enfriar<",
+  ">Cool<"
+ ],
+ [
+  "<span>Mostrar</span>",
+  "<span>Show</span>"
+ ],
+ [
+  "aria-pressed=\"true\">Todo<",
+  "aria-pressed=\"true\">All<"
+ ],
+ [
+  "aria-pressed=\"false\">Refrigerante<",
+  "aria-pressed=\"false\">Refrigerant<"
+ ],
+ [
+  "aria-pressed=\"false\">Agua<",
+  "aria-pressed=\"false\">Water<"
+ ],
+ [
+  "checked> Ver interior",
+  "checked> See inside"
+ ],
+ [
+  "> Separar placas",
+  "> Separate plates"
+ ],
+ [
+  "checked> Animar flujo",
+  "checked> Animate flow"
+ ],
+ [
+  "checked> Etiquetas",
+  "checked> Labels"
+ ],
+ [
+  "> Girar solo",
+  "> Auto-rotate"
+ ],
+ [
+  ">Restablecer vista<",
+  ">Reset view<"
+ ],
+ [
+  "Gas caliente, alta presión",
+  "Hot gas, high pressure"
+ ],
+ [
+  "Líquido, alta presión",
+  "Liquid, high pressure"
+ ],
+ [
+  "Líquido frío, baja presión",
+  "Cold liquid, low pressure"
+ ],
+ [
+  "Gas frío, baja presión",
+  "Cold gas, low pressure"
+ ],
+ [
+  "<span>Agua: fría<span class=\"grad\"></span>caliente</span>",
+  "<span>Water: cold<span class=\"grad\"></span>hot</span>"
+ ],
+ [
+  "El ciclo en cuatro etapas",
+  "The cycle in four stages"
+ ],
+ [
+  "<h2>Resultados</h2>",
+  "<h2>Results</h2>"
+ ],
+ [
+  "Condiciones de operación",
+  "Operating conditions"
+ ],
+ [
+  "Agua que entra al evaporador (°C)",
+  "Water entering the evaporator (°C)"
+ ],
+ [
+  "Caudal en el evaporador (m³/h)",
+  "Evaporator flow (m³/h)"
+ ],
+ [
+  "Agua que entra al condensador (°C)",
+  "Water entering the condenser (°C)"
+ ],
+ [
+  "Caudal en el condensador (m³/h)",
+  "Condenser flow (m³/h)"
+ ],
+ [
+  "Potencia eléctrica del compresor (kW)",
+  "Compressor electrical power (kW)"
+ ],
+ [
+  "Eficiencia respecto a Carnot (0,3 a 0,7)",
+  "Efficiency relative to Carnot (0.3 to 0.7)"
+ ],
+ [
+  "Acercamiento agua–refrigerante (K)",
+  "Water–refrigerant approach (K)"
+ ],
+ [
+  "Supuestos: agua dulce (1000 kg/m³, 4,186 kJ/kg·K), sin pérdidas al ambiente, eficiencia y acercamiento constantes. Los valores iniciales son ejemplos plausibles, no datos de tu equipo.",
+  "Assumptions: freshwater (1000 kg/m³, 4.186 kJ/kg·K), no losses to the surroundings, constant efficiency and approach. The default values are plausible examples, not data from your unit."
+ ],
+ [
+  "<summary>Cómo se calcula</summary>",
+  "<summary>How it is calculated</summary>"
+ ],
+ [
+  "Maqueta 3D de una bomba de calor con compresor scroll, intercambiadores de placas, filtro secador y válvula de expansión",
+  "3D model of a heat pump with scroll compressor, plate heat exchangers, filter drier and expansion valve"
+ ],
+ [
+  "\": escribe un valor entre \"",
+  "\": enter a value between \""
+ ],
+ [
+  "\" y \"+f(mx,1)",
+  "\" and \"+f(mx,1)"
+ ],
+ [
+  "\"1 · Compresor\"",
+  "\"1 · Compressor\""
+ ],
+ [
+  "\"2 · Condensador\"",
+  "\"2 · Condenser\""
+ ],
+ [
+  "\"3 · Válvula de expansión\"",
+  "\"3 · Expansion valve\""
+ ],
+ [
+  "\"4 · Evaporador\"",
+  "\"4 · Evaporator\""
+ ],
+ [
+  "El agua del condensador está más fría que la del evaporador: el calor pasaría solo, sin compresor. Sube la temperatura del condensador o baja la del evaporador. El modelo no se actualizó.",
+  "The condenser water is colder than the evaporator water: heat would flow by itself, without a compressor. Raise the condenser temperature or lower the evaporator temperature. The model was not updated."
+ ],
+ [
+  "\" El modelo no se actualizó.\"",
+  "\" The model was not updated.\""
+ ],
+ [
+  "\"El refrigerante evapora a \"",
+  "\"The refrigerant evaporates at \""
+ ],
+ [
+  "\" °C: riesgo de congelar agua dentro del evaporador. Sube el caudal o baja la potencia.\"",
+  "\" °C: risk of freezing water inside the evaporator. Raise the flow or lower the power.\""
+ ],
+ [
+  "Agua de proceso ('+(heat?\"condensador\":\"evaporador\")",
+  "Process water ('+(heat?\"condenser\":\"evaporator\")"
+ ],
+ [
+  "Calor entregado al agua",
+  "Heat delivered to the water"
+ ],
+ [
+  "Calor retirado del agua",
+  "Heat removed from the water"
+ ],
+ [
+  "COP '+(heat?\"calentando\":\"enfriando\")",
+  "COP '+(heat?\"heating\":\"cooling\")"
+ ],
+ [
+  "\"Gas frío → gas caliente\"",
+  "\"Cold gas → hot gas\""
+ ],
+ [
+  "\"Aspira gas a baja presión y lo comprime. La presión y la temperatura suben. Consume \"",
+  "\"It draws in low-pressure gas and compresses it. Pressure and temperature rise. It uses \""
+ ],
+ [
+  "\" kW eléctricos.\"",
+  "\" kW of electricity.\""
+ ],
+ [
+  "\"Gas → líquido\"",
+  "\"Gas → liquid\""
+ ],
+ [
+  "\"El gas caliente se condensa cerca de \"",
+  "\"The hot gas condenses at about \""
+ ],
+ [
+  "\" °C y entrega \"",
+  "\" °C and delivers \""
+ ],
+ [
+  "\" kW al agua, que sube de \"",
+  "\" kW to the water, which rises from \""
+ ],
+ [
+  "\"Líquido → mezcla fría\"",
+  "\"Liquid → cold mixture\""
+ ],
+ [
+  "\"El líquido pasa por un orificio estrecho. La presión cae y se enfría de golpe hasta unos \"",
+  "\"The liquid passes through a narrow orifice. Pressure drops and it suddenly cools to about \""
+ ],
+ [
+  "\" °C; una parte se vuelve gas.\"",
+  "\" °C; part of it turns into gas.\""
+ ],
+ [
+  "\"Líquido → gas\"",
+  "\"Liquid → gas\""
+ ],
+ [
+  "\"El líquido frío hierve cerca de \"",
+  "\"The cold liquid boils at about \""
+ ],
+ [
+  "\" °C y le quita \"",
+  "\" °C and removes \""
+ ],
+ [
+  "\" kW al agua, que baja de \"",
+  "\" kW from the water, which drops from \""
+ ],
+ [
+  "Capacidad térmica de cada caudal de agua: cuántos kW hacen falta para cambiarla 1 K.",
+  "Heat capacity of each water flow: how many kW it takes to change it by 1 K."
+ ],
+ [
+  "C = caudal × 1000 ÷ 3600 × 4,186 → evaporador <b>",
+  "C = flow × 1000 ÷ 3600 × 4.186 → evaporator <b>"
+ ],
+ [
+  " kW/K</b>, condensador <b>",
+  " kW/K</b>, condenser <b>"
+ ],
+ [
+  "Temperaturas del refrigerante: evapora algo más frío que el agua que sale del evaporador y condensa algo más caliente que la que sale del condensador.",
+  "Refrigerant temperatures: it evaporates slightly colder than the water leaving the evaporator and condenses slightly hotter than the water leaving the condenser."
+ ],
+ [
+  "COP de calefacción: una fracción del máximo teórico (Carnot), con temperaturas en kelvin.",
+  "Heating COP: a fraction of the theoretical maximum (Carnot), with temperatures in kelvin."
+ ],
+ [
+  "Calor en cada intercambiador: el condensador entrega lo que absorbió el evaporador más el trabajo del compresor.",
+  "Heat in each exchanger: the condenser delivers what the evaporator absorbed plus the compressor work."
+ ],
+ [
+  "Temperatura de salida del agua. Como depende de los pasos 2 a 4, se repite el cálculo hasta que deja de cambiar.",
+  "Water outlet temperature. Since it depends on steps 2 to 4, the calculation is repeated until it stops changing."
+ ],
+ [
+  "<span class=\"eq\">Evaporador: '",
+  "<span class=\"eq\">Evaporator: '"
+ ],
+ [
+  "' °C</b> · Condensador: '",
+  "' °C</b> · Condenser: '"
+ ],
+ [
+  "Comprobación por el lado del agua: el calor medido en el agua del condensador dividido por la potencia debe dar el mismo COP.",
+  "Check from the water side: the heat measured in the condenser water divided by the power must give the same COP."
+ ],
+ [
+  "</b> frente a '",
+  "</b> vs '"
+ ],
+ [
+  "No se pudo iniciar el visor 3D en este navegador. El cálculo sigue funcionando.",
+  "The 3D viewer could not start in this browser. The calculation still works."
+ ],
+ [
+  "Toca una etapa para acercar la cámara",
+  "Tap a stage to move the camera closer"
+ ],
+ [
+  "textContent=\"Compresor\"",
+  "textContent=\"Compressor\""
+ ],
+ [
+  "textContent=\"Condensador\"",
+  "textContent=\"Condenser\""
+ ],
+ [
+  "textContent=\"Válvula de expansión\"",
+  "textContent=\"Expansion valve\""
+ ],
+ [
+  "textContent=\"Evaporador\"",
+  "textContent=\"Evaporator\""
+ ],
+ [
+  "textContent=\"Filtro secador y visor\"",
+  "textContent=\"Filter drier and sight glass\""
+ ],
+ [
+  "textContent=\"Gas caliente\"",
+  "textContent=\"Hot gas\""
+ ],
+ [
+  "textContent=\"Líquido\"",
+  "textContent=\"Liquid\""
+ ],
+ [
+  "textContent=\"Líquido + gas, frío\"",
+  "textContent=\"Liquid + gas, cold\""
+ ],
+ [
+  "textContent=\"Gas frío\"",
+  "textContent=\"Cold gas\""
+ ],
+ [
+  "heat?\"Proceso\":\"Fuente\",ne=heat?\"Fuente\":\"Proceso\"",
+  "heat?\"Process\":\"Source\",ne=heat?\"Source\":\"Process\""
+ ],
+ [
+  "+\" entra <b>\"+f(p.Tci",
+  "+\" in <b>\"+f(p.Tci"
+ ],
+ [
+  "+\" sale <b>\"+f(r.Tco",
+  "+\" out <b>\"+f(r.Tco"
+ ],
+ [
+  "+\" entra <b>\"+f(p.Tei",
+  "+\" in <b>\"+f(p.Tei"
+ ],
+ [
+  "+\" sale <b>\"+f(r.Teo",
+  "+\" out <b>\"+f(r.Teo"
+ ],
+ [
+  "\"El visor 3D falló: \"",
+  "\"The 3D viewer failed: \""
+ ]
+]

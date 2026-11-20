@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>3D Heat Pump</title>
+<script>try{var t=localStorage.getItem("tema");if(t)document.documentElement.setAttribute("data-theme",t);}catch(e){}if(window.self!==window.top)document.documentElement.classList.add("embed");</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Idea: tablero didáctico de sala de máquinas. Visor 3D arriba, ciclo en 4 etapas, luego datos y cálculo. */
+:root{
+  --bg:#eef1f3; --panel:#ffffff; --ink:#18222b; --muted:#566573; --line:#d3dade;
+  --accent:#0b6e8f; --stage1:#dfe6ea; --stage2:#c3ced5;
+  --hot:#d8402f; --warm:#d9861c; --cold:#2456d6; --cool:#1c93bd; --warn:#a85b00;
+  --f-display:"Barlow Condensed","Arial Narrow",sans-serif;
+  --f-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#11171c; --panel:#1a2229; --ink:#e7edf1; --muted:#9aa8b3; --line:#2e3a44;
+    --accent:#5cc3e6; --stage1:#222c34; --stage2:#0f1519;
+    --hot:#ff6b5a; --warm:#ffb04d; --cold:#6f95ff; --cool:#6fd3f5; --warn:#ffb65c;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#11171c; --panel:#1a2229; --ink:#e7edf1; --muted:#9aa8b3; --line:#2e3a44;
+  --accent:#5cc3e6; --stage1:#222c34; --stage2:#0f1519;
+  --hot:#ff6b5a; --warm:#ffb04d; --cold:#6f95ff; --cool:#6fd3f5; --warn:#ffb65c;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.45;
+  padding:16px max(16px,env(safe-area-inset-right)) 40px max(16px,env(safe-area-inset-left));overflow-x:hidden}
+main{max-width:980px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+h1{font-family:var(--f-display);font-weight:600;font-size:30px;line-height:1.1;margin:0;text-wrap:balance}
+h2{font-family:var(--f-display);font-weight:600;font-size:21px;margin:0 0 10px;letter-spacing:.01em}
+p{margin:0}
+.sub{color:var(--muted);max-width:65ch;margin-top:4px}
+.viewer{position:relative;height:420px;border:1px solid var(--line);border-radius:10px;overflow:hidden;
+  background:radial-gradient(ellipse at 50% 35%,var(--stage1),var(--stage2));touch-action:none}
+@media (min-width:760px){.viewer{height:520px}}
+.viewer canvas{display:block;width:100%;height:100%;cursor:grab}
+.viewer canvas:active{cursor:grabbing}
+#labels{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.lbl{position:absolute;left:0;top:0;white-space:nowrap;font-size:11px;line-height:1.2;color:var(--ink);
+  background:color-mix(in srgb,var(--panel) 82%,transparent);border:1px solid var(--line);border-radius:5px;padding:2px 6px;will-change:transform}
+.lbl.part{font-family:var(--f-display);font-size:15px;font-weight:600;letter-spacing:.02em;border-color:var(--ink)}
+.lbl.state{border-style:dashed;color:var(--muted)}
+.lbl.water b{font-variant-numeric:tabular-nums}
+.lbl i{font-style:normal;display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px}
+.hint{position:absolute;left:10px;bottom:8px;font-size:11px;color:var(--muted);pointer-events:none}
+.controls{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--panel)}
+.seg button{font:inherit;font-weight:500;color:var(--ink);background:transparent;border:0;padding:8px 12px;cursor:pointer;min-height:40px}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--panel)}
+.btn{font:inherit;font-weight:500;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:8px 12px;min-height:40px;cursor:pointer}
+button:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.chk{display:inline-flex;align-items:center;gap:6px;min-height:40px}
+.chk input{width:18px;height:18px;accent-color:var(--accent)}
+.grp{display:flex;flex-direction:column;gap:4px}
+.grp>span{font-size:12px;color:var(--muted)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12px;color:var(--muted)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:-1px}
+.grad{display:inline-block;width:54px;height:8px;border-radius:4px;margin:0 5px;vertical-align:0;
+  background:linear-gradient(90deg,#2f6bff,#22c3d6,#3fd46a,#e6d23a,#ff4a3a)}
+.stages{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px}
+.stage{font:inherit;text-align:left;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-left:5px solid var(--c);
+  border-radius:8px;padding:10px 12px;cursor:pointer;display:flex;flex-direction:column;gap:4px}
+.stage .n{font-family:var(--f-display);font-size:19px;font-weight:600}
+.stage .ch{font-size:12px;font-weight:600;color:var(--c)}
+.stage .d{font-size:13px;color:var(--muted)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.tile{border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+.tile .k{font-size:12px;color:var(--muted)}
+.tile .v{font-family:var(--f-display);font-size:28px;font-weight:600;font-variant-numeric:tabular-nums;line-height:1.15}
+.tile .v small{font-size:15px;font-weight:500;color:var(--muted)}
+.tile.proc{border-color:var(--accent);border-width:2px}
+.inputs{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.inputs label{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted)}
+.inputs input{font:inherit;font-variant-numeric:tabular-nums;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:8px 10px;min-height:40px;width:100%}
+.inputs input.bad{border-color:var(--hot)}
+.msg{font-size:13px;margin-top:10px;min-height:1.2em}
+.msg.err{color:var(--hot);font-weight:500}
+.msg.warn{color:var(--warn);font-weight:500}
+.assume{font-size:13px;color:var(--muted);margin-top:10px;max-width:75ch}
+details summary{cursor:pointer;font-family:var(--f-display);font-size:21px;font-weight:600}
+ol.steps{margin:12px 0 0;padding-left:20px;display:flex;flex-direction:column;gap:10px}
+ol.steps li{max-width:75ch}
+.eq{display:block;font-variant-numeric:tabular-nums;color:var(--muted);font-size:13px;margin-top:2px;overflow-wrap:anywhere}
+.eq b{color:var(--ink)}
+.back{display:inline-block;margin-bottom:8px;font-weight:600;color:var(--accent);text-decoration:none}
+.embed .topbar{display:none}
+.topbar{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px}.topbar .back{margin:0}
+.langsw{display:flex;gap:2px;padding:3px;border:1px solid var(--line);border-radius:999px;background:var(--panel)}
+.langsw a{display:flex;align-items:center;gap:6px;padding:4px 10px 4px 6px;border-radius:999px;text-decoration:none;color:var(--muted);font-weight:600;font-size:13px}
+.langsw svg{width:22px;height:15px;border-radius:2px;box-shadow:0 0 0 1px rgba(0,0,0,.15)}
+.langsw a.on{background:var(--accent);color:var(--panel)}
+.embed body{padding-top:4px;padding-bottom:8px}
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div class="topbar"><a class="back" href="en.html#bomba">← Back to the water chemistry guide</a><span class="langsw"><a href="bomba-de-calor.html" data-lang="es" title="Español"><svg viewBox="0 0 30 20" aria-hidden="true"><rect width="30" height="10" fill="#fff"/><rect y="10" width="30" height="10" fill="#D52B1E"/><rect width="10" height="10" fill="#0039A6"/><path fill="#fff" d="M5 2.2l.78 2.4h2.52l-2.04 1.48.78 2.4L5 7l-2.04 1.48.78-2.4L1.7 4.6h2.52z"/></svg>ES</a><a href="bomba-de-calor-en.html" data-lang="en" class="on" title="English"><svg viewBox="0 0 60 30" aria-hidden="true"><clipPath id="ukc"><path d="M30 15h30v15zv15H0zH0V0zV0h30z"/></clipPath><path d="M0 0v30h60V0z" fill="#012169"/><path d="M0 0l60 30m0-30L0 30" stroke="#fff" stroke-width="6"/><path d="M0 0l60 30m0-30L0 30" clip-path="url(#ukc)" stroke="#C8102E" stroke-width="4"/><path d="M30 0v30M0 15h60" stroke="#fff" stroke-width="10"/><path d="M30 0v30M0 15h60" stroke="#C8102E" stroke-width="6"/></svg>EN</a></span></div>
+    <h1>Water-to-water heat pump</h1>
+    <p class="sub">The refrigerant circulates in a closed loop: it evaporates by taking heat from one water stream and condenses by giving it to another. Drag to rotate, pinch or use the wheel to zoom. Untick “See inside” to view the closed unit.</p>
+  </header>
+
+  <div class="viewer" id="viewer">
+    <canvas id="c" aria-label="3D model of a heat pump with scroll compressor, plate heat exchangers, filter drier and expansion valve"></canvas>
+    <div id="labels"></div>
+    <div class="hint" id="hint"></div>
+  </div>
+
+  <div class="controls">
+    <div class="grp"><span>Process water</span>
+      <div class="seg" id="segMode">
+        <button type="button" data-v="heat" aria-pressed="true">Heat</button>
+        <button type="button" data-v="cool" aria-pressed="false">Cool</button>
+      </div>
+    </div>
+    <div class="grp"><span>Show</span>
+      <div class="seg" id="segShow">
+        <button type="button" data-v="all" aria-pressed="true">All</button>
+        <button type="button" data-v="ref" aria-pressed="false">Refrigerant</button>
+        <button type="button" data-v="water" aria-pressed="false">Water</button>
+      </div>
+    </div>
+    <label class="chk"><input type="checkbox" id="chkIn" checked> See inside</label>
+    <label class="chk"><input type="checkbox" id="chkSep"> Separate plates</label>
+    <label class="chk"><input type="checkbox" id="chkAnim" checked> Animate flow</label>
+    <label class="chk"><input type="checkbox" id="chkLbl" checked> Labels</label>
+    <label class="chk"><input type="checkbox" id="chkSpin"> Auto-rotate</label>
+    <button type="button" class="btn" id="btnReset">Reset view</button>
+  </div>
+
+  <div class="legend">
+    <span><i style="background:#ff4a3a"></i>Hot gas, high pressure</span>
+    <span><i style="background:#ffa83a"></i>Liquid, high pressure</span>
+    <span><i style="background:#2f63ff"></i>Cold liquid, low pressure</span>
+    <span><i style="background:#8fe0ff"></i>Cold gas, low pressure</span>
+    <span>Water: cold<span class="grad"></span>hot</span>
+  </div>
+
+  <section>
+    <h2>The cycle in four stages</h2>
+    <div class="stages" id="stages"></div>
+  </section>
+
+  <section class="card">
+    <h2>Results</h2>
+    <div class="tiles" id="tiles"></div>
+    <div class="msg" id="msg" role="status"></div>
+  </section>
+
+  <section class="card">
+    <h2>Operating conditions</h2>
+    <div class="inputs">
+      <label for="inTei">Water entering the evaporator (°C)<input id="inTei" type="number" inputmode="decimal" min="2" max="40" step="0.1" value="14"></label>
+      <label for="inFe">Evaporator flow (m³/h)<input id="inFe" type="number" inputmode="decimal" min="1" max="500" step="0.5" value="20"></label>
+      <label for="inTci">Water entering the condenser (°C)<input id="inTci" type="number" inputmode="decimal" min="2" max="60" step="0.1" value="25"></label>
+      <label for="inFc">Condenser flow (m³/h)<input id="inFc" type="number" inputmode="decimal" min="1" max="500" step="0.5" value="20"></label>
+      <label for="inW">Compressor electrical power (kW)<input id="inW" type="number" inputmode="decimal" min="0.5" max="500" step="0.5" value="15"></label>
+      <label for="inEta">Efficiency relative to Carnot (0.3 to 0.7)<input id="inEta" type="number" inputmode="decimal" min="0.3" max="0.7" step="0.01" value="0.5"></label>
+      <label for="inAp">Water–refrigerant approach (K)<input id="inAp" type="number" inputmode="decimal" min="2" max="10" step="0.5" value="5"></label>
+    </div>
+    <p class="assume">Assumptions: freshwater (1000 kg/m³, 4.186 kJ/kg·K), no losses to the surroundings, constant efficiency and approach. The default values are plausible examples, not data from your unit.</p>
+  </section>
+
+  <section class="card">
+    <details open>
+      <summary>How it is calculated</summary>
+      <ol class="steps" id="steps"></ol>
+    </details>
+  </section>
+</main>
+
+<script src="js/three.min.js"></script>
+<script>window.THREE||document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"><\/script>')</script>
+<script>
+"use strict";
+/* ---------- Modelo numérico ---------- */
+function solve(p){
+  var cp=4.186, Ce=p.fe*1000/3600*cp, Cc=p.fc*1000/3600*cp;
+  var Teo=p.Tei-2, Tco=p.Tci+3, Tev=0,Tcd=0,lift=0,COPh=0,Qc=0,Qe=0;
+  for(var i=0;i<200;i++){
+    Tev=Teo-p.ap; Tcd=Tco+p.ap; lift=Math.max(Tcd-Tev,1);
+    COPh=Math.max(p.eta*(Tcd+273.15)/lift,1.01);
+    Qc=COPh*p.W; Qe=Qc-p.W;
+    Teo=0.5*Teo+0.5*(p.Tei-Qe/Ce);
+    Tco=0.5*Tco+0.5*(p.Tci+Qc/Cc);
+  }
+  Tev=Teo-p.ap; Tcd=Tco+p.ap;
+  return {Ce:Ce,Cc:Cc,Teo:Teo,Tco:Tco,Tev:Tev,Tcd:Tcd,lift:Tcd-Tev,COPh:COPh,COPc:Qe/p.W,Qc:Qc,Qe:Qe};
+}
+if(typeof module!=="undefined"){module.exports={solve:solve};}
+if(typeof document!=="undefined"){(function(){
+var $=function(id){return document.getElementById(id);};
+function f(x,d){return x.toLocaleString("en-US",{minimumFractionDigits:d,maximumFractionDigits:d});}
+var state={mode:"heat",show:"all",p:null,r:null};
+var fields=[["inTei","Tei"],["inFe","fe"],["inTci","Tci"],["inFc","fc"],["inW","W"],["inEta","eta"],["inAp","ap"]];
+
+function readInputs(){
+  var p={},ok=true,bad="";
+  fields.forEach(function(fl){
+    var el=$(fl[0]),v=parseFloat(el.value),mn=parseFloat(el.min),mx=parseFloat(el.max);
+    var good=isFinite(v)&&v>=mn&&v<=mx;
+    el.classList.toggle("bad",!good);
+    if(!good&&ok){ok=false;bad=el.parentNode.firstChild.textContent.trim()+": enter a value between "+f(mn,1)+" and "+f(mx,1)+".";}
+    p[fl[1]]=v;
+  });
+  return {ok:ok,p:p,bad:bad};
+}
+
+var stageDefs=[
+  {id:"comp",n:"1 · Compressor",c:"var(--hot)"},
+  {id:"cond",n:"2 · Condenser",c:"var(--warm)"},
+  {id:"valv",n:"3 · Expansion valve",c:"var(--cold)"},
+  {id:"evap",n:"4 · Evaporator",c:"var(--cool)"}
+];
+stageDefs.forEach(function(s){
+  var b=document.createElement("button");b.type="button";b.className="stage";b.style.setProperty("--c",s.c);b.id="st_"+s.id;
+  b.innerHTML='<span class="n">'+s.n+'</span><span class="ch"></span><span class="d"></span>';
+  b.addEventListener("click",function(){focusOn(s.id);$("viewer").scrollIntoView({block:"nearest"});});
+  $("stages").appendChild(b);
+});
+function setStage(id,ch,d){var b=$("st_"+id);b.children[1].textContent=ch;b.children[2].textContent=d;}
+
+function update(){
+  var inp=readInputs(),msg=$("msg");
+  if(!inp.ok){msg.className="msg err";msg.textContent=inp.bad+" The model was not updated.";return;}
+  var p=inp.p,r=solve(p);
+  if(r.lift<8){msg.className="msg err";msg.textContent="The condenser water is colder than the evaporator water: heat would flow by itself, without a compressor. Raise the condenser temperature or lower the evaporator temperature. The model was not updated.";return;}
+  state.p=p;state.r=r;
+  if(r.Tev<0.5){msg.className="msg warn";msg.textContent="The refrigerant evaporates at "+f(r.Tev,1)+" °C: risk of freezing water inside the evaporator. Raise the flow or lower the power.";}
+  else{msg.className="msg";msg.textContent="";}
+  var heat=state.mode==="heat";
+  $("tiles").innerHTML=
+    '<div class="tile proc"><div class="k">Process water ('+(heat?"condenser":"evaporator")+')</div><div class="v">'+
+      (heat?f(p.Tci,1)+" → "+f(r.Tco,1):f(p.Tei,1)+" → "+f(r.Teo,1))+' <small>°C</small></div></div>'+
+    '<div class="tile"><div class="k">Heat delivered to the water</div><div class="v">'+f(r.Qc,1)+' <small>kW</small></div></div>'+
+    '<div class="tile"><div class="k">Heat removed from the water</div><div class="v">'+f(r.Qe,1)+' <small>kW</small></div></div>'+
+    '<div class="tile"><div class="k">COP '+(heat?"heating":"cooling")+'</div><div class="v">'+f(heat?r.COPh:r.COPc,2)+'</div></div>';
+  setStage("comp","Cold gas → hot gas","It draws in low-pressure gas and compresses it. Pressure and temperature rise. It uses "+f(p.W,1)+" kW of electricity.");
+  setStage("cond","Gas → liquid","The hot gas condenses at about "+f(r.Tcd,1)+" °C and delivers "+f(r.Qc,1)+" kW to the water, which rises from "+f(p.Tci,1)+" a "+f(r.Tco,1)+" °C.");
+  setStage("valv","Liquid → cold mixture","The liquid passes through a narrow orifice. Pressure drops and it suddenly cools to about "+f(r.Tev,1)+" °C; part of it turns into gas.");
+  setStage("evap","Liquid → gas","The cold liquid boils at about "+f(r.Tev,1)+" °C and removes "+f(r.Qe,1)+" kW from the water, which drops from "+f(p.Tei,1)+" a "+f(r.Teo,1)+" °C.");
+  $("steps").innerHTML=
+   '<li>Heat capacity of each water flow: how many kW it takes to change it by 1 K.<span class="eq">C = flow × 1000 ÷ 3600 × 4.186 → evaporator <b>'+f(r.Ce,2)+' kW/K</b>, condenser <b>'+f(r.Cc,2)+' kW/K</b></span></li>'+
+   '<li>Refrigerant temperatures: it evaporates slightly colder than the water leaving the evaporator and condenses slightly hotter than the water leaving the condenser.<span class="eq">T evap = '+f(r.Teo,1)+' − '+f(p.ap,1)+' = <b>'+f(r.Tev,1)+' °C</b> · T cond = '+f(r.Tco,1)+' + '+f(p.ap,1)+' = <b>'+f(r.Tcd,1)+' °C</b></span></li>'+
+   '<li>Heating COP: a fraction of the theoretical maximum (Carnot), with temperatures in kelvin.<span class="eq">COP = '+f(p.eta,2)+' × '+f(r.Tcd+273.15,1)+' ÷ ('+f(r.Tcd,1)+' − '+f(r.Tev,1)+') = <b>'+f(r.COPh,2)+'</b></span></li>'+
+   '<li>Heat in each exchanger: the condenser delivers what the evaporator absorbed plus the compressor work.<span class="eq">Q cond = '+f(r.COPh,2)+' × '+f(p.W,1)+' = <b>'+f(r.Qc,1)+' kW</b> · Q evap = '+f(r.Qc,1)+' − '+f(p.W,1)+' = <b>'+f(r.Qe,1)+' kW</b></span></li>'+
+   '<li>Water outlet temperature. Since it depends on steps 2 to 4, the calculation is repeated until it stops changing.<span class="eq">Evaporator: '+f(p.Tei,1)+' − '+f(r.Qe,1)+' ÷ '+f(r.Ce,2)+' = <b>'+f(r.Teo,1)+' °C</b> · Condenser: '+f(p.Tci,1)+' + '+f(r.Qc,1)+' ÷ '+f(r.Cc,2)+' = <b>'+f(r.Tco,1)+' °C</b></span></li>'+
+   '<li>Check from the water side: the heat measured in the condenser water divided by the power must give the same COP.<span class="eq">'+f(r.Cc,2)+' × ('+f(r.Tco,2)+' − '+f(p.Tci,2)+') ÷ '+f(p.W,1)+' = <b>'+f(r.Cc*(r.Tco-p.Tci)/p.W,2)+'</b> vs '+f(r.COPh,2)+'</span></li>';
+  refreshLabels();
+}
+
+/* ---------- Escena 3D ---------- */
+var canvas=$("c"),viewer=$("viewer"),labelsEl=$("labels");
+var has3D=typeof THREE!=="undefined",renderer=null;
+if(has3D){try{renderer=new THREE.WebGLRenderer({canvas:canvas,antialias:true,alpha:true});}catch(e){renderer=null;}}
+var labels=[],focusOn=function(){},refreshLabels=function(){},setInterior=function(){},setDisplay=function(){};
+if(!renderer){$("hint").textContent="The 3D viewer could not start in this browser. The calculation still works.";}
+else{try{(function(){
+  $("hint").textContent="Tap a stage to move the camera closer";
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
+  renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.outputEncoding=THREE.sRGBEncoding;
+  var scene=new THREE.Scene(),camera=new THREE.PerspectiveCamera(40,1,0.1,200);
+  // entorno de estudio
+  (function(){
+    var pm=new THREE.PMREMGenerator(renderer),es=new THREE.Scene();
+    es.add(new THREE.Mesh(new THREE.SphereGeometry(30,16,12),new THREE.MeshBasicMaterial({color:0x7c838b,side:THREE.BackSide})));
+    var wm=new THREE.MeshBasicMaterial({color:0xffffff});
+    [[0,18,0,24,1,24],[-20,4,8,1,16,16],[20,6,-6,1,12,18],[0,4,22,20,10,1]].forEach(function(a){
+      var m=new THREE.Mesh(new THREE.BoxGeometry(a[3],a[4],a[5]),wm);m.position.set(a[0],a[1],a[2]);es.add(m);});
+    scene.environment=pm.fromScene(es,0.04).texture;
+  })();
+  scene.add(new THREE.HemisphereLight(0xffffff,0x4a5560,0.55));
+  var dl=new THREE.DirectionalLight(0xffffff,0.8);dl.position.set(4,8,9);scene.add(dl);
+
+  var V=function(x,y,z){return new THREE.Vector3(x,y,z||0);};
+  var H=Math.PI/2;
+  var seeList=[];
+  function see(m,op){m.userData.op=op;seeList.push(m);return m;}
+  setInterior=function(on){seeList.forEach(function(m){m.transparent=on;m.opacity=on?m.userData.op:1;m.depthWrite=!on;m.needsUpdate=true;});};
+  function std(c,me,ro){return new THREE.MeshStandardMaterial({color:c,metalness:me,roughness:ro});}
+  var steel=std(0xb4bcc2,0.9,0.3),dark=see(std(0x1d2126,0.55,0.42),0.4),brass=std(0xc9a04a,0.9,0.3),
+      cabinet=std(0x6d757b,0.35,0.7),frameM=std(0x3c4349,0.5,0.6),rubber=std(0x111315,0,0.9),
+      copper=see(std(0xc27a45,0.95,0.28),0.3),waterPipe=see(std(0x9fb2bd,0.8,0.35),0.24),
+      drier=std(0x2c5f8f,0.4,0.45);
+  function add(geo,mat,x,y,z,rx,rz){var m=new THREE.Mesh(geo,mat);m.position.set(x,y,z);if(rx)m.rotation.x=rx;if(rz)m.rotation.z=rz;scene.add(m);return m;}
+  function cyl(r,h,s){return new THREE.CylinderGeometry(r,r,h,s||24);}
+  function tex(w,h,draw){var cv=document.createElement("canvas");cv.width=w;cv.height=h;draw(cv.getContext("2d"),w,h);var t=new THREE.CanvasTexture(cv);t.encoding=THREE.sRGBEncoding;return t;}
+
+  // bastidor y gabinete
+  add(new THREE.BoxGeometry(6.8,0.1,2.9),frameM,0,-0.05,0.15);
+  [-1.1,1.4].forEach(function(z){add(new THREE.BoxGeometry(6.8,0.16,0.14),frameM,0,-0.18,z);});
+  add(new THREE.BoxGeometry(6.8,4.2,0.08),cabinet,0,2.0,-1.3);
+  [-3.36,3.36].forEach(function(x){add(new THREE.BoxGeometry(0.08,4.2,0.5),cabinet,x,2.0,-1.05);});
+  (function(){
+    var sh=tex(128,128,function(g){var gr=g.createRadialGradient(64,64,6,64,64,64);gr.addColorStop(0,"rgba(0,0,0,.45)");gr.addColorStop(1,"rgba(0,0,0,0)");g.fillStyle=gr;g.fillRect(0,0,128,128);});
+    var m=new THREE.Mesh(new THREE.PlaneGeometry(12,7),new THREE.MeshBasicMaterial({map:sh,transparent:true,depthWrite:false}));
+    m.rotation.x=-H;m.position.set(0,-0.27,0.2);scene.add(m);
+  })();
+  // tablero: pilotos, display, parada de emergencia, manómetros
+  var ZP=-1.26;
+  [[-0.35,0xf2f6ff],[0,0x35ff6a],[0.35,0x6a1c1c]].forEach(function(a){
+    add(cyl(0.085,0.04),steel,a[0],3.78,ZP+0.02,H);add(cyl(0.065,0.07),new THREE.MeshBasicMaterial({color:a[1]}),a[0],3.78,ZP+0.04,H);});
+  add(new THREE.BoxGeometry(0.6,0.27,0.04),std(0xd8dcdf,0.2,0.5),0,3.42,ZP+0.02);
+  var dispCv=document.createElement("canvas");dispCv.width=256;dispCv.height=96;
+  var dispTex=new THREE.CanvasTexture(dispCv);dispTex.encoding=THREE.sRGBEncoding;
+  add(new THREE.PlaneGeometry(0.5,0.19),new THREE.MeshBasicMaterial({map:dispTex}),0,3.42,ZP+0.045);
+  setDisplay=function(txt){var g=dispCv.getContext("2d");g.fillStyle="#06120a";g.fillRect(0,0,256,96);
+    g.fillStyle="#3dff7a";g.font="bold 70px monospace";g.textAlign="center";g.textBaseline="middle";g.fillText(txt,128,52);dispTex.needsUpdate=true;};
+  add(cyl(0.12,0.02),std(0xe7c21a,0.1,0.6),0,3.04,ZP+0.01,H);add(cyl(0.075,0.09),std(0xc62222,0.1,0.5),0,3.04,ZP+0.05,H);
+  [-0.42,0.42].forEach(function(x){add(cyl(0.06,0.06),rubber,x,3.04,ZP+0.03,H);add(new THREE.BoxGeometry(0.03,0.11,0.03),rubber,x,3.04,ZP+0.07);});
+  [[3.62,0.75,"#c62222"],[3.2,0.3,"#1f56c6"]].forEach(function(a){
+    var t=tex(128,128,function(g){g.fillStyle="#f4f4ef";g.beginPath();g.arc(64,64,62,0,7);g.fill();g.strokeStyle="#222";g.lineWidth=3;
+      for(var i=0;i<=10;i++){var an=Math.PI*0.75+i/10*Math.PI*1.5;g.beginPath();g.moveTo(64+Math.cos(an)*46,64+Math.sin(an)*46);g.lineTo(64+Math.cos(an)*57,64+Math.sin(an)*57);g.stroke();}
+      var n=Math.PI*0.75+a[1]*Math.PI*1.5;g.strokeStyle=a[2];g.lineWidth=5;g.beginPath();g.moveTo(64,64);g.lineTo(64+Math.cos(n)*44,64+Math.sin(n)*44);g.stroke();
+      g.fillStyle="#222";g.beginPath();g.arc(64,64,6,0,7);g.fill();});
+    add(cyl(0.15,0.06,32),steel,-1.2,a[0],ZP+0.03,H);
+    add(new THREE.CircleGeometry(0.135,32),new THREE.MeshBasicMaterial({map:t}),-1.2,a[0],ZP+0.062);});
+
+  // intercambiadores de placas soldadas: tapa frontal + 9 placas corrugadas (8 canales alternos) + tapa trasera
+  function chevTex(dir){var t=tex(256,512,function(g){g.fillStyle="#cfd5d9";g.fillRect(0,0,256,512);g.strokeStyle="#868e94";g.lineWidth=7;
+      for(var y=-150;y<660;y+=24){g.beginPath();g.moveTo(-4,y+130*dir);g.lineTo(128,y);g.lineTo(260,y+130*dir);g.stroke();}});
+    t.repeat.set(1/0.9,1/2);t.offset.set(0.5,0.5);return t;}
+  function plateShape(holes){var s=new THREE.Shape(),w=0.45,h=1.0,r=0.08;
+    s.moveTo(-w+r,-h);s.lineTo(w-r,-h);s.quadraticCurveTo(w,-h,w,-h+r);s.lineTo(w,h-r);s.quadraticCurveTo(w,h,w-r,h);
+    s.lineTo(-w+r,h);s.quadraticCurveTo(-w,h,-w,h-r);s.lineTo(-w,-h+r);s.quadraticCurveTo(-w,-h,-w+r,-h);
+    if(holes)[[-0.25,-0.75],[0.25,-0.75],[-0.25,0.75],[0.25,0.75]].forEach(function(c){var p=new THREE.Path();p.absarc(c[0],c[1],0.085,0,Math.PI*2,true);s.holes.push(p);});
+    return s;}
+  function ext(shape,d){var g=new THREE.ExtrudeGeometry(shape,{depth:d,bevelEnabled:false,curveSegments:14});g.translate(0,0,-d/2);return g;}
+  var gPlate=ext(plateShape(true),0.012),gFront=ext(plateShape(true),0.03),gBack=ext(plateShape(false),0.03);
+  var plateMats=[chevTex(1),chevTex(-1)].map(function(t){
+    return see(new THREE.MeshStandardMaterial({color:0xffffff,map:t,bumpMap:t,bumpScale:0.03,metalness:0.85,roughness:0.35,side:THREE.DoubleSide}),0.08);});
+  var coverM=see(std(0xb9c0c5,0.9,0.33),0.14);
+  var movers=[],sepCur=1,sepApplied=0;
+  function zE(z){return 0.25-(0.25-z)*sepCur;}
+  var EXY0=0.65,EXY1=2.15;
+  function bphe(xc,rx,wx){
+    add(gFront,coverM,xc,1.4,0.25);
+    add(new THREE.PlaneGeometry(0.26,0.16),std(0xe9ecee,0.1,0.6),xc,1.4,0.268);
+    for(var k=0;k<9;k++)movers.push({m:add(gPlate,plateMats[k%2],xc,1.4,0),z:-0.2175+0.055*k});
+    movers.push({m:add(gBack,coverM,xc,1.4,0),z:-0.255});
+    add(new THREE.BoxGeometry(0.7,0.4,0.4),frameM,xc,0.2,0.05);
+    [EXY0,EXY1].forEach(function(y){
+      add(cyl(0.1,0.12),brass,rx,y,0.3,H);
+      add(cyl(0.15,0.12),steel,wx,y,0.3,H);
+      add(cyl(0.11,1.1,28),waterPipe,wx,y,0.85,H);
+      add(cyl(0.2,0.05,28),steel,wx,y,1.4,H);add(cyl(0.2,0.05,28),steel,wx,y,1.33,H);
+    });
+  }
+  bphe(2.0,1.75,2.25);   // condensador
+  bphe(-2.0,-1.75,-2.25); // evaporador
+
+  // compresor scroll
+  var CZ=-0.3;
+  add(cyl(0.42,1.3,40),dark,0,1.1,CZ);
+  var dm=add(new THREE.SphereGeometry(0.42,40,20),dark,0,1.75,CZ);dm.scale.y=0.5;
+  dm=add(new THREE.SphereGeometry(0.42,40,20),dark,0,0.45,CZ);dm.scale.y=0.5;
+  add(new THREE.TorusGeometry(0.425,0.022,8,48),dark,0,1.42,CZ,H);
+  add(cyl(0.52,0.05,3),frameM,0,0.2,CZ);
+  [0,1,2].forEach(function(i){var a=i*2.094+0.5;add(cyl(0.07,0.2,14),rubber,Math.sin(a)*0.42,0.1,CZ+Math.cos(a)*0.42);});
+  add(new THREE.BoxGeometry(0.3,0.36,0.14),std(0x30363b,0.3,0.6),0,1.15,CZ+0.47);
+  add(cyl(0.085,0.2),brass,0,1.98,CZ);
+  add(cyl(0.1,0.2),brass,-0.5,0.9,CZ,0,H);
+
+  // línea de líquido: filtro secador, visor y válvula de expansión termostática
+  var LZ=0.9,LY=EXY0;
+  add(cyl(0.12,0.46,28),drier,0.9,LY,LZ,0,H);
+  [0.62,1.18].forEach(function(x){add(new THREE.CylinderGeometry(x<0.9?0.07:0.12,x<0.9?0.12:0.07,0.1,24),drier,x,LY,LZ,0,H);});
+  add(cyl(0.095,0.18,6),brass,0.15,LY,LZ,0,H);
+  add(cyl(0.07,0.06),brass,0.15,LY,LZ+0.1,H);add(cyl(0.05,0.065),new THREE.MeshBasicMaterial({color:0x7fe08a}),0.15,LY,LZ+0.1,H);
+  var VX=-1.1;
+  add(new THREE.BoxGeometry(0.22,0.26,0.2),brass,VX,LY,LZ);
+  add(cyl(0.06,0.14),brass,VX,LY+0.2,LZ);add(cyl(0.16,0.06,28),steel,VX,LY+0.3,LZ);
+  add(cyl(0.035,0.3,12),copper,-0.84,1.7,0.6); // bulbo sensor sobre la succión
+  scene.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([V(VX,LY+0.33,LZ),V(VX,1.3,LZ),V(-0.75,1.45,0.85),V(-0.8,1.9,0.66),V(-0.84,1.85,0.6)]),40,0.012,6,false),copper));
+
+  // recorrido del refrigerante
+  function roundPath(w,r){
+    var a=[w[0].clone()],i,k;
+    for(i=1;i<w.length-1;i++){
+      var P=w[i],p0=P.clone().add(w[i-1].clone().sub(P).normalize().multiplyScalar(r)),
+          p1=P.clone().add(w[i+1].clone().sub(P).normalize().multiplyScalar(r));
+      for(k=0;k<=8;k++){var t=k/8,u=1-t;
+        a.push(V(u*u*p0.x+2*u*t*P.x+t*t*p1.x,u*u*p0.y+2*u*t*P.y+t*t*p1.y,u*u*p0.z+2*u*t*P.z+t*t*p1.z));}
+    }
+    a.push(w[w.length-1].clone());
+    var out=[a[0]];
+    for(i=1;i<a.length;i++){var d=a[i].distanceTo(a[i-1]),n=Math.ceil(d/0.15);
+      for(k=1;k<=n;k++)out.push(a[i-1].clone().lerp(a[i],k/n));}
+    return out;
+  }
+  var RXc=1.75,RXe=-1.75;
+  // w = lentitud relativa: el gas va rápido y poco denso, el líquido lento y denso
+  var secs=[
+    {id:"suc", pts:roundPath([V(RXe,EXY1,0.25),V(RXe,EXY1,0.6),V(-0.95,EXY1,0.6),V(-0.95,0.9,0.6),V(-0.95,0.9,CZ),V(-0.42,0.9,CZ)],0.15),r:0.08,w:0.6},
+    {id:"comp",pts:[V(-0.42,0.9,CZ),V(0,0.9,CZ),V(0,2.0,CZ)],r:0,w:0.6},
+    {id:"dis", pts:roundPath([V(0,2.0,CZ),V(0,2.7,CZ),V(RXc,2.7,CZ),V(RXc,2.7,0.6),V(RXc,EXY1,0.6),V(RXc,EXY1,0.25)],0.15),r:0.065,w:0.6},
+    {id:"cond",pts:[V(RXc,EXY1,0.2),V(RXc,EXY0,0.2)],r:0,w:5},
+    {id:"liq", pts:roundPath([V(RXc,EXY0,0.25),V(RXc,EXY0,LZ),V(VX,LY,LZ)],0.15),r:0.06,w:1.3},
+    {id:"mix", pts:roundPath([V(VX,LY,LZ),V(RXe,EXY0,LZ),V(RXe,EXY0,0.25)],0.15),r:0.065,w:1},
+    {id:"evap",pts:[V(RXe,EXY0,0.2),V(RXe,EXY1,0.2)],r:0,w:5}
+  ];
+  secs.forEach(function(s){
+    if(!s.r)return;
+    scene.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(s.pts),s.pts.length*2,s.r,12,false),copper));
+  });
+  var M=3000,tabP=new Float32Array(M*3),tabS=new Uint8Array(M),tabF=new Float32Array(M);
+  (function(){
+    var P=[],S=[];secs.forEach(function(s,si){s.pts.forEach(function(p){P.push(p);S.push(si);});});
+    var cum=[0];for(var i=1;i<P.length;i++)cum.push(cum[i-1]+P[i].distanceTo(P[i-1])*secs[S[i-1]].w);
+    var L=cum[cum.length-1],a0=[],a1=[];
+    secs.forEach(function(s,si){a0[si]=cum[S.indexOf(si)];a1[si]=cum[S.lastIndexOf(si)];});
+    var j=0;
+    for(var k=0;k<M;k++){
+      var d=k/M*L;while(j<P.length-2&&cum[j+1]<d)j++;
+      var seg=cum[j+1]-cum[j],t=seg>1e-9?(d-cum[j])/seg:0,si=S[j];
+      tabP[k*3]=P[j].x+(P[j+1].x-P[j].x)*t;tabP[k*3+1]=P[j].y+(P[j+1].y-P[j].y)*t;tabP[k*3+2]=P[j].z+(P[j+1].z-P[j].z)*t;
+      tabS[k]=si;tabF[k]=Math.min(1,Math.max(0,(d-a0[si])/Math.max(a1[si]-a0[si],1e-9)));
+    }
+  })();
+
+  // partículas
+  var NR=1100,NW=420,NT=NR+2*NW;
+  var parts=new THREE.InstancedMesh(new THREE.SphereGeometry(1,8,6),new THREE.MeshStandardMaterial({color:0xffffff,metalness:0,roughness:0.3}),NT);
+  parts.frustumCulled=false;scene.add(parts);
+  var rnd=new Float32Array(NT*4);for(var i=0;i<NT*4;i++)rnd[i]=Math.random();
+  var cGH=new THREE.Color(0xff4a3a),cLH=new THREE.Color(0xffa83a),cLC=new THREE.Color(0x2f63ff),cGC=new THREE.Color(0x8fe0ff);
+  var col=new THREE.Color(),mat=new THREE.Matrix4();
+  var SG=0.02,SL=0.036;
+  function put(i,x,y,z,s){mat.makeScale(s,s,s);mat.setPosition(x,y,z);parts.setMatrixAt(i,mat);parts.setColorAt(i,col);}
+  function waterColor(T,lo,hi){var t=Math.min(1,Math.max(0,(T-lo)/(hi-lo)));col.setHSL(0.62*(1-t),0.85,0.55);}
+  function sm(t){return t<=0?0:t>=1?1:t*t*(3-2*t);}
+  function zch(k){return -0.19+0.055*k;}
+  // posición dentro de un intercambiador: entra por el orificio hasta su canal, recorre la placa y sale por el otro orificio
+  var EP={x:0,y:0,z:0,c:0};
+  function exPos(t,px,yin,yout,xc,zk,hl,ang,rr){
+    var m=0.1,ox=Math.cos(ang)*rr,oy=Math.sin(ang)*rr;
+    if(t<m){EP.x=px+ox;EP.y=yin+oy;EP.z=0.25+(zk-0.25)*(t/m);EP.c=0;}
+    else if(t>1-m){EP.x=px+ox;EP.y=yout+oy;EP.z=0.25+(zk-0.25)*((1-t)/m);EP.c=1;}
+    else{var c=(t-m)/(1-2*m),e=Math.min(c,1-c),w=sm(e/0.15),lat=xc-0.39+hl*0.78;
+      EP.y=yin+(yout-yin)*c+oy*(1-w);EP.x=px+(lat-px)*w+ox*(1-w)+0.025*Math.sin(EP.y*32+ang)*w;EP.z=zk;EP.c=c;}
+  }
+  var tr=0,tw=0;
+  function updateParticles(){
+    var showR=state.show!=="water",showW=state.show!=="ref",inside=$("chkIn").checked,i,k;
+    for(i=0;i<NR;i++){
+      var u=((i/NR+tr)%1+1)%1;k=Math.floor(u*M)%M;
+      var sd=secs[tabS[k]],sec=sd.id,fr=tabF[k],h=rnd[i*4],h1=rnd[i*4+1],h2=rnd[i*4+2],h3=rnd[i*4+3],q,s=SG;
+      var x=tabP[k*3],y=tabP[k*3+1],z=tabP[k*3+2];
+      if(sec==="cond"||sec==="evap"){var cd=sec==="cond";
+        exPos(fr,cd?RXc:RXe,cd?EXY1:EXY0,cd?EXY0:EXY1,cd?2.0:-2.0,zE(zch(2*Math.floor(h3*4))),h1,h2*6.2832,0.05*Math.sqrt((h3*4)%1));
+        x=EP.x;y=EP.y;z=EP.z;fr=EP.c;}
+      if(sec==="suc"){col.copy(cGC);}
+      else if(sec==="comp"){col.copy(cGC).lerp(cGH,fr);if(!inside)s=0;}
+      else if(sec==="dis"){col.copy(cGH);}
+      else if(sec==="cond"){q=1-Math.min(1,Math.max(0,(fr-0.1)/0.75));if(h>=q){col.copy(cLH);s=SL;}else col.copy(cGH);}
+      else if(sec==="liq"){col.copy(cLH);s=SL;}
+      else if(sec==="mix"){if(h>=0.25){col.copy(cLC);s=SL;}else col.copy(cGC);}
+      else{q=0.25+0.75*Math.min(1,fr/0.85);if(h>=q){col.copy(cLC);s=SL;}else col.copy(cGC);}
+      if(sec!=="cond"&&sec!=="evap"){
+        var R=(sec==="comp"?0.2:sd.r)-s-0.006;
+        x+=(h1-0.5)*1.15*R;y+=(h2-0.5)*1.15*R;z+=(h3-0.5)*1.15*R;
+      }
+      put(i,x,y,z,showR?s:0);
+    }
+    var p=state.p,r=state.r;
+    if(!r){parts.instanceMatrix.needsUpdate=true;return;}
+    var lo=Math.min(r.Teo,p.Tci)-1,hi=Math.max(p.Tei,r.Tco)+1;
+    for(var ex=0;ex<2;ex++){
+      var cx=ex?-2.0:2.0,wx=ex?-2.25:2.25,yin=ex?EXY1:EXY0,yout=ex?EXY0:EXY1,Tin=ex?p.Tei:p.Tci,Tout=ex?r.Teo:r.Tco;
+      for(var n=0;n<NW;n++){
+        i=NR+ex*NW+n;
+        var sp=((n/NW+tw+rnd[i*4]*0.003)%1+1)%1,ang=rnd[i*4+1]*6.2832,rr=0.085*Math.sqrt(rnd[i*4+2]),
+            ox=Math.cos(ang)*rr,oy=Math.sin(ang)*rr,X,Y,Z,T;
+        if(sp<0.15){X=wx+ox;Y=yin+oy;Z=1.4-sp/0.15*1.15;T=Tin;}
+        else if(sp>0.85){X=wx+ox;Y=yout+oy;Z=0.25+(sp-0.85)/0.15*1.15;T=Tout;}
+        else{exPos((sp-0.15)/0.7,wx,yin,yout,cx,zE(zch(1+2*Math.floor(rnd[i*4+3]*4))),rnd[i*4+2],ang,rr*0.75);X=EP.x;Y=EP.y;Z=EP.z;T=Tin+(Tout-Tin)*EP.c;}
+        waterColor(T,lo,hi);put(i,X,Y,Z,showW?0.021:0);
+      }
+    }
+    parts.instanceMatrix.needsUpdate=true;if(parts.instanceColor)parts.instanceColor.needsUpdate=true;
+  }
+
+  // etiquetas
+  function mk(cls,pos){var el=document.createElement("div");el.className="lbl "+cls;labelsEl.appendChild(el);var o={el:el,pos:pos};labels.push(o);return o;}
+  var L={
+    comp:mk("part",V(0.72,1.55,CZ+0.2)),cond:mk("part",V(2.2,3.0,0)),valv:mk("part",V(VX,0.28,LZ+0.1)),evap:mk("part",V(-2.2,2.62,0)),
+    filt:mk("state",V(0.9,0.32,LZ+0.1)),
+    dis:mk("state",V(0.9,2.92,CZ)),liq:mk("state",V(0.1,0.98,LZ)),mix:mk("state",V(-1.62,1.0,LZ)),suc:mk("state",V(-0.5,1.3,0.7)),
+    cIn:mk("water",V(2.3,EXY0-0.05,1.6)),cOut:mk("water",V(2.3,EXY1+0.05,1.6)),eIn:mk("water",V(-2.3,EXY1+0.05,1.6)),eOut:mk("water",V(-2.3,EXY0-0.05,1.6))
+  };
+  L.comp.el.textContent="Compressor";L.cond.el.textContent="Condenser";L.valv.el.textContent="Expansion valve";L.evap.el.textContent="Evaporator";
+  L.filt.el.textContent="Filter drier and sight glass";
+  L.dis.el.textContent="Hot gas";L.liq.el.textContent="Liquid";L.mix.el.textContent="Liquid + gas, cold";L.suc.el.textContent="Cold gas";
+  function dot(T,lo,hi){waterColor(T,lo,hi);return '<i style="background:#'+col.getHexString()+'"></i>';}
+  refreshLabels=function(){
+    var p=state.p,r=state.r;if(!r)return;
+    var lo=Math.min(r.Teo,p.Tci)-1,hi=Math.max(p.Tei,r.Tco)+1,heat=state.mode==="heat";
+    var nc=heat?"Process":"Source",ne=heat?"Source":"Process";
+    L.cIn.el.innerHTML=dot(p.Tci,lo,hi)+nc+" in <b>"+f(p.Tci,1)+" °C</b>";
+    L.cOut.el.innerHTML=dot(r.Tco,lo,hi)+nc+" out <b>"+f(r.Tco,1)+" °C</b>";
+    L.eIn.el.innerHTML=dot(p.Tei,lo,hi)+ne+" in <b>"+f(p.Tei,1)+" °C</b>";
+    L.eOut.el.innerHTML=dot(r.Teo,lo,hi)+ne+" out <b>"+f(r.Teo,1)+" °C</b>";
+    setDisplay((heat?r.Tco:r.Teo).toFixed(1));
+  };
+
+  // cámara orbital
+  var HOME={az:0.34,el:0.17,dist:11,tx:0,ty:1.75,tz:0};
+  var goal={},cur={};
+  function homeDist(){var a=viewer.clientWidth/Math.max(viewer.clientHeight,1);return Math.max(9.8,4.5/(Math.tan(20*Math.PI/180)*a));}
+  function resetView(){for(var k in HOME)goal[k]=HOME[k];goal.dist=homeDist();}
+  resetView();for(var k0 in goal)cur[k0]=goal[k0];
+  var targets={comp:[0,1.2,CZ],cond:[2,1.4,0.2],valv:[VX,0.8,LZ],evap:[-2,1.4,0.2]};
+  focusOn=function(id){var t=targets[id];goal.tx=t[0];goal.ty=t[1];goal.tz=t[2];goal.dist=id==="valv"?4.2:5.6;
+    goal.az=id==="comp"?0.2:id==="valv"?-0.25:id==="evap"?-0.5:0.5;goal.el=0.2;$("chkSpin").checked=false;};
+  var ptrs={},pinch=0;
+  canvas.addEventListener("pointerdown",function(e){canvas.setPointerCapture(e.pointerId);ptrs[e.pointerId]={x:e.clientX,y:e.clientY};pinch=0;});
+  canvas.addEventListener("pointermove",function(e){
+    var p=ptrs[e.pointerId];if(!p)return;
+    var ids=Object.keys(ptrs);
+    if(ids.length===1){goal.az-=(e.clientX-p.x)*0.008;goal.el=Math.min(1.3,Math.max(-0.25,goal.el+(e.clientY-p.y)*0.006));}
+    p.x=e.clientX;p.y=e.clientY;
+    if(ids.length===2){var a=ptrs[ids[0]],b=ptrs[ids[1]],d=Math.hypot(a.x-b.x,a.y-b.y);
+      if(pinch>0)goal.dist=Math.min(30,Math.max(2.5,goal.dist*pinch/d));pinch=d;}
+  });
+  function up(e){delete ptrs[e.pointerId];pinch=0;}
+  canvas.addEventListener("pointerup",up);canvas.addEventListener("pointercancel",up);
+  canvas.addEventListener("wheel",function(e){e.preventDefault();goal.dist=Math.min(30,Math.max(2.5,goal.dist*Math.exp(e.deltaY*0.001)));},{passive:false});
+  $("btnReset").addEventListener("click",resetView);
+  $("chkIn").addEventListener("change",function(){setInterior(this.checked);});setInterior($("chkIn").checked);
+
+  var lastW=0,lastH=0;
+  function resize(){var w=viewer.clientWidth,h=viewer.clientHeight;if(w===lastW&&h===lastH)return;
+    var first=lastW===0;lastW=w;lastH=h;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();
+    if(first){goal.dist=homeDist();cur.dist=goal.dist;}}
+  var tmp=new THREE.Vector3(),last=performance.now();
+  function frame(now){
+    requestAnimationFrame(frame);
+    var dt=Math.min(0.05,Math.max(0,(now-last)/1000));last=now;resize();
+    if($("chkSpin").checked)goal.az+=dt*0.25;
+    for(var k in goal)cur[k]+=(goal[k]-cur[k])*Math.min(1,dt*7);
+    var ce=Math.cos(cur.el);
+    camera.position.set(cur.tx+cur.dist*ce*Math.sin(cur.az),cur.ty+cur.dist*Math.sin(cur.el),cur.tz+cur.dist*ce*Math.cos(cur.az));
+    camera.lookAt(cur.tx,cur.ty,cur.tz);
+    sepCur+=(($("chkSep").checked?2.8:1)-sepCur)*Math.min(1,dt*5);
+    if(Math.abs(sepCur-sepApplied)>1e-4){sepApplied=sepCur;for(var mi=0;mi<movers.length;mi++)movers[mi].m.position.z=zE(movers[mi].z);}
+    if($("chkAnim").checked){tr=(tr+dt*0.06)%1;tw=(tw+dt*0.13)%1;}
+    updateParticles();
+    renderer.render(scene,camera);
+    var showL=$("chkLbl").checked;
+    for(var i=0;i<labels.length;i++){var o=labels[i];
+      tmp.copy(o.pos).project(camera);
+      var vis=showL&&tmp.z<1&&Math.abs(tmp.x)<1.05&&Math.abs(tmp.y)<1.05;
+      if(o.el.classList.contains("water")&&state.show==="ref")vis=false;
+      if(o.el.classList.contains("state")&&state.show==="water")vis=false;
+      o.el.style.display=vis?"":"none";
+      if(vis)o.el.style.transform="translate(-50%,-50%) translate("+((tmp.x*0.5+0.5)*lastW).toFixed(1)+"px,"+((-tmp.y*0.5+0.5)*lastH).toFixed(1)+"px)";
+    }
+  }
+  requestAnimationFrame(frame);
+})();}catch(err){$("hint").textContent="The 3D viewer failed: "+err.message;}}
+
+/* ---------- Controles ---------- */
+function seg(id,key){
+  var box=$(id);
+  box.addEventListener("click",function(e){
+    var b=e.target.closest("button");if(!b)return;
+    Array.prototype.forEach.call(box.children,function(c){c.setAttribute("aria-pressed",c===b?"true":"false");});
+    state[key]=b.dataset.v;update();
+  });
+}
+seg("segMode","mode");seg("segShow","show");
+fields.forEach(function(fl){$(fl[0]).addEventListener("input",update);});
+if(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches)$("chkAnim").checked=false;
+update();
+})();}
+</script>
+</body>
+</html>

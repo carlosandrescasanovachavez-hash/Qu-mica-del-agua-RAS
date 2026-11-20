@@ -364,6 +364,14 @@ input[type=range]{height:28px;cursor:pointer}
 .hp-frame{border-radius:20px;overflow:hidden;border:1px solid var(--line);box-shadow:0 6px 24px rgba(10,42,94,.12);background:var(--bg)}
 .hp-frame iframe{display:block;width:100%;height:1900px;border:0}
 
+.langsw{position:fixed;top:max(10px,env(safe-area-inset-top));right:max(12px,env(safe-area-inset-right));z-index:65;display:flex;gap:2px;padding:3px;border-radius:999px;background:color-mix(in srgb,var(--surface) 92%,transparent);border:1px solid var(--line);box-shadow:0 4px 14px rgba(10,42,94,.18);backdrop-filter:blur(8px)}
+.langsw a{display:flex;align-items:center;gap:6px;padding:5px 10px 5px 6px;border-radius:999px;text-decoration:none;color:var(--muted);font-family:var(--f-display);font-weight:600;font-size:.85rem;min-height:34px}
+.langsw a svg{width:24px;height:16px;border-radius:3px;box-shadow:0 0 0 1px rgba(0,0,0,.15);flex:0 0 auto}
+.langsw a.on{background:var(--fjord);color:#fff}
+.langsw a:not(.on):hover{background:var(--sunk);color:var(--ink)}
+.nav .wrap{padding-right:150px}
+@media (max-width:520px){.langsw a span{display:none}.langsw a{padding:5px 7px}.nav .wrap{padding-right:96px}}
+
 /* Presentación */
 .pres{position:relative;min-height:100vh;min-height:100svh;display:grid;align-content:center;color:#fff;overflow:hidden;
   background:radial-gradient(120% 80% at 80% 0%,#42A5F5 0%,transparent 55%),linear-gradient(160deg,#0A2A5E 0%,#1565C0 60%,#1E88E5 100%);
@@ -933,6 +941,8 @@ input[type=range]{height:28px;cursor:pointer}
 </section>
 </main>
 <footer><div class="wrap"><b>Química del agua · RAS</b><span>Guía didáctica de calidad de agua para salmónidos en sistemas de recirculación.</span><span style="opacity:.8">Material de apoyo técnico: no reemplaza procedimientos internos ni normativa vigente.</span></div></footer>
+<div class="langsw" role="group" aria-label="Idioma / Language"><a href="index.html" data-lang="es" class="on" hreflang="es" lang="es" title="Español"><svg viewBox="0 0 30 20" aria-hidden="true"><rect width="30" height="10" fill="#fff"/><rect y="10" width="30" height="10" fill="#D52B1E"/><rect width="10" height="10" fill="#0039A6"/><path fill="#fff" d="M5 2.2l.78 2.4h2.52l-2.04 1.48.78 2.4L5 7l-2.04 1.48.78-2.4L1.7 4.6h2.52z"/></svg><span>ES</span></a><a href="en.html" data-lang="en" hreflang="en" lang="en" title="English"><svg viewBox="0 0 60 30" aria-hidden="true"><clipPath id="ukc"><path d="M30 15h30v15zv15H0zH0V0zV0h30z"/></clipPath><path d="M0 0v30h60V0z" fill="#012169"/><path d="M0 0l60 30m0-30L0 30" stroke="#fff" stroke-width="6"/><path d="M0 0l60 30m0-30L0 30" clip-path="url(#ukc)" stroke="#C8102E" stroke-width="4"/><path d="M30 0v30M0 15h60" stroke="#fff" stroke-width="10"/><path d="M30 0v30M0 15h60" stroke="#C8102E" stroke-width="6"/></svg><span>EN</span></a></div>
+<script>(function(){var w=document.querySelector(".langsw");w.addEventListener("click",function(e){var a=e.target.closest("a");if(!a)return;try{localStorage.setItem("idioma",a.dataset.lang)}catch(_){}var n=document.querySelector(".nav a.active"),h=location.hash||(n&&scrollY>200?n.getAttribute("href"):"");if(h){e.preventDefault();location.href=a.getAttribute("href")+h;}});})();</script>
 <div class="progress" id="progress"></div>
 <div class="fab">
   <button type="button" id="themeBtn" aria-label="Cambiar modo claro u oscuro" title="Modo claro / oscuro">🌙</button>

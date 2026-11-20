@@ -93,14 +93,19 @@ ol.steps li{max-width:75ch}
 .eq{display:block;font-variant-numeric:tabular-nums;color:var(--muted);font-size:13px;margin-top:2px;overflow-wrap:anywhere}
 .eq b{color:var(--ink)}
 .back{display:inline-block;margin-bottom:8px;font-weight:600;color:var(--accent);text-decoration:none}
-.embed .back{display:none}
+.embed .topbar{display:none}
+.topbar{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px}.topbar .back{margin:0}
+.langsw{display:flex;gap:2px;padding:3px;border:1px solid var(--line);border-radius:999px;background:var(--panel)}
+.langsw a{display:flex;align-items:center;gap:6px;padding:4px 10px 4px 6px;border-radius:999px;text-decoration:none;color:var(--muted);font-weight:600;font-size:13px}
+.langsw svg{width:22px;height:15px;border-radius:2px;box-shadow:0 0 0 1px rgba(0,0,0,.15)}
+.langsw a.on{background:var(--accent);color:var(--panel)}
 .embed body{padding-top:4px;padding-bottom:8px}
 </style>
 </head>
 <body>
 <main>
   <header>
-    <a class="back" href="./#bomba">← Volver a la guía de química del agua</a>
+    <div class="topbar"><a class="back" href="./#bomba">← Volver a la guía de química del agua</a><span class="langsw"><a href="bomba-de-calor.html" data-lang="es" class="on" title="Español"><svg viewBox="0 0 30 20" aria-hidden="true"><rect width="30" height="10" fill="#fff"/><rect y="10" width="30" height="10" fill="#D52B1E"/><rect width="10" height="10" fill="#0039A6"/><path fill="#fff" d="M5 2.2l.78 2.4h2.52l-2.04 1.48.78 2.4L5 7l-2.04 1.48.78-2.4L1.7 4.6h2.52z"/></svg>ES</a><a href="bomba-de-calor-en.html" data-lang="en" title="English"><svg viewBox="0 0 60 30" aria-hidden="true"><clipPath id="ukc"><path d="M30 15h30v15zv15H0zH0V0zV0h30z"/></clipPath><path d="M0 0v30h60V0z" fill="#012169"/><path d="M0 0l60 30m0-30L0 30" stroke="#fff" stroke-width="6"/><path d="M0 0l60 30m0-30L0 30" clip-path="url(#ukc)" stroke="#C8102E" stroke-width="4"/><path d="M30 0v30M0 15h60" stroke="#fff" stroke-width="10"/><path d="M30 0v30M0 15h60" stroke="#C8102E" stroke-width="6"/></svg>EN</a></span></div>
     <h1>Bomba de calor agua-agua</h1>
     <p class="sub">El refrigerante da vueltas en circuito cerrado: se evapora quitándole calor a un agua y se condensa entregándoselo a otra. Arrastra para girar, pellizca o usa la rueda para acercar. Desmarca «Ver interior» para ver el equipo cerrado.</p>
   </header>
