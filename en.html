@@ -2245,28 +2245,67 @@ function build(){
     side:std({color:0xd2d3ca,metalness:0.15,roughness:0.55,envMapIntensity:0.6}),
     grille:std({color:0xb9bab2,metalness:0.2,roughness:0.6}),
     black:std({color:0x1b1f23,metalness:0.4,roughness:0.55}),
-    steel:std({color:0xb7c0c8,metalness:0.9,roughness:0.28,envMapIntensity:0.8}),
+    steel:std({color:0xb7c0c8,metalness:0.9,roughness:0.26,envMapIntensity:0.85}),
+    ss:std({color:0xc3cbd2,metalness:0.95,roughness:0.2,envMapIntensity:0.9}),
     brass:std({color:0xc9a04a,metalness:0.9,roughness:0.3}),
+    copper:std({color:0xc27a45,metalness:0.95,roughness:0.3}),
     panel:std({color:0x8ea3c7,metalness:0.1,roughness:0.5}),
     key:std({color:0x2bb39a,metalness:0.1,roughness:0.45}),
     yellow:std({color:0xf2c200,metalness:0.1,roughness:0.6}),
+    red:std({color:0xd23b2f,metalness:0.2,roughness:0.5}),
+    orange:std({color:0xe8701a,metalness:0.1,roughness:0.6}),
     conc:std({color:0xe6e9ec,metalness:0.1,roughness:0.55}),
     blue:std({color:0x1e5aa8,metalness:0.35,roughness:0.45}),
-    pvc:std({color:0x8a9bb0,metalness:0.1,roughness:0.5}),
+    hoseB:std({color:0x2a6fd6,roughness:0.6}),hoseR:std({color:0xc62828,roughness:0.6}),
+    pvc:std({color:0x5f6670,metalness:0.05,roughness:0.55,side:T.DoubleSide}),
+    pvcF:std({color:0x50565f,metalness:0.05,roughness:0.5}),
+    vent:std({color:0x2f343a,metalness:0.1,roughness:0.4,side:T.DoubleSide}),
+    pump:std({color:0x1e5aa8,metalness:0.35,roughness:0.45}),
     pvcG:std({color:0x9aa6ad,metalness:0.1,roughness:0.5}),
     glass:std({color:0xeaf5ff,metalness:0,roughness:0.05,transparent:true,opacity:0.22,depthWrite:false,side:T.DoubleSide}),
+    quartz:std({color:0xf2f8ff,metalness:0,roughness:0.05,transparent:true,opacity:0.35,depthWrite:false,side:T.DoubleSide}),
     water:std({color:0x2f80d0,metalness:0,roughness:0.2,transparent:true,opacity:0.22,depthWrite:false}),
+    cool:std({color:0x4aa3ff,metalness:0,roughness:0.2,transparent:true,opacity:0.18,depthWrite:false,side:T.DoubleSide}),
     destr:std({color:0x6b7884,metalness:0.6,roughness:0.4}),
     base:std({color:0xdbe7f3,metalness:0,roughness:0.9}),baseEdge:std({color:0x1565c0,metalness:0.2,roughness:0.5}),
-    cell:std({color:0x9aa4ad,metalness:0.85,roughness:0.3}),
-    hv:std({color:0x3a3f45,metalness:0.4,roughness:0.5}),
+    cell:std({color:0xb0b9c1,metalness:0.9,roughness:0.28,side:T.DoubleSide,envMapIntensity:0.85}),
+    core:std({color:0x3a3f45,metalness:0.5,roughness:0.5}),
+    pcb:std({color:0x1f7a3a,metalness:0.1,roughness:0.6}),
+    ceramic:std({color:0xf3efe6,roughness:0.4}),
     bubble:std({color:0xffffff,roughness:0.1,transparent:true,opacity:0.6,depthWrite:false}),
     mol:std({color:0xffffff,roughness:0.35,vertexColors:true}),
-    org:std({color:0x5d4037,roughness:0.85,emissive:0x3e2723,emissiveIntensity:0.35})
+    org:std({color:0x5d4037,roughness:0.85,emissive:0x3e2723,emissiveIntensity:0.35}),
+    wdot:std({color:0x90caf9,roughness:0.3,emissive:0x1565c0,emissiveIntensity:0.25})
   };
   const add=(g,m,x,y,z,par)=>{const o=new T.Mesh(g,m);o.position.set(x,y,z);(par||scene).add(o);return o;};
   const V=(x,y,z)=>new T.Vector3(x,y,z);
+  const Y=V(0,1,0);
   const tex=(w,h,draw)=>{const c=document.createElement('canvas');c.width=w;c.height=h;draw(c.getContext('2d'),w,h);const t=new T.CanvasTexture(c);t.encoding=T.sRGBEncoding;return t;};
+  const along=(o,dir)=>{o.quaternion.setFromUnitVectors(Y,dir.clone().normalize());return o;};
+  const gauge=(val,col)=>tex(128,128,(g)=>{g.fillStyle='#f4f4ef';g.beginPath();g.arc(64,64,62,0,7);g.fill();g.strokeStyle='#222';g.lineWidth=3;
+    for(let i=0;i<=10;i++){const a=Math.PI*0.75+i/10*Math.PI*1.5;g.beginPath();g.moveTo(64+Math.cos(a)*46,64+Math.sin(a)*46);g.lineTo(64+Math.cos(a)*57,64+Math.sin(a)*57);g.stroke();}
+    g.fillStyle='#222';g.font='bold 15px sans-serif';g.textAlign='center';g.fillText('bar',64,98);
+    const n=Math.PI*0.75+val*Math.PI*1.5;g.strokeStyle=col||'#c62222';g.lineWidth=5;g.beginPath();g.moveTo(64,64);g.lineTo(64+Math.cos(n)*44,64+Math.sin(n)*44);g.stroke();g.fillStyle='#222';g.beginPath();g.arc(64,64,6,0,7);g.fill();});
+  // recorrido ortogonal con codos redondeados
+  function roundPath(w,r){const a=[w[0].clone()],corners=[];
+    for(let i=1;i<w.length-1;i++){const P=w[i],d0=w[i-1].clone().sub(P).normalize(),d1=w[i+1].clone().sub(P).normalize();
+      const p0=P.clone().addScaledVector(d0,r),p1=P.clone().addScaledVector(d1,r);corners.push({p0,p1,d0:d0.clone().negate(),d1});
+      for(let k=0;k<=8;k++){const t=k/8,u=1-t;a.push(V(u*u*p0.x+2*u*t*P.x+t*t*p1.x,u*u*p0.y+2*u*t*P.y+t*t*p1.y,u*u*p0.z+2*u*t*P.z+t*t*p1.z));}}
+    a.push(w[w.length-1].clone());
+    const out=[a[0]];for(let i=1;i<a.length;i++){const d=a[i].distanceTo(a[i-1]),n=Math.max(1,Math.ceil(d/0.08));for(let k=1;k<=n;k++)out.push(a[i-1].clone().lerp(a[i],k/n));}
+    return {pts:out,corners,curve:new T.CatmullRomCurve3(out,false,'centripetal')};}
+  const tubes=[];
+  function pipe(w,r,mat,opt){opt=opt||{};const rp=roundPath(w,opt.bend||r*2.2);
+    const m=new T.Mesh(new T.TubeGeometry(rp.curve,rp.pts.length*2,r,opt.seg||16,false),mat);scene.add(m);tubes.push(m);
+    if(opt.socket){const sg=new T.CylinderGeometry(r*1.2,r*1.2,r*1.0,opt.seg||16);
+      rp.corners.forEach(c=>{along(add(sg,opt.socket,c.p0.x,c.p0.y,c.p0.z),c.d0);along(add(sg,opt.socket,c.p1.x,c.p1.y,c.p1.z),c.d1);});}
+    if(opt.nut){const ng=new T.CylinderGeometry(r*1.9,r*1.9,r*2.6,6);[[0,1],[w.length-1,w.length-2]].forEach(([a,b])=>{const d=w[b].clone().sub(w[a]).normalize();const p=w[a].clone().addScaledVector(d,r*1.3);along(add(ng,opt.nut,p.x,p.y,p.z),d);});}
+    return rp;}
+  const union=(p,dir,r,mat)=>{along(add(new T.CylinderGeometry(r*1.45,r*1.45,r*1.6,6),mat,p.x,p.y,p.z),dir);along(add(new T.CylinderGeometry(r*1.3,r*1.3,r*2.4,20),mat,p.x,p.y,p.z),dir);};
+  const ballValve=(p,dir,r,mat,handle)=>{along(add(new T.CylinderGeometry(r*1.5,r*1.5,r*3.2,20),mat,p.x,p.y,p.z),dir);add(new T.SphereGeometry(r*1.7,20,14),mat,p.x,p.y,p.z);
+    add(new T.CylinderGeometry(r*0.35,r*0.35,r*1.6,10),M.steel,p.x,p.y+r*2,p.z);const h=add(new T.BoxGeometry(r*5,r*0.5,r*0.9),handle,p.x,p.y+r*2.8,p.z);h.quaternion.setFromUnitVectors(V(1,0,0),dir.clone().normalize());h.position.addScaledVector(dir.clone().normalize(),r*1.8);};
+  const support=(x,y,z,r)=>{add(new T.BoxGeometry(0.07,y-r,0.07),M.steel,x,(y-r)/2,z);add(new T.BoxGeometry(0.22,0.025,0.22),M.steel,x,0.012,z);
+    const u=add(new T.TorusGeometry(r*1.08,0.012,6,20,Math.PI),M.steel,x,y,z);u.rotation.y=Math.PI/2;u.rotation.z=Math.PI;};
 
   // plataforma
   add(new T.CylinderGeometry(6.0,6.1,0.14,64),M.base,0,-0.08,0);
@@ -2276,137 +2315,200 @@ function build(){
   // 1) concentrador de oxygen (PSA)
   const KX=-3.9;
   add(new T.BoxGeometry(0.95,1.55,0.75),M.conc,KX,0.88,0);
-  [-0.22,0.22].forEach(dx=>add(new T.CylinderGeometry(0.12,0.12,1.1,24),M.steel,KX+dx,0.9,0.42));
+  [-0.22,0.22].forEach(dx=>{add(new T.CylinderGeometry(0.12,0.12,1.1,24),M.steel,KX+dx,0.9,0.42);[0.36,1.44].forEach(y=>add(new T.CylinderGeometry(0.13,0.13,0.05,24),M.steel,KX+dx,y,0.42));});
   add(new T.BoxGeometry(0.5,0.22,0.03),M.panel,KX,1.42,0.39);
   add(new T.PlaneGeometry(0.4,0.12),new T.MeshBasicMaterial({map:tex(256,80,(g)=>{g.fillStyle='#06120a';g.fillRect(0,0,256,80);g.fillStyle='#3dff7a';g.font='bold 46px monospace';g.textAlign='center';g.textBaseline='middle';g.fillText('O2 93%',128,42);}),toneMapped:false}),KX,1.42,0.41);
   [[-0.38,-0.3],[0.38,-0.3],[-0.38,0.3],[0.38,0.3]].forEach(p=>add(new T.CylinderGeometry(0.05,0.05,0.1,12),M.black,KX+p[0],0.05,p[1]));
+  // regulador con manómetro a la salida del concentrador
+  add(new T.CylinderGeometry(0.06,0.06,0.12,16),M.brass,KX+0.55,1.3,0).rotation.z=Math.PI/2;
+  add(new T.CylinderGeometry(0.075,0.075,0.04,24),M.steel,KX+0.55,1.42,0);
+  add(new T.CircleGeometry(0.065,24),new T.MeshBasicMaterial({map:gauge(0.35),toneMapped:false}),KX+0.55,1.42,0.025).rotation.x=0;
 
   // 2) generador de ozono (gabinete)
   const GX=-0.9,GY=1.2,GW=2.1,GH=1.9,GD=0.75,SX=GX+GW/2+0.24;
-  const cabMat=M.cab;
-  add(new T.BoxGeometry(GW,GH,GD),cabMat,GX,GY,0);
+  add(new T.BoxGeometry(GW,GH,GD),M.cab,GX,GY,0);
   add(new T.BoxGeometry(0.46,GH,GD+0.04),M.side,SX,GY,0);
   [[GX-GW/2+0.15],[GX+GW/2-0.1],[SX]].forEach(p=>[-0.28,0.28].forEach(z=>add(new T.CylinderGeometry(0.06,0.07,0.1,14),M.black,p[0],0.2,z)));
   const FZ=GD/2+0.012;
-  // display + teclado
   add(new T.BoxGeometry(0.5,0.5,0.03),M.panel,GX-0.55,GY+0.25,FZ);
   const lcd=document.createElement('canvas');lcd.width=256;lcd.height=96;const lcdT=new T.CanvasTexture(lcd);lcdT.encoding=T.sRGBEncoding;
   add(new T.PlaneGeometry(0.38,0.13),new T.MeshBasicMaterial({map:lcdT,toneMapped:false}),GX-0.55,GY+0.39,FZ+0.017);
   for(let r=0;r<2;r++)for(let c=0;c<4;c++)add(new T.BoxGeometry(0.06,0.05,0.03),M.key,GX-0.73+c*0.12,GY+0.17-r*0.1,FZ+0.025);
-  // rejilla de ventilación
   add(new T.BoxGeometry(0.62,0.62,0.03),M.grille,GX-0.62,GY-0.55,FZ);
   for(let k=0;k<12;k++){const sl=add(new T.BoxGeometry(0.58,0.02,0.05),M.grille,GX-0.62,GY-0.82+k*0.049,FZ+0.025);sl.rotation.x=-0.5;}
-  // rótulo de alto voltaje
   add(new T.PlaneGeometry(0.28,0.4),new T.MeshBasicMaterial({map:tex(160,230,(g,w,h)=>{g.fillStyle='#F2C200';g.fillRect(0,0,w,h);g.strokeStyle='#111';g.lineWidth=6;g.strokeRect(4,4,w-8,h-8);
     g.fillStyle='#111';g.beginPath();g.moveTo(80,22);g.lineTo(130,100);g.lineTo(30,100);g.closePath();g.fill();g.fillStyle='#F2C200';g.font='bold 54px sans-serif';g.textAlign='center';g.fillText('⚡',80,94);
     g.fillStyle='#111';g.font='bold 30px sans-serif';g.fillText('ALTO',80,145);g.fillText('VOLTAJE',80,180);g.font='22px sans-serif';g.fillText('8000 V',80,212);}),toneMapped:false}),GX+0.62,GY+0.35,FZ+0.002);
   [GY+0.72,GY-0.55].forEach(y=>{add(new T.CylinderGeometry(0.05,0.05,0.04,16),M.steel,GX+0.62,y,FZ+0.02).rotation.x=Math.PI/2;});
-  // columna lateral: manómetro, válvula, rotámetro, salida
   const SZ=GD/2+0.032;
   add(new T.CylinderGeometry(0.13,0.13,0.06,32),M.steel,SX,GY+0.62,SZ).rotation.x=Math.PI/2;
-  add(new T.CircleGeometry(0.115,32),new T.MeshBasicMaterial({map:tex(128,128,(g)=>{g.fillStyle='#f4f4ef';g.beginPath();g.arc(64,64,62,0,7);g.fill();g.strokeStyle='#222';g.lineWidth=3;
-    for(let i=0;i<=10;i++){const a=Math.PI*0.75+i/10*Math.PI*1.5;g.beginPath();g.moveTo(64+Math.cos(a)*46,64+Math.sin(a)*46);g.lineTo(64+Math.cos(a)*57,64+Math.sin(a)*57);g.stroke();}
-    const n=Math.PI*0.75+0.45*Math.PI*1.5;g.strokeStyle='#c62222';g.lineWidth=5;g.beginPath();g.moveTo(64,64);g.lineTo(64+Math.cos(n)*44,64+Math.sin(n)*44);g.stroke();g.fillStyle='#222';g.beginPath();g.arc(64,64,6,0,7);g.fill();}),toneMapped:false}),SX,GY+0.62,SZ+0.032);
+  add(new T.CircleGeometry(0.115,32),new T.MeshBasicMaterial({map:gauge(0.45),toneMapped:false}),SX,GY+0.62,SZ+0.032);
   add(new T.CylinderGeometry(0.09,0.09,0.08,24),M.yellow,SX,GY+0.27,SZ+0.01).rotation.x=Math.PI/2;
   add(new T.CylinderGeometry(0.065,0.075,0.1,8),M.black,SX,GY+0.27,SZ+0.07).rotation.x=Math.PI/2;
   add(new T.BoxGeometry(0.13,0.5,0.03),M.black,SX,GY-0.2,SZ);
   add(new T.CylinderGeometry(0.035,0.035,0.42,16),M.glass,SX,GY-0.2,SZ+0.03);
   const flt=add(new T.CylinderGeometry(0.03,0.018,0.04,12),std({color:0xd32f2f,roughness:0.5}),SX,GY-0.25,SZ+0.03);
   add(new T.CylinderGeometry(0.05,0.05,0.04,16),M.steel,SX,GY-0.62,SZ+0.01).rotation.x=Math.PI/2;
-  // conexiones laterales de bronce (O₂ entra / O₃ sale / agua de enfriamiento)
   const RX=SX+0.23;
-  [[GY-0.35],[GY-0.6]].forEach(p=>{const f=add(new T.CylinderGeometry(0.035,0.035,0.16,12),M.brass,RX+0.06,p[0],0.15);f.rotation.z=Math.PI/2;});
-  // interior: celda corona
+  // conexiones laterales: O₂ entra (izq), O₃ sale y agua de enfriamiento (der)
+  [[GY-0.35,M.ss],[GY-0.6,M.brass],[GY-0.75,M.brass]].forEach(p=>{const f=add(new T.CylinderGeometry(0.035,0.035,0.12,12),p[1],RX+0.05,p[0],0.15);f.rotation.z=Math.PI/2;add(new T.CylinderGeometry(0.05,0.05,0.04,6),p[1],RX+0.02,p[0],0.15).rotation.z=Math.PI/2;});
+
+  // ===== interior del generador =====
   const inner=new T.Group();scene.add(inner);inner.visible=false;
-  const CY=GY+0.15,TUBES=[-0.18,0,0.18].map(dy=>CY+dy);
-  add(new T.BoxGeometry(1.5,0.62,0.48),std({color:0x7e8a94,metalness:0.7,roughness:0.35,transparent:true,opacity:0.25,depthWrite:false}),GX,CY,-0.05,inner);
-  const glowM=new T.MeshBasicMaterial({color:0x8e44ff,transparent:true,opacity:0.6,depthWrite:false});
-  const glows=[];
-  TUBES.forEach(y=>[-0.12,0.12].forEach(z=>{
-    const o=add(new T.CylinderGeometry(0.075,0.075,1.4,20,1,true),M.glass,GX,y,z-0.05,inner);o.rotation.z=Math.PI/2;
-    const e=add(new T.CylinderGeometry(0.035,0.035,1.42,12),M.cell,GX,y,z-0.05,inner);e.rotation.z=Math.PI/2;
-    const g=add(new T.CylinderGeometry(0.062,0.062,1.36,20,1,true),glowM,GX,y,z-0.05,inner);g.rotation.z=Math.PI/2;glows.push(g);}));
-  add(new T.BoxGeometry(0.5,0.42,0.42),M.hv,GX+0.55,GY-0.55,-0.05,inner);
-  for(let k=0;k<5;k++)add(new T.BoxGeometry(0.52,0.025,0.44),M.cell,GX+0.55,GY-0.72+k*0.08,-0.05,inner);
-  const coil=add(new T.TorusGeometry(0.11,0.035,10,24),M.brass,GX+0.55,GY-0.28,0.18,inner);
-  const cw=add(new T.CylinderGeometry(0.04,0.04,1.5,12),M.blue,GX,CY+0.36,-0.05,inner);cw.rotation.z=Math.PI/2;
-  const cw2=add(new T.CylinderGeometry(0.04,0.04,1.5,12),M.blue,GX,CY-0.36,-0.05,inner);cw2.rotation.z=Math.PI/2;
-  const corona=new T.PointLight(0xa57cff,0,2.4,2);corona.position.set(GX,CY,0.2);scene.add(corona);
+  const CXc=GX-0.2,CY=GY+0.45,CZ=-0.05,CL=1.25,CRs=0.25;
+  // carcasa del reactor (corte frontal)
+  const shell=add(new T.CylinderGeometry(CRs,CRs,CL,48,1,true,Math.PI/2,Math.PI*1.5),M.cell,CXc,CY,CZ,inner);shell.rotation.z=Math.PI/2;
+  const coolW=add(new T.CylinderGeometry(CRs-0.01,CRs-0.01,CL-0.02,40,1,false,Math.PI/2,Math.PI*1.5),M.cool,CXc,CY,CZ,inner);coolW.rotation.z=Math.PI/2;
+  [-1,1].forEach(s=>{const ts=add(new T.CylinderGeometry(CRs+0.035,CRs+0.035,0.035,48),M.cell,CXc+s*CL/2,CY,CZ,inner);ts.rotation.z=Math.PI/2;
+    for(let k=0;k<10;k++){const a=k/10*Math.PI*2;const b=add(new T.CylinderGeometry(0.012,0.012,0.06,6),M.steel,CXc+s*(CL/2),CY+Math.cos(a)*(CRs+0.02),CZ+Math.sin(a)*(CRs+0.02),inner);b.rotation.z=Math.PI/2;}
+    const hd=add(new T.SphereGeometry(CRs,32,16,0,Math.PI*2,0,Math.PI/2),s<0?M.quartz:M.cell,CXc+s*(CL/2+0.02),CY,CZ,inner);hd.scale.y=0.45;hd.rotation.z=-s*Math.PI/2;});
+  // tubos dieléctricos (7, en hexágono)
+  const TUBEP=[[0,0],[0.13,0],[-0.13,0],[0.065,0.112],[-0.065,0.112],[0.065,-0.112],[-0.065,-0.112]];
+  const glowM=new T.MeshBasicMaterial({color:0x8e44ff,transparent:true,opacity:0.7,depthWrite:false});
+  TUBEP.forEach(([dy,dz])=>{
+    const ty=CY+dy,tz=CZ+dz;
+    const og=add(new T.CylinderGeometry(0.052,0.052,CL,20,1,true,Math.PI/2,Math.PI*1.5),M.cell,CXc,ty,tz,inner);og.rotation.z=Math.PI/2;
+    const gl=add(new T.CylinderGeometry(0.042,0.042,CL-0.06,20,1,true),M.quartz,CXc,ty,tz,inner);gl.rotation.z=Math.PI/2;
+    const gw=add(new T.CylinderGeometry(0.047,0.047,CL-0.1,20,1,true),glowM,CXc,ty,tz,inner);gw.rotation.z=Math.PI/2;
+    const el=add(new T.CylinderGeometry(0.028,0.028,CL-0.04,14),M.steel,CXc,ty,tz,inner);el.rotation.z=Math.PI/2;
+    // fusible y conexión de alto voltaje en el extremo izquierdo
+    const fx=CXc-CL/2-0.06;const fu=add(new T.CylinderGeometry(0.014,0.014,0.08,10),M.ceramic,fx,ty,tz,inner);fu.rotation.z=Math.PI/2;
+    [fx-0.04,fx+0.04].forEach(x=>{const c=add(new T.CylinderGeometry(0.017,0.017,0.012,10),M.brass,x,ty,tz,inner);c.rotation.z=Math.PI/2;});});
+  const bus=add(new T.TorusGeometry(0.12,0.008,6,40),M.copper,CXc-CL/2-0.11,CY,CZ,inner);bus.rotation.y=Math.PI/2;
+  // boquillas de agua de enfriamiento y salida de gas
+  add(new T.CylinderGeometry(0.03,0.03,0.12,12),M.cell,CXc-0.45,CY-CRs-0.05,CZ,inner);
+  add(new T.CylinderGeometry(0.03,0.03,0.12,12),M.cell,CXc+0.45,CY+CRs+0.05,CZ,inner);
+  // transformador de alto voltaje
+  const TX=GX+0.5,TY=GY-0.55;
+  add(new T.BoxGeometry(0.46,0.07,0.34),M.core,TX,TY-0.2,CZ,inner);add(new T.BoxGeometry(0.46,0.07,0.34),M.core,TX,TY+0.2,CZ,inner);
+  [-0.19,0,0.19].forEach(dx=>add(new T.BoxGeometry(0.07,0.36,0.34),M.core,TX+dx,TY,CZ,inner));
+  [-0.095,0.095].forEach(dx=>{add(new T.CylinderGeometry(0.075,0.075,0.3,24),M.copper,TX+dx,TY,CZ,inner);for(let k=0;k<8;k++)add(new T.TorusGeometry(0.076,0.006,5,24),M.copper,TX+dx,TY-0.13+k*0.037,CZ,inner).rotation.x=Math.PI/2;});
+  for(let k=0;k<3;k++)add(new T.CylinderGeometry(0.02,0.025,0.06,10),M.ceramic,TX-0.12+k*0.12,TY+0.27,CZ,inner);
+  const hvC=new T.CatmullRomCurve3([V(TX,TY+0.3,CZ),V(TX,TY+0.55,CZ+0.15),V(CXc-CL/2-0.3,CY-0.3,CZ+0.15),V(CXc-CL/2-0.11,CY-0.12,CZ)]);
+  inner.add(new T.Mesh(new T.TubeGeometry(hvC,40,0.018,8,false),M.orange));
+  // placa electrónica (inversor de media frecuencia)
+  const BX=GX-0.15,BY=GY-0.5,BZ=-GD/2+0.05;
+  add(new T.BoxGeometry(0.62,0.42,0.02),M.pcb,BX,BY,BZ,inner);
+  for(let k=0;k<4;k++)add(new T.CylinderGeometry(0.03,0.03,0.09,14),M.black,BX-0.22+k*0.08,BY+0.1,BZ+0.055,inner).rotation.x=Math.PI/2;
+  for(let k=0;k<6;k++)add(new T.BoxGeometry(0.05,0.035,0.02),M.black,BX-0.2+k*0.07,BY-0.1,BZ+0.02,inner);
+  add(new T.BoxGeometry(0.16,0.14,0.03),M.ss,BX+0.18,BY+0.08,BZ+0.025,inner);
+  for(let k=0;k<7;k++)add(new T.BoxGeometry(0.012,0.14,0.07),M.ss,BX+0.11+k*0.023,BY+0.08,BZ+0.07,inner);
+  // ventilador tras la rejilla
+  const fan=new T.Group();fan.position.set(GX-0.62,GY-0.55,FZ-0.08);inner.add(fan);
+  add(new T.TorusGeometry(0.24,0.02,8,40),M.black,0,0,0,fan);
+  add(new T.CylinderGeometry(0.06,0.06,0.04,16),M.black,0,0,0,fan).rotation.x=Math.PI/2;
+  const blades=new T.Group();fan.add(blades);
+  for(let k=0;k<5;k++){const b=add(new T.BoxGeometry(0.17,0.07,0.01),M.black,0,0,0,blades);b.rotation.z=k*Math.PI*2/5;b.position.set(Math.cos(k*Math.PI*2/5)*0.12,Math.sin(k*Math.PI*2/5)*0.12,0);b.rotation.x=0.4;}
+  const corona=new T.PointLight(0xa57cff,0,2.0,2);corona.position.set(CXc,CY,CZ+0.25);scene.add(corona);
+  // tuberías internas de gas (acero inoxidable) y enfriamiento
+  const inO2=roundPath([V(GX-GW/2-0.02,1.3,0.12),V(GX-GW/2+0.18,1.3,0.12),V(GX-GW/2+0.18,CY,0.12),V(CXc-CL/2-0.2,CY,CZ)],0.06);
+  inner.add(new T.Mesh(new T.TubeGeometry(inO2.curve,60,0.022,10,false),M.ss));
+  const outO3=roundPath([V(CXc+CL/2+0.12,CY,CZ),V(SX-0.05,CY,CZ),V(SX-0.05,GY-0.35,CZ),V(SX-0.05,GY-0.35,0.15),V(RX-0.02,GY-0.35,0.15)],0.06);
+  inner.add(new T.Mesh(new T.TubeGeometry(outO3.curve,80,0.022,10,false),M.ss));
+  const cwI=roundPath([V(RX-0.02,GY-0.6,0.15),V(CXc-0.45,GY-0.6,0.15),V(CXc-0.45,CY-CRs-0.11,CZ)],0.05);inner.add(new T.Mesh(new T.TubeGeometry(cwI.curve,60,0.018,8,false),M.hoseB));
+  const cwO=roundPath([V(CXc+0.45,CY+CRs+0.11,CZ),V(CXc+0.45,CY+CRs+0.2,CZ),V(SX-0.15,CY+CRs+0.2,CZ),V(SX-0.15,GY-0.75,0.15),V(RX-0.02,GY-0.75,0.15)],0.05);inner.add(new T.Mesh(new T.TubeGeometry(cwO.curve,80,0.018,8,false),M.hoseR));
 
-  // tuberías de gas
-  const cpath=pts=>new T.CatmullRomCurve3(pts,false,'catmullrom',0.15);
-  const pO2=cpath([V(KX+0.48,1.3,0),V(KX+0.9,1.3,0),V(GX-GW/2-0.2,1.3,0),V(GX-GW/2-0.05,CY,-0.05),V(GX-0.7,CY,-0.05)]);
-  const pCell=new T.LineCurve3(V(GX-0.7,CY,-0.05),V(GX+0.7,CY,-0.05));
-  const IX=2.3,IY=0.55;
-  const pO3=cpath([V(GX+0.7,CY,-0.05),V(SX,CY,-0.05),V(RX+0.15,GY-0.35,0.15),V(RX+0.45,GY-0.35,0.15),V(IX-0.05,1.1,0.15),V(IX,0.95,0.05),V(IX,IY+0.08,0)]);
-  const tube=(c,r,m)=>scene.add(new T.Mesh(new T.TubeGeometry(c,100,r,10,false),m));
-  tube(cpath([V(KX+0.48,1.3,0),V(KX+0.9,1.3,0),V(GX-GW/2-0.2,1.3,0),V(GX-GW/2,1.3,0)]),0.03,M.steel);
-  tube(cpath([V(RX+0.14,GY-0.35,0.15),V(RX+0.45,GY-0.35,0.15),V(IX-0.05,1.1,0.15),V(IX,0.95,0.05),V(IX,IY+0.14,0)]),0.03,M.steel);
-  tube(cpath([V(RX+0.14,GY-0.6,0.15),V(RX+0.4,GY-0.6,0.15),V(RX+0.5,0.3,0.25),V(RX+0.5,0.05,0.25)]),0.025,M.blue);
+  // ===== líneas exteriores =====
+  // O₂: concentrador → generador (tubo inox 1/2")
+  const gO2=pipe([V(KX+0.62,1.3,0),V(GX-GW/2-0.02,1.3,0)],0.025,M.ss,{nut:M.ss});
+  // O₃: generador → válvula → antirretorno → succión del venturi
+  const IX=2.2,IY=0.75;
+  const gO3w=[V(RX+0.11,GY-0.35,0.15),V(RX+0.38,GY-0.35,0.15),V(RX+0.38,1.3,0.15),V(IX,1.3,0.15),V(IX,1.3,0),V(IX,IY+0.25,0)];
+  const gO3=pipe(gO3w,0.025,M.ss,{nut:M.ss,bend:0.08});
+  ballValve(V(1.35,1.3,0.15),V(1,0,0),0.025,M.ss,M.red);
+  along(add(new T.CylinderGeometry(0.04,0.04,0.12,16),M.ss,IX,1.05,0),Y);add(new T.CylinderGeometry(0.048,0.048,0.03,6),M.ss,IX,1.12,0);add(new T.CylinderGeometry(0.048,0.048,0.03,6),M.ss,IX,0.98,0);
+  support(1.08,1.3,0.15,0.03);
+  // agua de enfriamiento: mangueras
+  pipe([V(RX+0.11,GY-0.6,0.15),V(RX+0.3,GY-0.6,0.15),V(RX+0.3,0.05,0.15),V(RX+0.3,0.05,0.6)],0.022,M.hoseB,{bend:0.1});
+  pipe([V(RX+0.11,GY-0.75,0.15),V(RX+0.22,GY-0.75,0.15),V(RX+0.22,0.05,0.15),V(RX+0.22,0.05,0.6)],0.022,M.hoseR,{bend:0.1});
 
-  // 3) agua: bomba de refuerzo + venturi + columna de contacto
-  const pipeR=0.1;
-  const wPath=cpath([V(0.9,IY,0.9),V(1.5,IY,0.9),V(1.7,IY,0.3),V(1.8,IY,0),V(IX,IY,0),V(3.2,IY,0),V(3.55,IY,0),V(3.6,0.45,0)]);
-  tube(cpath([V(0.6,IY,1.4),V(0.9,IY,0.9),V(1.5,IY,0.9),V(1.7,IY,0.3),V(1.8,IY,0)]),pipeR,M.pvc);
-  const pipeX=(x0,x1,y,z,m)=>{const o=add(new T.CylinderGeometry(pipeR,pipeR,x1-x0,24),m,(x0+x1)/2,y,z);o.rotation.z=Math.PI/2;};
-  pipeX(1.8,IX-0.28,IY,0,M.pvc);pipeX(IX+0.28,3.3,IY,0,M.pvc);
-  // bomba
-  const PX=1.15,PZ=0.9;
-  add(new T.BoxGeometry(0.9,0.06,0.5),M.steel,PX,0.08,PZ);
-  const mot=add(new T.CylinderGeometry(0.16,0.16,0.42,24),M.blue,PX-0.1,0.3,PZ);mot.rotation.z=Math.PI/2;
-  for(let k=0;k<5;k++){const r=add(new T.CylinderGeometry(0.172,0.172,0.02,24),M.blue,PX-0.27+k*0.07,0.3,PZ);r.rotation.z=Math.PI/2;}
-  add(new T.CylinderGeometry(0.2,0.2,0.14,28),M.steel,PX+0.2,0.33,PZ).rotation.z=Math.PI/2;
-  add(new T.CylinderGeometry(0.06,0.06,0.25,12),M.steel,PX+0.2,0.5,PZ);
-  // venturi
-  add(new T.CylinderGeometry(0.06,pipeR*1.25,0.28,24),M.pvcG,IX-0.14,IY,0).rotation.z=Math.PI/2;
-  add(new T.CylinderGeometry(pipeR*1.25,0.06,0.28,24),M.pvcG,IX+0.14,IY,0).rotation.z=Math.PI/2;
-  add(new T.CylinderGeometry(0.065,0.065,0.08,16),M.pvcG,IX,IY,0).rotation.z=Math.PI/2;
-  add(new T.CylinderGeometry(0.04,0.04,0.14,12),M.pvcG,IX,IY+0.1,0);
-  [IX-0.3,IX+0.3].forEach(x=>{const f=add(new T.CylinderGeometry(0.16,0.16,0.04,24),M.pvcG,x,IY,0);f.rotation.z=Math.PI/2;});
+  // 3) agua: bomba de refuerzo → venturi → columna (PVC cédula 80)
+  const PR=0.085;
+  const PX=1.0,PZ=0.62;
+  add(new T.BoxGeometry(0.42,0.06,0.95),M.steel,PX,0.06,PZ-0.15);
+  const mot=add(new T.CylinderGeometry(0.15,0.15,0.42,24),M.pump,PX,0.33,PZ-0.42);mot.rotation.x=Math.PI/2;
+  for(let k=0;k<6;k++)add(new T.CylinderGeometry(0.162,0.162,0.02,24),M.pump,PX,0.33,PZ-0.58+k*0.065).rotation.x=Math.PI/2;
+  add(new T.BoxGeometry(0.14,0.1,0.14),M.pump,PX,0.5,PZ-0.42);
+  add(new T.CylinderGeometry(0.19,0.19,0.13,28),M.pump,PX,0.33,PZ).rotation.x=Math.PI/2;
+  add(new T.CylinderGeometry(0.08,0.1,0.1,20),M.pump,PX,0.33,PZ+0.1).rotation.x=Math.PI/2;
+  const wIn=pipe([V(PX,0.33,1.75),V(PX,0.33,PZ+0.15)],PR,M.pvc,{socket:M.pvcF});
+  const wDis=[V(PX,0.5,PZ),V(PX,IY,PZ),V(PX,IY,0),V(IX-0.42,IY,0)];
+  const wA=pipe(wDis,PR,M.pvc,{socket:M.pvcF,bend:0.16});
+  union(V(1.32,IY,0),V(1,0,0),PR,M.pvcF);ballValve(V(1.55,IY,0),V(1,0,0),PR,M.pvcF,M.red);
+  // manómetros antes y después del venturi
+  const gaugeAt=(x,val)=>{add(new T.CylinderGeometry(PR*1.25,PR*1.25,PR*1.6,16),M.pvcF,x,IY,0).rotation.z=Math.PI/2;add(new T.CylinderGeometry(0.02,0.02,0.18,10),M.brass,x,IY+0.16,0);
+    add(new T.CylinderGeometry(0.075,0.075,0.04,24),M.steel,x,IY+0.3,0).rotation.x=Math.PI/2;add(new T.CircleGeometry(0.066,24),new T.MeshBasicMaterial({map:gauge(val),toneMapped:false}),x,IY+0.3,0.021);};
+  gaugeAt(1.8,0.6);gaugeAt(2.75,0.18);
+  // venturi (inyector)
+  const ven=new T.Group();ven.position.set(IX,IY,0);scene.add(ven);
+  const vx=(g,x)=>{const o=add(g,M.vent,x,0,0,ven);o.rotation.z=Math.PI/2;return o;};
+  vx(new T.CylinderGeometry(0.09,0.09,0.14,24),-0.35);for(let k=0;k<6;k++)vx(new T.TorusGeometry(0.09,0.006,5,24),-0.41+k*0.022).rotation.set(0,Math.PI/2,0);
+  vx(new T.CylinderGeometry(0.11,0.11,0.07,6),-0.245);
+  vx(new T.CylinderGeometry(0.045,0.1,0.18,28,1,true),-0.12);
+  vx(new T.CylinderGeometry(0.045,0.045,0.06,24,1,true),0);
+  vx(new T.CylinderGeometry(0.1,0.045,0.34,28,1,true),0.2);
+  vx(new T.CylinderGeometry(0.11,0.11,0.07,6),0.405);
+  vx(new T.CylinderGeometry(0.09,0.09,0.14,24),0.51);for(let k=0;k<6;k++)vx(new T.TorusGeometry(0.09,0.006,5,24),0.46+k*0.022).rotation.set(0,Math.PI/2,0);
+  add(new T.CylinderGeometry(0.035,0.04,0.14,16),M.vent,0,0.09,0,ven);add(new T.CylinderGeometry(0.05,0.05,0.04,6),M.vent,0,0.17,0,ven);
+  add(new T.CylinderGeometry(0.03,0.03,0.04,12),M.vent,0,0.21,0,ven);
+  const arrow=add(new T.ConeGeometry(0.03,0.07,12),M.yellow,0.2,0.12,0,ven);arrow.rotation.z=-Math.PI/2;
+  const wB=pipe([V(IX+0.58,IY,0),V(3.4,IY,0)],PR,M.pvc,{socket:M.pvcF});
+  union(V(3.05,IY,0),V(1,0,0),PR,M.pvcF);
+  support(1.2,IY,0.0,PR);support(3.25,IY,0,PR);
   // columna de contacto
-  const CX=3.75,CH=2.6,CR=0.42,CB=0.3;
+  const CX=3.85,CH=2.6,CR=0.42,CB=0.3;
   add(new T.CylinderGeometry(CR,CR,CH,40,1,true),M.glass,CX,CB+CH/2,0);
   add(new T.CylinderGeometry(CR-0.02,CR-0.02,CH-0.25,40),M.water,CX,CB+(CH-0.25)/2,0);
-  const top=add(new T.SphereGeometry(CR,40,16,0,Math.PI*2,0,Math.PI/2),M.pvcG,CX,CB+CH,0);
-  add(new T.CylinderGeometry(CR+0.03,CR+0.03,0.06,40),M.pvcG,CX,CB+CH,0);
+  add(new T.SphereGeometry(CR,40,16,0,Math.PI*2,0,Math.PI/2),M.pvcG,CX,CB+CH,0);
+  [CB+CH,CB+CH*0.5,CB+0.02].forEach(y=>add(new T.CylinderGeometry(CR+0.035,CR+0.035,0.06,40),M.pvcG,CX,y,0));
   add(new T.CylinderGeometry(CR+0.03,CR+0.08,0.3,40),M.pvcG,CX,CB-0.15+0.15,0);
   [0,1,2,3].forEach(k=>{const a=k*Math.PI/2+Math.PI/4;add(new T.BoxGeometry(0.06,CB,0.06),M.steel,CX+Math.cos(a)*(CR+0.02),CB/2,Math.sin(a)*(CR+0.02));});
-  pipeX(3.3,CX-CR,IY,0,M.pvc);
+  pipe([V(3.4,IY,0),V(CX-CR+0.02,IY,0)],PR,M.pvc,{});
+  add(new T.CylinderGeometry(PR*1.6,PR*1.6,0.04,24),M.pvcF,CX-CR-0.02,IY,0).rotation.z=Math.PI/2;
   // salida al estanque + sonda ORP
-  const outP=cpath([V(CX+CR,CB+0.25,0),V(CX+CR+0.5,CB+0.25,0),V(CX+CR+0.8,CB+0.25,0.5),V(CX+CR+0.8,CB+0.25,1.4)]);
-  tube(outP,pipeR,M.pvc);
-  add(new T.CylinderGeometry(0.03,0.03,0.4,10),M.black,CX+CR+0.5,CB+0.45,0);
-  add(new T.BoxGeometry(0.22,0.28,0.1),std({color:0xf4f6f8,roughness:0.5}),CX+CR+0.5,CB+0.85,0);
-  add(new T.PlaneGeometry(0.16,0.08),new T.MeshBasicMaterial({map:tex(160,80,(g)=>{g.fillStyle='#06120a';g.fillRect(0,0,160,80);g.fillStyle='#3dff7a';g.font='bold 34px monospace';g.textAlign='center';g.textBaseline='middle';g.fillText('310mV',80,42);}),toneMapped:false}),CX+CR+0.5,CB+0.88,0.051);
+  pipe([V(CX+CR-0.02,CB+0.25,0),V(CX+CR+0.6,CB+0.25,0),V(CX+CR+0.6,CB+0.25,1.5)],PR,M.pvc,{socket:M.pvcF,bend:0.16});
+  add(new T.CylinderGeometry(PR*1.6,PR*1.6,0.04,24),M.pvcF,CX+CR+0.02,CB+0.25,0).rotation.z=Math.PI/2;
+  add(new T.CylinderGeometry(0.03,0.03,0.4,10),M.black,CX+CR+0.35,CB+0.45,0);
+  add(new T.BoxGeometry(0.22,0.28,0.1),std({color:0xf4f6f8,roughness:0.5}),CX+CR+0.35,CB+0.85,0);
+  add(new T.PlaneGeometry(0.16,0.08),new T.MeshBasicMaterial({map:tex(160,80,(g)=>{g.fillStyle='#06120a';g.fillRect(0,0,160,80);g.fillStyle='#3dff7a';g.font='bold 34px monospace';g.textAlign='center';g.textBaseline='middle';g.fillText('310mV',80,42);}),toneMapped:false}),CX+CR+0.35,CB+0.88,0.051);
   // destructor de ozono residual
   const DX=CX,DY=CB+CH+0.75;
-  tube(cpath([V(CX,CB+CH+0.35,0),V(CX,DY-0.25,0)]),0.035,M.steel);
+  pipe([V(CX,CB+CH+0.38,0),V(CX,DY-0.25,0)],0.03,M.ss,{nut:M.ss});
   add(new T.BoxGeometry(0.55,0.5,0.4),M.destr,DX,DY,0);
   for(let k=0;k<6;k++)add(new T.BoxGeometry(0.57,0.025,0.42),M.cell,DX,DY-0.2+k*0.08,0);
   add(new T.CylinderGeometry(0.04,0.04,0.3,12),M.steel,DX,DY+0.4,0);
   add(new T.SphereGeometry(0.05,12,8),M.steel,DX,DY+0.56,0);
+
+  // caminos de las partículas
+  const pO2=new T.CatmullRomCurve3(gO2.pts.concat(inO2.pts),false,'centripetal');
+  const pO3=new T.CatmullRomCurve3(outO3.pts.concat(gO3.pts),false,'centripetal');
+  const wPts=wIn.pts.slice(0,-1).concat([V(PX,0.33,PZ+0.02),V(PX,0.45,PZ)]).concat(wA.pts).concat([V(IX-0.35,IY,0),V(IX-0.12,IY,0),V(IX,IY,0),V(IX+0.2,IY,0),V(IX+0.5,IY,0)]).concat(wB.pts).concat([V(CX-CR+0.05,IY,0)]);
+  const wCurve=new T.CatmullRomCurve3(wPts,false,'centripetal');const wLen=wCurve.getLength();
+  const uThroat=(()=>{let best=0,bd=9;for(let i=0;i<=200;i++){const p=wCurve.getPointAt(i/200);const d=Math.abs(p.x-IX)+Math.abs(p.y-IY)*3+Math.abs(p.z)*3;if(d<bd){bd=d;best=i/200;}}return best;})();
 
   // moléculas
   const merge=gs=>{const pos=[],nor=[],col=[];gs.forEach(o=>{let g=o.g.toNonIndexed();g.applyMatrix4(o.m);pos.push(...g.attributes.position.array);nor.push(...g.attributes.normal.array);const c=lin(o.c);for(let i=0;i<g.attributes.position.count;i++)col.push(c.r,c.g,c.b);});
     const out=new T.BufferGeometry();out.setAttribute('position',new T.Float32BufferAttribute(pos,3));out.setAttribute('normal',new T.Float32BufferAttribute(nor,3));out.setAttribute('color',new T.Float32BufferAttribute(col,3));return out;};
   const mt=(x,y,z)=>new T.Matrix4().makeTranslation(x,y,z);
   const sp=r=>new T.IcosahedronGeometry(r,1);
-  const gO2=merge([{g:sp(0.04),c:'#E53935',m:mt(-0.032,0,0)},{g:sp(0.04),c:'#E53935',m:mt(0.032,0,0)}]);
-  const gO3=merge([{g:sp(0.038),c:'#4FC3F7',m:mt(0,0.022,0)},{g:sp(0.038),c:'#4FC3F7',m:mt(-0.05,-0.02,0)},{g:sp(0.038),c:'#4FC3F7',m:mt(0.05,-0.02,0)}]);
-  const gO1=sp(0.04);
-  const NG=reduce?70:110,NW=reduce?40:70,NOFF=12;
-  const m2=new T.InstancedMesh(gO2,M.mol,NG+NOFF),m3=new T.InstancedMesh(gO3,M.mol,NG+NW+NOFF),m1=new T.InstancedMesh(gO1,std({color:0xff8a65,emissive:0xff5722,emissiveIntensity:0.6}),30);
+  const geoO2=merge([{g:sp(0.034),c:'#E53935',m:mt(-0.027,0,0)},{g:sp(0.034),c:'#E53935',m:mt(0.027,0,0)}]);
+  const geoO3=merge([{g:sp(0.032),c:'#4FC3F7',m:mt(0,0.019,0)},{g:sp(0.032),c:'#4FC3F7',m:mt(-0.042,-0.017,0)},{g:sp(0.032),c:'#4FC3F7',m:mt(0.042,-0.017,0)}]);
+  const NG=reduce?80:130,NW=reduce?40:70,NOFF=12;
+  const m2=new T.InstancedMesh(geoO2,M.mol,NG+NOFF),m3=new T.InstancedMesh(geoO3,M.mol,NG+NW+NOFF+40),m1=new T.InstancedMesh(sp(0.034),std({color:0xff8a65,emissive:0xff5722,emissiveIntensity:0.6}),40);
   [m2,m3,m1].forEach(m=>{m.frustumCulled=false;scene.add(m);});
-  const gas=[];for(let i=0;i<NG;i++)gas.push({u:Math.random(),j:V((Math.random()-0.5),(Math.random()-0.5),(Math.random()-0.5)),r:Math.random(),q:new T.Quaternion().setFromEuler(new T.Euler(Math.random()*6,Math.random()*6,0)),ax:V(Math.random()-0.5,Math.random()-0.5,Math.random()-0.5).normalize()});
-  const dis=[];for(let i=0;i<NW;i++)dis.push({u:Math.random(),y:Math.random(),a:Math.random()*6.28,rr:Math.random(),q:new T.Quaternion(),ax:V(Math.random()-0.5,Math.random()-0.5,Math.random()-0.5).normalize(),r:Math.random()});
-  const off=[];for(let i=0;i<NOFF;i++)off.push({u:Math.random(),q:new T.Quaternion()});
+  const L1=pO2.getLength(),L2=CL,L3=pO3.getLength(),LT=L1+L2+L3;
+  const gas=[];for(let i=0;i<NG;i++)gas.push({u:Math.random(),j:V((Math.random()-0.5),(Math.random()-0.5),(Math.random()-0.5)),r:Math.random(),k:i%7,q:new T.Quaternion().setFromEuler(new T.Euler(Math.random()*6,Math.random()*6,0)),ax:V(Math.random()-0.5,Math.random()-0.5,Math.random()-0.5).normalize()});
+  const dis=[];for(let i=0;i<NW;i++)dis.push({u:Math.random(),a:Math.random()*6.28,rr:Math.random(),q:new T.Quaternion(),ax:V(Math.random()-0.5,Math.random()-0.5,Math.random()-0.5).normalize(),r:Math.random()});
+  const off=[];for(let i=0;i<NOFF;i++)off.push({u:Math.random()});
   const NBB=reduce?60:110;
-  const bub=new T.InstancedMesh(new T.SphereGeometry(0.03,8,6),M.bubble,NBB);bub.frustumCulled=false;scene.add(bub);
+  const bub=new T.InstancedMesh(new T.SphereGeometry(0.03,8,6),M.bubble,NBB+60);bub.frustumCulled=false;scene.add(bub);
   const bb=[];for(let i=0;i<NBB;i++)bb.push({y:Math.random(),a:Math.random()*6.28,rr:Math.random(),s:0.6+Math.random()*0.8});
+  const vb=[];for(let i=0;i<60;i++)vb.push({u:Math.random(),a:Math.random()*6.28,rr:Math.random()});
   const NORG=40,org=new T.InstancedMesh(new T.DodecahedronGeometry(0.05,0),M.org,NORG);org.frustumCulled=false;scene.add(org);
   const og=[];for(let i=0;i<NORG;i++)og.push({y:Math.random(),a:Math.random()*6.28,rr:Math.random(),life:Math.random()});
+  const NWD=reduce?90:150,wd=new T.InstancedMesh(new T.SphereGeometry(0.018,6,5),M.wdot,NWD);wd.frustumCulled=false;scene.add(wd);
+  const wp=[];for(let i=0;i<NWD;i++)wp.push({u:Math.random(),a:Math.random()*6.28,rr:Math.sqrt(Math.random())});
 
-  // pantalla del generador
   function drawLcd(){const g=lcd.getContext('2d');g.fillStyle=st.on?'#1d3a12':'#162016';g.fillRect(0,0,256,96);g.fillStyle=st.on?'#9dff6a':'#3b5a32';g.font='bold 34px monospace';g.textAlign='left';g.textBaseline='middle';
     g.fillText(st.on?('O3 '+R.o3.toFixed(0)+' g/h'):'O3  OFF',12,30);g.font='26px monospace';g.fillText(st.on?(st.c.toFixed(1)+'% '+st.q+'L/m'):'STANDBY',12,70);lcdT.needsUpdate=true;}
 
@@ -2415,12 +2517,12 @@ function build(){
     {t:'Overview',k:'Guided tour',p:'An ozonation system has four parts: the <b>oxygen source</b>, the <b>generator</b> that makes the ozone, the <b>injector</b> that mixes it with the water and the <b>contact column</b> where it reacts. Tap <b>Next</b> or a number.',tg:V(0,1.3,0),az:0.45,el:0.32,d:null,hl:[]},
     {t:'Oxygen source',k:'Step 1 of 6',p:'A <b>PSA concentrator</b> separates oxygen from air with zeolite columns and delivers very dry ~93% O₂. With oxygen the generator produces 3 to 5 times more ozone than with air. The two-sphere <b style="color:#E53935">red</b> molecules are O₂.',tg:V(KX,1.0,0),az:0.35,el:0.2,d:4.6,hl:['conc'],pin:V(KX,1.85,0)},
     {t:'Ozone generator',k:'Step 2 of 6',p:'The cabinet has a <b>display with keypad</b> to set production, a ventilation <b>grille</b>, and on the side column a <b>pressure gauge</b>, a <b>needle valve</b> and a <b>rotameter</b> to regulate gas flow. The yellow label warns of the high voltage inside.',tg:V(GX+0.2,GY,0.3),az:0.15,el:0.12,d:4.6,hl:['cab'],pin:V(GX,GY+1.15,0)},
-    {t:'Corona discharge cell',k:'Step 3 of 6',p:'Inside are tubes with an electrode and a glass <b>dielectric</b>. With thousands of volts a violet discharge appears that splits O₂ into oxygen atoms (orange). Each atom joins another O₂ and forms <b style="color:#0288D1">O₃</b> (three light-blue spheres). I switched on the interior view.',tg:V(GX,CY,0),az:0.25,el:0.1,d:3.8,hl:['cell'],pin:V(GX-0.3,CY+0.55,0),inside:true},
-    {t:'Pump and venturi injector',k:'Step 4 of 6',p:'A <b>booster pump</b> pushes water through the <b>venturi</b>. At the narrowing the water speeds up and pressure drops, which draws the ozone gas in through the top tube and breaks it into fine bubbles.',tg:V(1.9,0.6,0.4),az:0.35,el:0.25,d:4.2,hl:['venturi'],pin:V(IX,IY+0.55,0)},
+    {t:'Inside the generator',k:'Step 3 of 6',p:'The heart is a steel <b>tubular reactor</b> (cut away so you can see it): inside are <b>glass dielectric</b> tubes with a central electrode, surrounded by <b>cooling water</b> (blue and red hoses). The <b>transformer</b> with copper coils and the <b>inverter board</b> deliver thousands of volts through the orange cable; each tube has its own <b>fuse</b>. In the violet discharge O₂ splits into atoms (orange) that form <b style="color:#0288D1">O₃</b>.',tg:V(CXc+0.2,GY+0.05,0),az:0.3,el:0.12,d:4.0,hl:['cell'],pin:V(CXc,CY+CRs+0.2,0),inside:true},
+    {t:'Pump and venturi injector',k:'Step 4 of 6',p:'A <b>booster pump</b> pushes water through the <b>venturi</b>. The inlet cone narrows the passage, the water speeds up in the <b>throat</b> and pressure drops (look at the two <b>gauges</b>: high before, low after). That suction draws the ozone gas in through the top port, protected by a <b>check valve</b>, and breaks it into fine bubbles in the outlet cone.',tg:V(IX,IY+0.1,0.2),az:0.25,el:0.22,d:3.4,hl:['venturi'],pin:V(IX-0.3,IY+0.55,0)},
     {t:'Contact column',k:'Step 5 of 6',p:'The bubbles rise through the column and the ozone dissolves. When it hits <b style="color:#8D6E63">organic matter</b> (brown) it oxidizes and breaks it down; it also oxidizes nitrite to nitrate and clears the water. Typical contact time is 1 to 4 minutes.',tg:V(CX,1.6,0),az:0.3,el:0.18,d:5.2,hl:['col'],pin:V(CX-0.5,2.4,0)},
     {t:'Destructor and ORP control',k:'Step 6 of 6',p:'Undissolved gas rises to the <b>destructor</b>, which turns the ozone back into O₂ before releasing it. At the outlet, the <b>ORP probe</b> (≈ 250–350 mV) controls the generator; before the fish the water goes through UV or degassing to remove any residual.',tg:V(CX+0.3,2.4,0.3),az:0.55,el:0.25,d:5.4,hl:['destr'],pin:V(DX,DY+0.75,0)}
   ];
-  const HL={conc:[M.conc],cab:[M.cab,M.side],cell:[M.cell],venturi:[M.pvcG,M.blue],col:[M.water],destr:[M.destr]};
+  const HL={conc:[M.conc],cab:[M.cab,M.side],cell:[M.cell],venturi:[M.vent,M.pump],col:[M.water],destr:[M.destr]};
   const lw=$('o3Lbls');
   const pins=STEPS.map((s,i)=>{if(!s.pin)return null;const b=document.createElement('button');b.type='button';b.className='pin';b.innerHTML='<b>'+i+'</b><span>'+s.t+'</span>';b.addEventListener('click',()=>goStep(i));lw.appendChild(b);return b;});
   const dots=$('oDots');STEPS.forEach((_,i)=>{const d=document.createElement('button');d.type='button';d.setAttribute('aria-label','Step '+i);d.addEventListener('click',()=>goStep(i));dots.appendChild(d);});
@@ -2430,8 +2532,9 @@ function build(){
   const shortest=(a,b)=>{let d=(b-a)%(Math.PI*2);if(d>Math.PI)d-=Math.PI*2;if(d<-Math.PI)d+=Math.PI*2;return a+d;};
   function resetView(){az=0.45;el=0.32;dist=D0();tgt.set(0,1.3,0);goal=null;}
   resetView();
+  const seeThrough=[[M.cab,0.16],[M.side,0.16],[M.vent,0.3],[M.pvc,0.3]];
   function setInside(on){inside=on;$('oIn').setAttribute('aria-pressed',on);inner.visible=on;
-    [M.cab,M.side].forEach(m=>{m.transparent=on;m.opacity=on?0.18:1;m.depthWrite=!on;m.needsUpdate=true;});}
+    seeThrough.forEach(([m,o])=>{m.transparent=on;m.opacity=on?o:1;m.depthWrite=!on;m.needsUpdate=true;});}
   function goStep(i){
     step=Math.max(0,Math.min(STEPS.length-1,i));const s=STEPS[step];
     $('oTourN').textContent=step===0?'★':step;$('oTourT').textContent=s.t;$('oTourK').textContent=s.k;$('oTourP').innerHTML=s.p;
@@ -2439,7 +2542,7 @@ function build(){
     [].forEach.call(dots.children,(d,j)=>d.setAttribute('aria-current',j===step?'true':'false'));
     pins.forEach((p,j)=>p&&p.classList.toggle('on',j===step));
     goal={tg:s.tg.clone(),az:s.az,el:s.el,d:s.d?s.d*(narrow()?1.45:1):D0()};
-    if(s.inside)setInside(true);
+    if(s.inside||step===4)setInside(true);
     if(step>0){auto=false;$('oRot').setAttribute('aria-pressed','false');}
   }
   $('oPrev').addEventListener('click',()=>goStep(step-1));
@@ -2448,19 +2551,19 @@ function build(){
   tg('oLbl',on=>lw.classList.toggle('off',!on));
   tg('oRot',on=>{auto=on;});
   $('oReset').addEventListener('click',()=>goStep(0));
-  const shell=$('o3Shell');
-  const setFull=on=>{shell.classList.toggle('full',on);$('oFs').textContent=on?'✕':'⛶';document.body.style.overflow=on?'hidden':'';};
-  $('oFs').addEventListener('click',()=>setFull(!shell.classList.contains('full')));
-  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&shell.classList.contains('full'))setFull(false);});
+  const shell2=$('o3Shell');
+  const setFull=on=>{shell2.classList.toggle('full',on);$('oFs').textContent=on?'✕':'⛶';document.body.style.overflow=on?'hidden':'';};
+  $('oFs').addEventListener('click',()=>setFull(!shell2.classList.contains('full')));
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&shell2.classList.contains('full'))setFull(false);});
   const cv=renderer.domElement,ptr=new Map();let pinch0=0,dist0=0;
   const hint=$('o3Hint');const killHint=()=>hint.classList.add('gone');setTimeout(killHint,6000);
   cv.addEventListener('pointerdown',e=>{goal=null;killHint();cv.setPointerCapture(e.pointerId);ptr.set(e.pointerId,{x:e.clientX,y:e.clientY});if(ptr.size===2){const a=[...ptr.values()];pinch0=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y);dist0=dist;}});
   cv.addEventListener('pointermove',e=>{if(!ptr.has(e.pointerId))return;const p=ptr.get(e.pointerId);const dx=e.clientX-p.x,dy=e.clientY-p.y;p.x=e.clientX;p.y=e.clientY;
     if(ptr.size===1){az-=dx*0.008;el=Math.max(0.02,Math.min(1.35,el+dy*0.006));}
-    else if(ptr.size===2&&pinch0>0){const a=[...ptr.values()];dist=Math.max(3,Math.min(20,dist0*pinch0/(Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y)||1)));}});
+    else if(ptr.size===2&&pinch0>0){const a=[...ptr.values()];dist=Math.max(2.5,Math.min(20,dist0*pinch0/(Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y)||1)));}});
   const up=e=>{ptr.delete(e.pointerId);if(ptr.size<2)pinch0=0;};
   cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
-  cv.addEventListener('wheel',e=>{e.preventDefault();goal=null;dist=Math.max(3,Math.min(20,dist*(1+e.deltaY*0.001)));},{passive:false});
+  cv.addEventListener('wheel',e=>{e.preventDefault();goal=null;dist=Math.max(2.5,Math.min(20,dist*(1+e.deltaY*0.001)));},{passive:false});
   function resize(){host.classList.toggle('narrow',narrow());const w=host.clientWidth,h=host.clientHeight;if(w<2||h<2)return;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();}
   new ResizeObserver(resize).observe(host);resize();
 
@@ -2477,42 +2580,47 @@ function build(){
     Object.keys(HL).forEach(key=>{const on=STEPS[step].hl.indexOf(key)>=0;HL[key].forEach(m=>{m.emissive.setHex(on?0x1e88e5:0);m.emissiveIntensity=on?pulse:0;});});
     pw+=((st.on?1:0)-pw)*Math.min(1,dt*5);
     const fl=0.75+0.25*Math.sin(clk*53)*Math.sin(clk*17);
-    glowM.opacity=0.8*pw*fl;corona.intensity=inside?2.5*pw*fl:0;
+    glowM.opacity=0.8*pw*fl;corona.intensity=inside?2.2*pw*fl:0;
+    blades.rotation.z-=dt*(4+14*pw);
     flt.position.y=GY-0.42+0.32*Math.min(1,st.q/40);
-    const frac=st.on?Math.min(1,st.c/12)*0.85+0.1:0;   // fracción visible de O₃ tras la celda
-    // gas: concentrador → celda → venturi
+    const frac=st.on?Math.min(1,st.c/12)*0.85+0.1:0;
     let n2=0,n3=0,n1=0;
     for(let i=0;i<NG;i++){const g=gas[i];g.u+=dt*0.07;if(g.u>1){g.u-=1;g.r=Math.random();}
       qa.setFromAxisAngle(g.ax,dt*2);g.q.multiply(qa);
-      const u=g.u;let isO3=false;
-      if(u<0.35){pos.copy(pO2.getPointAt(u/0.35));pos.addScaledVector(g.j,0.04);}
-      else if(u<0.6){const t=(u-0.35)/0.25;pos.copy(pCell.getPointAt(t));const k=i%6;pos.y=TUBES[k%3];pos.z=(k<3?-0.12:0.12)-0.05;pos.addScaledVector(g.j,0.03);
+      const d=g.u*LT;let isO3=false;
+      if(d<L1){pos.copy(pO2.getPointAt(d/L1));pos.addScaledVector(g.j,0.03);}
+      else if(d<L1+L2){const t=(d-L1)/L2;const tp=TUBEP[g.k];pos.set(CXc-CL/2+t*CL,CY+tp[0]+g.j.y*0.03,CZ+tp[1]+g.j.z*0.03);
         isO3=g.r<frac*t;
-        if(st.on&&!isO3&&g.r<frac&&Math.abs(t-g.r/frac)<0.08&&n1<30){pv.copy(pos).add(V(0.05,0.03,0));scl.set(1,1,1);m4.compose(pv,qi,scl);m1.setMatrixAt(n1++,m4);}}
-      else{pos.copy(pO3.getPointAt((u-0.6)/0.4));pos.addScaledVector(g.j,0.035);isO3=g.r<frac;}
-      m4.compose(pos,g.q,one);
+        if(st.on&&!isO3&&g.r<frac&&Math.abs(t-g.r/frac)<0.08&&n1<40&&inside){pv.copy(pos).add(V(0.04,0.025,0));m4.compose(pv,qi,one);m1.setMatrixAt(n1++,m4);}}
+      else{pos.copy(pO3.getPointAt(Math.min(1,(d-L1-L2)/L3)));pos.addScaledVector(g.j,0.03);isO3=g.r<frac;}
+      const gs=(d>=L1&&d<L1+L2)?0.9:0.62;scl.set(gs,gs,gs);m4.compose(pos,g.q,scl);
       if(isO3)m3.setMatrixAt(n3++,m4);else m2.setMatrixAt(n2++,m4);}
-    // disuelto en el agua: tubería tras venturi y columna
     const wOn=st.on?1:0;
-    for(let i=0;i<NW;i++){const d=dis[i];if(!wOn)break;d.u+=dt*0.18;if(d.u>1){d.u-=1;d.r=Math.random();}
+    // agua en la línea: se acelera en la garganta del venturi
+    for(let i=0;i<NWD;i++){const p=wp[i];const dth=Math.abs(p.u-uThroat)*wLen;const sp=1+3.5*Math.exp(-dth*dth/0.02);p.u+=dt*0.55*sp/wLen;if(p.u>1)p.u-=1;
+      pos.copy(wCurve.getPointAt(p.u));const rr=p.rr*(0.065/sp*1.8);pos.y+=Math.cos(p.a)*Math.min(rr,0.065);pos.z+=Math.sin(p.a)*Math.min(rr,0.065);
+      m4.compose(pos,qi,one);wd.setMatrixAt(i,m4);}
+    wd.instanceMatrix.needsUpdate=true;
+    // gas succionado en el venturi → burbujas y O₃ hacia la columna
+    let nb=0;
+    for(let i=0;i<NBB;i++){const b=bb[i];b.y+=dt*0.22*b.s*(0.4+wOn);if(b.y>1)b.y-=1;
+      const r=b.rr*(CR-0.06),s=Math.max(0.0001,(1-b.y*0.7)*(0.3+0.7*wOn));pos.set(CX+Math.cos(b.a+b.y*3)*r,CB+0.1+b.y*(CH-0.4),Math.sin(b.a+b.y*3)*r);scl.set(s,s,s);m4.compose(pos,qi,scl);bub.setMatrixAt(nb++,m4);}
+    for(let i=0;i<60;i++){const b=vb[i];b.u+=dt*0.35;if(b.u>1)b.u-=1;const x=IX+0.03+b.u*(CX-CR-IX-0.03);const grow=Math.min(1,b.u*4);const s=Math.max(0.0001,wOn*(0.25+0.55*grow));
+      pos.set(x,IY+Math.cos(b.a)*b.rr*0.055*grow,Math.sin(b.a)*b.rr*0.055*grow);scl.set(s,s,s);m4.compose(pos,qi,scl);bub.setMatrixAt(nb++,m4);}
+    bub.count=nb;bub.instanceMatrix.needsUpdate=true;
+    for(let i=0;i<NW;i++){const d=dis[i];if(!wOn)break;d.u+=dt*0.16;if(d.u>1){d.u-=1;d.r=Math.random();}
       qa.setFromAxisAngle(d.ax,dt*2);d.q.multiply(qa);
-      if(d.u<0.3){const t=d.u/0.3;pos.set(IX+(CX-CR-IX)*t,IY+(Math.random()-0.5)*0.02+Math.sin(i)*0.05,Math.cos(i*1.7)*0.05);}
+      if(d.u<0.3){const t=d.u/0.3;pos.set(IX+0.05+(CX-CR-IX)*t,IY+Math.sin(i*2.1)*0.04,Math.cos(i*1.7)*0.04);}
       else{const t=(d.u-0.3)/0.7;const r=d.rr*(CR-0.08);pos.set(CX+Math.cos(d.a+t*2)*r,CB+0.1+t*(CH-0.45),Math.sin(d.a+t*2)*r);if(d.r>1-t*0.8)continue;}
       scl.set(0.85,0.85,0.85);m4.compose(pos,d.q,scl);m3.setMatrixAt(n3++,m4);}
-    // gas residual al destructor: O₃ entra, O₂ sale
     for(let i=0;i<NOFF;i++){const o=off[i];if(!wOn)break;o.u=(o.u+dt*0.2)%1;
       if(o.u<0.55){pos.set(CX+Math.sin(i)*0.02,CB+CH+0.1+o.u/0.55*(DY-0.25-(CB+CH+0.1)),0);m4.compose(pos,qi,one);m3.setMatrixAt(n3++,m4);}
       else{pos.set(DX+Math.sin(i)*0.03,DY+0.6+(o.u-0.55)*1.4,Math.cos(i)*0.03);m4.compose(pos,qi,one);m2.setMatrixAt(n2++,m4);}}
     m2.count=n2;m3.count=n3;m1.count=n1;[m2,m3,m1].forEach(m=>m.instanceMatrix.needsUpdate=true);
-    // burbujas en la columna
-    for(let i=0;i<NBB;i++){const b=bb[i];b.y+=dt*0.22*b.s*(0.4+wOn);if(b.y>1)b.y-=1;
-      const r=b.rr*(CR-0.06),s=Math.max(0.0001,(1-b.y*0.7)*(0.3+0.7*wOn));pos.set(CX+Math.cos(b.a+b.y*3)*r,CB+0.1+b.y*(CH-0.4),Math.sin(b.a+b.y*3)*r);scl.set(s,s,s);m4.compose(pos,qi,scl);bub.setMatrixAt(i,m4);}
-    bub.instanceMatrix.needsUpdate=true;
-    // materia orgánica: se oxida según la dosis
     const ox=st.on?Math.min(1,R.dose/20):0;
     for(let i=0;i<NORG;i++){const o=og[i];o.y+=dt*0.06;if(o.y>1){o.y-=1;o.life=Math.random();}
-      const vis=o.life>ox*o.y*1.3?1:Math.max(0,1-(ox*o.y*1.3-o.life)*6);const r=o.rr*(CR-0.08);
-      pos.set(CX+Math.cos(o.a)*r,CB+0.15+o.y*(CH-0.5),Math.sin(o.a)*r);scl.set(vis,vis,vis);qa.setFromAxisAngle(V(0,1,0),clk+i);m4.compose(pos,qa,scl.set(Math.max(0.0001,vis),Math.max(0.0001,vis),Math.max(0.0001,vis)));org.setMatrixAt(i,m4);}
+      const vis=o.life>ox*o.y*1.3?1:Math.max(0,1-(ox*o.y*1.3-o.life)*6);const r=o.rr*(CR-0.08);const s=Math.max(0.0001,vis);
+      pos.set(CX+Math.cos(o.a)*r,CB+0.15+o.y*(CH-0.5),Math.sin(o.a)*r);qa.setFromAxisAngle(Y,clk+i);scl.set(s,s,s);m4.compose(pos,qa,scl);org.setMatrixAt(i,m4);}
     org.instanceMatrix.needsUpdate=true;
     if(dirty){drawLcd();dirty=false;}
     renderer.render(scene,camera);
