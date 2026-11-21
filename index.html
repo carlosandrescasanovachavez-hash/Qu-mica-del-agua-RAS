@@ -455,6 +455,7 @@ input[type=range]{height:28px;cursor:pointer}
           <li><span class="ico">14</span><span><b>Fichas</b> de catorce parámetros, incluidos <b>TGP %</b> y <b>N₂ %</b>.</span></li>
           <li><span class="ico">3D</span><span><b>Biofiltro en 3D</b> y calculadora de nitrificación.</span></li>
           <li><span class="ico">UV</span><span><b>Reactor UV en 3D</b> con simulador de dosis.</span></li>
+          <li><span class="ico">O₃</span><span><b>Ozono en 3D</b>: cómo se genera y se inyecta.</span></li>
           <li><span class="ico">🌡</span><span><b>Bomba de calor en 3D</b> para controlar la temperatura del agua.</span></li>
           <li><span class="ico">⚗</span><span><b>Reacciones</b> químicas clave y fuentes científicas.</span></li>
         </ul>
@@ -508,6 +509,7 @@ input[type=range]{height:28px;cursor:pointer}
       <a class="tile" href="#interacciones"><span>🕸</span><b>Interacciones</b><small>Cómo se afectan entre sí</small></a>
       <a class="tile" href="#biofiltro"><span>🦠</span><b>Biofiltro 3D</b><small>Maqueta y nitrificación</small></a>
       <a class="tile" href="#uv"><span>💡</span><b>Reactor UV 3D</b><small>Desinfección y dosis</small></a>
+      <a class="tile" href="#ozono"><span>🫧</span><b>Ozono 3D</b><small>Generación e inyección</small></a>
       <a class="tile" href="#bomba"><span>🌡</span><b>Bomba de calor 3D</b><small>Control de temperatura</small></a>
       <a class="tile" href="#reacciones"><span>⚗</span><b>Reacciones</b><small>La química de fondo</small></a>
       <a class="tile" href="#etapas"><span>🐟</span><b>Etapas</b><small>Ova, alevín, smolt</small></a>
@@ -523,6 +525,7 @@ input[type=range]{height:28px;cursor:pointer}
     <a class="sec" href="#interacciones">Interacciones</a>
     <a class="sec" href="#biofiltro">Biofiltro 3D</a>
     <a class="sec" href="#uv">Desinfección UV</a>
+    <a class="sec" href="#ozono">Ozono</a>
     <a class="sec" href="#bomba">Bomba de calor</a>
     <a class="sec" href="#reacciones">Reacciones</a>
     <a class="sec" href="#etapas">Etapas</a>
@@ -845,11 +848,86 @@ input[type=range]{height:28px;cursor:pointer}
   </div>
 </section>
 
+<!-- OZONO -->
+<section class="block" id="ozono">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">07 · Ozonización</div>
+      <h2>Cómo se genera y se inyecta el ozono</h2>
+      <p>El ozono (O₃) no se puede guardar: se fabrica en el momento a partir de oxígeno, con una descarga eléctrica de alto voltaje. Luego se mezcla con el agua en un inyector venturi y reacciona en una columna de contacto. Sigue las moléculas: el O₂ (dos esferas rojas) entra al generador y sale parte como O₃ (tres esferas celestes).</p>
+    </div>
+
+    <div class="bio-shell" id="o3Shell">
+      <div class="viewer" id="o3Viewer">
+        <div class="lbls" id="o3Lbls"></div>
+        <div class="vtop">
+          <span class="vhint" id="o3Hint">☝ Arrastra para girar · pellizca para acercar</span>
+          <button class="vicon" id="oFs" type="button" aria-label="Pantalla completa" title="Pantalla completa">⛶</button>
+        </div>
+        <p class="fallback" id="o3Fallback" hidden>No se pudo cargar el motor 3D (Three.js). El simulador de ozono funciona igual.</p>
+      </div>
+
+      <div class="tour" aria-live="polite">
+        <div class="tour-head">
+          <span class="tour-n" id="oTourN">★</span>
+          <div><div class="tour-k" id="oTourK">Recorrido guiado</div><h4 id="oTourT">Vista general</h4></div>
+        </div>
+        <p id="oTourP"></p>
+        <div class="tour-ctl">
+          <button class="tbtn ghost" id="oPrev" type="button">← Anterior</button>
+          <div class="tdots" id="oDots"></div>
+          <button class="tbtn solid" id="oNext" type="button">Siguiente →</button>
+        </div>
+      </div>
+
+      <div class="vbar" role="toolbar" aria-label="Controles del sistema de ozono">
+        <button class="tbtn" id="oOn" aria-pressed="true"><span>⚡</span>Generador</button>
+        <button class="tbtn" id="oIn" aria-pressed="false"><span>🔍</span>Ver interior</button>
+        <button class="tbtn" id="oLbl" aria-pressed="true"><span>🏷</span>Etiquetas</button>
+        <button class="tbtn" id="oRot" aria-pressed="true"><span>⟳</span>Girar solo</button>
+        <button class="tbtn" id="oReset"><span>⌂</span>Vista inicial</button>
+      </div>
+      <div class="vleg"><b>Moléculas:</b><span><i style="background:#E53935"></i>O₂ oxígeno (2 átomos)</span><span><i style="background:#4FC3F7"></i>O₃ ozono (3 átomos)</span><span><i style="background:#8D6E63"></i>materia orgánica</span><span><i style="background:#B388FF"></i>descarga corona</span><span><i style="background:#ffffff;border:1px solid var(--muted)"></i>burbujas de gas</span></div>
+    </div>
+
+    <div class="sim" style="margin-top:24px">
+      <div class="panel controls">
+        <h3 style="font-size:1.15rem">Simulador de ozonización</h3>
+        <div class="ctl"><label for="oQ">Flujo de oxígeno <output id="oQO"></output></label><input type="range" id="oQ" min="1" max="40" step="1" value="10"><small>Gas que entra al generador, desde el concentrador o el tanque de O₂.</small></div>
+        <div class="ctl"><label for="oC">Concentración de O₃ en el gas <output id="oCO"></output></label><input type="range" id="oC" min="2" max="12" step="0.5" value="10"><small>% en peso. Sube con más potencia y menos flujo; con aire en vez de O₂ solo llega a 1–3 %.</small></div>
+        <div class="ctl"><label for="oE">Eficiencia de transferencia al agua <output id="oEO"></output></label><input type="range" id="oE" min="50" max="95" step="1" value="85"><small>Fracción del ozono que se disuelve. El resto sale como gas al destructor.</small></div>
+        <div class="ctl"><label for="oF">Alimento diario <output id="oFO"></output></label><input type="range" id="oF" min="10" max="1000" step="10" value="100"><small>La dosis en RAS se expresa por kg de alimento.</small></div>
+        <div class="ctl"><label for="oW">Caudal tratado <output id="oWO"></output></label><input type="range" id="oW" min="10" max="300" step="5" value="50"><small>Agua que pasa por el inyector y la columna de contacto.</small></div>
+      </div>
+      <div style="display:grid;gap:12px;min-width:0">
+        <div class="readouts">
+          <div class="ro" id="oR1"><span class="k">Producción de O₃</span><span class="v">–</span><span class="d"></span></div>
+          <div class="ro" id="oR2"><span class="k">Dosis por alimento</span><span class="v">–</span><span class="pill">–</span><span class="d"></span></div>
+          <div class="ro" id="oR3"><span class="k">Dosis en el agua tratada</span><span class="v">–</span><span class="d"></span></div>
+        </div>
+        <div class="panel" style="display:grid;gap:8px">
+          <h4 style="margin:0;font-family:var(--f-display);font-size:1.05rem">¿Cómo se calcula?</h4>
+          <div class="eq" style="white-space:normal">O₃ (g/h) = flujo de O₂ (L/min) × 60 × 1,429 g/L × concentración (%) &nbsp;·&nbsp; Dosis (g/kg) = O₃ (g/h) × 24 × eficiencia ÷ alimento (kg/d)</div>
+          <p style="font-size:.9rem;color:var(--muted)">En RAS de salmón se suele trabajar con <b>10–25 g de O₃ por kg de alimento</b>. La energía de un generador con O₂ es de unos 7–12 kWh por kg de O₃. El control real se hace con el <b>ORP</b> (250–350 mV) y una alarma que corta el generador.</p>
+          <p class="note">Modelo simplificado para aprender. El ozono residual en el agua de peces debe ser prácticamente cero.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="rx" style="margin-top:24px">
+      <div class="panel"><h4>Descarga corona</h4><p>Entre dos electrodos separados por un dieléctrico (vidrio o cerámica) se aplican miles de voltios. La descarga rompe moléculas de O₂ en átomos de oxígeno (O), que se unen a otro O₂ y forman O₃. Casi toda la energía se vuelve calor, por eso la celda se enfría con agua.</p></div>
+      <div class="panel"><h4>Gas de alimentación seco</h4><p>El gas debe ser muy seco (punto de rocío bajo −60 °C). Con humedad se forma ácido nítrico que corroe la celda y baja la producción. Por eso se usa O₂ de un concentrador PSA o de un tanque de oxígeno líquido.</p></div>
+      <div class="panel"><h4>Inyección y contacto</h4><p>El <b>venturi</b> crea una zona de baja presión que succiona el gas sin necesidad de compresor. Luego la <b>columna de contacto</b> da tiempo (1–4 min) para que el ozono se disuelva y oxide la materia orgánica, el nitrito y el color.</p></div>
+      <div class="panel"><h4>Seguridad</h4><p>El ozono gaseoso es tóxico para las personas (límite de exposición ~0,1 ppm). La sala necesita un <b>detector de ozono ambiental</b>, el gas que no se disolvió pasa por un <b>destructor</b> catalítico o térmico, y el agua pasa por UV o desgasificación antes de llegar a los peces.</p></div>
+    </div>
+  </div>
+</section>
+
 <!-- BOMBA DE CALOR -->
 <section class="block" id="bomba">
   <div class="wrap">
     <div class="sec-head">
-      <div class="eyebrow">07 · Control de temperatura</div>
+      <div class="eyebrow">08 · Control de temperatura</div>
       <h2>Bomba de calor agua-agua en 3D</h2>
       <p>En un RAS la temperatura del agua se controla con bombas de calor: mueven calor desde un agua hacia otra usando un refrigerante que se evapora y se condensa en circuito cerrado. Explora el compresor, los intercambiadores de placas y la válvula de expansión, y calcula cuánto calor entrega con tus condiciones.</p>
     </div>
@@ -872,7 +950,7 @@ input[type=range]{height:28px;cursor:pointer}
 <section class="block" id="reacciones">
   <div class="wrap">
     <div class="sec-head">
-      <div class="eyebrow">08 · Química de fondo</div>
+      <div class="eyebrow">09 · Química de fondo</div>
       <h2>Reacciones que explican las interacciones</h2>
     </div>
     <div class="rx">
@@ -890,7 +968,7 @@ input[type=range]{height:28px;cursor:pointer}
 <section class="block" id="etapas">
   <div class="wrap">
     <div class="sec-head">
-      <div class="eyebrow">09 · Sensibilidad por etapa</div>
+      <div class="eyebrow">10 · Sensibilidad por etapa</div>
       <h2>No todas las etapas toleran lo mismo</h2>
     </div>
     <div class="stages">
@@ -906,7 +984,7 @@ input[type=range]{height:28px;cursor:pointer}
 <section class="block" id="fuentes">
   <div class="wrap">
     <div class="sec-head">
-      <div class="eyebrow">10 · Fuentes y limitaciones</div>
+      <div class="eyebrow">11 · Fuentes y limitaciones</div>
       <h2>De dónde salen los números</h2>
     </div>
     <ol class="refs">
@@ -2099,6 +2177,344 @@ function build(){
       pos.set(p.x,Y0+p.y,p.z);m4.compose(pos,p.q,one);mic.setMatrixAt(i,m4);mic.setColorAt(i,p.alive?cAlive:cDead);}
     mic.instanceMatrix.needsUpdate=true;if(mic.instanceColor)mic.instanceColor.needsUpdate=true;
     if(dirty){drawScreen();dirty=false;}
+    renderer.render(scene,camera);
+    const w=host.clientWidth,h=host.clientHeight;
+    STEPS.forEach((s,i)=>{const e=pins[i];if(!e)return;pv.copy(s.pin).project(camera);if(pv.z>1||Math.abs(pv.x)>1.05||Math.abs(pv.y)>1.05){e.style.display='none';return;}e.style.display='';e.style.left=((pv.x+1)/2*w).toFixed(0)+'px';e.style.top=((1-pv.y)/2*h).toFixed(0)+'px';});
+  };
+}
+})();
+</script>
+
+<script>
+/* ======================= OZONO ======================= */
+(function(){
+const $=id=>document.getElementById(id);
+const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const fmt=(v,d)=>Number(v).toLocaleString('es-CL',{minimumFractionDigits:d,maximumFractionDigits:d});
+const st={on:true,q:10,c:10,e:85,f:100,w:50};
+let R=null,dirty=true;
+function calc(){
+  const o2gh=st.q*60*1.429, o3=st.on?o2gh*st.c/100:0;
+  const dose=o3*24*st.e/100/st.f, mgl=o3*st.e/100/st.w, kw=o3/1000*10;
+  return {o3,dose,mgl,kw};
+}
+function setRO(id,val,unit,detail,cls,label){const el=$(id);el.querySelector('.v').innerHTML=val+'<small>'+unit+'</small>';el.querySelector('.d').textContent=detail;
+  const p=el.querySelector('.pill');if(p){p.className='pill '+cls;p.textContent=label;el.style.setProperty('--st','var(--'+cls+')');}}
+function render(){
+  R=calc();dirty=true;
+  $('oQO').textContent=st.q+' L/min';$('oCO').textContent=fmt(st.c,1)+' %';$('oEO').textContent=st.e+' %';$('oFO').textContent=st.f+' kg/d';$('oWO').textContent=st.w+' m³/h';
+  setRO('oR1',fmt(R.o3,1),'g/h',st.on?('≈ '+fmt(R.o3*24/1000,2)+' kg/d · energía ≈ '+fmt(R.kw,1)+' kW'):'Generador apagado');
+  let s;if(!st.on||R.dose<=0)s=['crit','Sin ozono'];else if(R.dose<10)s=['warn','Bajo: poca oxidación'];else if(R.dose<=25)s=['ok','En rango 10–25'];else s=['crit','Alto: riesgo de residual'];
+  setRO('oR2',fmt(R.dose,1),'g/kg',fmt(R.o3*24*st.e/100,0)+' g/d disueltos para '+st.f+' kg de alimento',s[0],s[1]);
+  setRO('oR3',fmt(R.mgl,2),'mg/L','Antes de reaccionar en la columna; a los peces debe llegar ~0 mg/L.');
+}
+[['oQ','q'],['oC','c'],['oE','e'],['oF','f'],['oW','w']].forEach(([id,k])=>$(id).addEventListener('input',e=>{st[k]=+e.target.value;render();}));
+const tg=(id,fn)=>{const b=$(id);b.addEventListener('click',()=>{const on=b.getAttribute('aria-pressed')!=='true';b.setAttribute('aria-pressed',on);fn(on);});};
+tg('oOn',on=>{st.on=on;render();});
+render();
+
+const host=$('o3Viewer');
+if(!window.THREE){$('o3Fallback').hidden=false;return;}
+let tick=null;
+try{tick=build();}catch(e){console.warn(e);$('o3Fallback').hidden=false;return;}
+let last=performance.now(),fails=0;
+const inView=el=>{const r=el.getBoundingClientRect();return r.bottom>-200&&r.top<(window.innerHeight||800)+200;};
+function loop(now){let dt=(now-last)/1000;last=now;if(!(dt>0))dt=0;if(dt>0.05)dt=0.05;
+  if(tick&&inView(host)){try{tick(dt);fails=0;}catch(e){console.warn(e);if(++fails>30){tick=null;if(window.show3dMsg)window.show3dMsg(host,'La maqueta 3D tuvo un problema en este dispositivo.');}}}
+  requestAnimationFrame(loop);}
+try{tick(0);}catch(e){console.warn(e);}
+requestAnimationFrame(loop);
+
+function build(){
+  const T=THREE;
+  const renderer=new T.WebGLRenderer({antialias:true,alpha:true});
+  renderer.setPixelRatio(window.pr3d?window.pr3d():1.5);
+  renderer.outputEncoding=T.sRGBEncoding;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;
+  host.prepend(renderer.domElement);if(window.watch3d)window.watch3d(host,renderer.domElement);
+  const scene=new T.Scene(),camera=new T.PerspectiveCamera(36,1,0.1,100);
+  const pm=new T.PMREMGenerator(renderer),env=new T.Scene();
+  env.add(new T.Mesh(new T.SphereGeometry(20,32,16),new T.MeshBasicMaterial({color:0x7d8a96,side:T.BackSide})));
+  [[0,12,0,16,16],[12,5,2,6,12],[-12,5,4,6,12],[0,5,-12,12,6],[0,4,12,10,5]].forEach(p=>{const m=new T.Mesh(new T.PlaneGeometry(p[3],p[4]),new T.MeshBasicMaterial({color:0xffffff,side:T.DoubleSide}));m.position.set(p[0],p[1],p[2]);m.lookAt(0,0,0);env.add(m);});
+  scene.environment=pm.fromScene(env,0.04).texture;
+  scene.add(new T.HemisphereLight(0xffffff,0x40505a,0.5));
+  const dl=new T.DirectionalLight(0xffffff,0.8);dl.position.set(4,9,6);scene.add(dl);
+  const std=o=>new T.MeshStandardMaterial(o);
+  const lin=c=>new T.Color(c).convertSRGBToLinear();
+  const M={
+    cab:std({color:0xdcdcd2,metalness:0.15,roughness:0.55,envMapIntensity:0.6}),
+    side:std({color:0xd2d3ca,metalness:0.15,roughness:0.55,envMapIntensity:0.6}),
+    grille:std({color:0xb9bab2,metalness:0.2,roughness:0.6}),
+    black:std({color:0x1b1f23,metalness:0.4,roughness:0.55}),
+    steel:std({color:0xb7c0c8,metalness:0.9,roughness:0.28,envMapIntensity:0.8}),
+    brass:std({color:0xc9a04a,metalness:0.9,roughness:0.3}),
+    panel:std({color:0x8ea3c7,metalness:0.1,roughness:0.5}),
+    key:std({color:0x2bb39a,metalness:0.1,roughness:0.45}),
+    yellow:std({color:0xf2c200,metalness:0.1,roughness:0.6}),
+    conc:std({color:0xe6e9ec,metalness:0.1,roughness:0.55}),
+    blue:std({color:0x1e5aa8,metalness:0.35,roughness:0.45}),
+    pvc:std({color:0x8a9bb0,metalness:0.1,roughness:0.5}),
+    pvcG:std({color:0x9aa6ad,metalness:0.1,roughness:0.5}),
+    glass:std({color:0xeaf5ff,metalness:0,roughness:0.05,transparent:true,opacity:0.22,depthWrite:false,side:T.DoubleSide}),
+    water:std({color:0x2f80d0,metalness:0,roughness:0.2,transparent:true,opacity:0.22,depthWrite:false}),
+    destr:std({color:0x6b7884,metalness:0.6,roughness:0.4}),
+    base:std({color:0xdbe7f3,metalness:0,roughness:0.9}),baseEdge:std({color:0x1565c0,metalness:0.2,roughness:0.5}),
+    cell:std({color:0x9aa4ad,metalness:0.85,roughness:0.3}),
+    hv:std({color:0x3a3f45,metalness:0.4,roughness:0.5}),
+    bubble:std({color:0xffffff,roughness:0.1,transparent:true,opacity:0.6,depthWrite:false}),
+    mol:std({color:0xffffff,roughness:0.35,vertexColors:true}),
+    org:std({color:0x5d4037,roughness:0.85,emissive:0x3e2723,emissiveIntensity:0.35})
+  };
+  const add=(g,m,x,y,z,par)=>{const o=new T.Mesh(g,m);o.position.set(x,y,z);(par||scene).add(o);return o;};
+  const V=(x,y,z)=>new T.Vector3(x,y,z);
+  const tex=(w,h,draw)=>{const c=document.createElement('canvas');c.width=w;c.height=h;draw(c.getContext('2d'),w,h);const t=new T.CanvasTexture(c);t.encoding=T.sRGBEncoding;return t;};
+
+  // plataforma
+  add(new T.CylinderGeometry(6.0,6.1,0.14,64),M.base,0,-0.08,0);
+  add(new T.TorusGeometry(6.05,0.035,8,96),M.baseEdge,0,-0.01,0).rotation.x=Math.PI/2;
+  add(new T.PlaneGeometry(10,4),new T.MeshBasicMaterial({map:tex(128,128,(g)=>{const gr=g.createRadialGradient(64,64,10,64,64,64);gr.addColorStop(0,'rgba(0,0,0,0.32)');gr.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=gr;g.fillRect(0,0,128,128);}),transparent:true,depthWrite:false}),0,0.002,0).rotation.x=-Math.PI/2;
+
+  // 1) concentrador de oxígeno (PSA)
+  const KX=-3.9;
+  add(new T.BoxGeometry(0.95,1.55,0.75),M.conc,KX,0.88,0);
+  [-0.22,0.22].forEach(dx=>add(new T.CylinderGeometry(0.12,0.12,1.1,24),M.steel,KX+dx,0.9,0.42));
+  add(new T.BoxGeometry(0.5,0.22,0.03),M.panel,KX,1.42,0.39);
+  add(new T.PlaneGeometry(0.4,0.12),new T.MeshBasicMaterial({map:tex(256,80,(g)=>{g.fillStyle='#06120a';g.fillRect(0,0,256,80);g.fillStyle='#3dff7a';g.font='bold 46px monospace';g.textAlign='center';g.textBaseline='middle';g.fillText('O2 93%',128,42);}),toneMapped:false}),KX,1.42,0.41);
+  [[-0.38,-0.3],[0.38,-0.3],[-0.38,0.3],[0.38,0.3]].forEach(p=>add(new T.CylinderGeometry(0.05,0.05,0.1,12),M.black,KX+p[0],0.05,p[1]));
+
+  // 2) generador de ozono (gabinete)
+  const GX=-0.9,GY=1.2,GW=2.1,GH=1.9,GD=0.75,SX=GX+GW/2+0.24;
+  const cabMat=M.cab;
+  add(new T.BoxGeometry(GW,GH,GD),cabMat,GX,GY,0);
+  add(new T.BoxGeometry(0.46,GH,GD+0.04),M.side,SX,GY,0);
+  [[GX-GW/2+0.15],[GX+GW/2-0.1],[SX]].forEach(p=>[-0.28,0.28].forEach(z=>add(new T.CylinderGeometry(0.06,0.07,0.1,14),M.black,p[0],0.2,z)));
+  const FZ=GD/2+0.012;
+  // display + teclado
+  add(new T.BoxGeometry(0.5,0.5,0.03),M.panel,GX-0.55,GY+0.25,FZ);
+  const lcd=document.createElement('canvas');lcd.width=256;lcd.height=96;const lcdT=new T.CanvasTexture(lcd);lcdT.encoding=T.sRGBEncoding;
+  add(new T.PlaneGeometry(0.38,0.13),new T.MeshBasicMaterial({map:lcdT,toneMapped:false}),GX-0.55,GY+0.39,FZ+0.017);
+  for(let r=0;r<2;r++)for(let c=0;c<4;c++)add(new T.BoxGeometry(0.06,0.05,0.03),M.key,GX-0.73+c*0.12,GY+0.17-r*0.1,FZ+0.025);
+  // rejilla de ventilación
+  add(new T.BoxGeometry(0.62,0.62,0.03),M.grille,GX-0.62,GY-0.55,FZ);
+  for(let k=0;k<12;k++){const sl=add(new T.BoxGeometry(0.58,0.02,0.05),M.grille,GX-0.62,GY-0.82+k*0.049,FZ+0.025);sl.rotation.x=-0.5;}
+  // rótulo de alto voltaje
+  add(new T.PlaneGeometry(0.28,0.4),new T.MeshBasicMaterial({map:tex(160,230,(g,w,h)=>{g.fillStyle='#F2C200';g.fillRect(0,0,w,h);g.strokeStyle='#111';g.lineWidth=6;g.strokeRect(4,4,w-8,h-8);
+    g.fillStyle='#111';g.beginPath();g.moveTo(80,22);g.lineTo(130,100);g.lineTo(30,100);g.closePath();g.fill();g.fillStyle='#F2C200';g.font='bold 54px sans-serif';g.textAlign='center';g.fillText('⚡',80,94);
+    g.fillStyle='#111';g.font='bold 30px sans-serif';g.fillText('ALTO',80,145);g.fillText('VOLTAJE',80,180);g.font='22px sans-serif';g.fillText('8000 V',80,212);}),toneMapped:false}),GX+0.62,GY+0.35,FZ+0.002);
+  [GY+0.72,GY-0.55].forEach(y=>{add(new T.CylinderGeometry(0.05,0.05,0.04,16),M.steel,GX+0.62,y,FZ+0.02).rotation.x=Math.PI/2;});
+  // columna lateral: manómetro, válvula, rotámetro, salida
+  const SZ=GD/2+0.032;
+  add(new T.CylinderGeometry(0.13,0.13,0.06,32),M.steel,SX,GY+0.62,SZ).rotation.x=Math.PI/2;
+  add(new T.CircleGeometry(0.115,32),new T.MeshBasicMaterial({map:tex(128,128,(g)=>{g.fillStyle='#f4f4ef';g.beginPath();g.arc(64,64,62,0,7);g.fill();g.strokeStyle='#222';g.lineWidth=3;
+    for(let i=0;i<=10;i++){const a=Math.PI*0.75+i/10*Math.PI*1.5;g.beginPath();g.moveTo(64+Math.cos(a)*46,64+Math.sin(a)*46);g.lineTo(64+Math.cos(a)*57,64+Math.sin(a)*57);g.stroke();}
+    const n=Math.PI*0.75+0.45*Math.PI*1.5;g.strokeStyle='#c62222';g.lineWidth=5;g.beginPath();g.moveTo(64,64);g.lineTo(64+Math.cos(n)*44,64+Math.sin(n)*44);g.stroke();g.fillStyle='#222';g.beginPath();g.arc(64,64,6,0,7);g.fill();}),toneMapped:false}),SX,GY+0.62,SZ+0.032);
+  add(new T.CylinderGeometry(0.09,0.09,0.08,24),M.yellow,SX,GY+0.27,SZ+0.01).rotation.x=Math.PI/2;
+  add(new T.CylinderGeometry(0.065,0.075,0.1,8),M.black,SX,GY+0.27,SZ+0.07).rotation.x=Math.PI/2;
+  add(new T.BoxGeometry(0.13,0.5,0.03),M.black,SX,GY-0.2,SZ);
+  add(new T.CylinderGeometry(0.035,0.035,0.42,16),M.glass,SX,GY-0.2,SZ+0.03);
+  const flt=add(new T.CylinderGeometry(0.03,0.018,0.04,12),std({color:0xd32f2f,roughness:0.5}),SX,GY-0.25,SZ+0.03);
+  add(new T.CylinderGeometry(0.05,0.05,0.04,16),M.steel,SX,GY-0.62,SZ+0.01).rotation.x=Math.PI/2;
+  // conexiones laterales de bronce (O₂ entra / O₃ sale / agua de enfriamiento)
+  const RX=SX+0.23;
+  [[GY-0.35],[GY-0.6]].forEach(p=>{const f=add(new T.CylinderGeometry(0.035,0.035,0.16,12),M.brass,RX+0.06,p[0],0.15);f.rotation.z=Math.PI/2;});
+  // interior: celda corona
+  const inner=new T.Group();scene.add(inner);inner.visible=false;
+  const CY=GY+0.15,TUBES=[-0.18,0,0.18].map(dy=>CY+dy);
+  add(new T.BoxGeometry(1.5,0.62,0.48),std({color:0x7e8a94,metalness:0.7,roughness:0.35,transparent:true,opacity:0.25,depthWrite:false}),GX,CY,-0.05,inner);
+  const glowM=new T.MeshBasicMaterial({color:0x8e44ff,transparent:true,opacity:0.6,depthWrite:false});
+  const glows=[];
+  TUBES.forEach(y=>[-0.12,0.12].forEach(z=>{
+    const o=add(new T.CylinderGeometry(0.075,0.075,1.4,20,1,true),M.glass,GX,y,z-0.05,inner);o.rotation.z=Math.PI/2;
+    const e=add(new T.CylinderGeometry(0.035,0.035,1.42,12),M.cell,GX,y,z-0.05,inner);e.rotation.z=Math.PI/2;
+    const g=add(new T.CylinderGeometry(0.062,0.062,1.36,20,1,true),glowM,GX,y,z-0.05,inner);g.rotation.z=Math.PI/2;glows.push(g);}));
+  add(new T.BoxGeometry(0.5,0.42,0.42),M.hv,GX+0.55,GY-0.55,-0.05,inner);
+  for(let k=0;k<5;k++)add(new T.BoxGeometry(0.52,0.025,0.44),M.cell,GX+0.55,GY-0.72+k*0.08,-0.05,inner);
+  const coil=add(new T.TorusGeometry(0.11,0.035,10,24),M.brass,GX+0.55,GY-0.28,0.18,inner);
+  const cw=add(new T.CylinderGeometry(0.04,0.04,1.5,12),M.blue,GX,CY+0.36,-0.05,inner);cw.rotation.z=Math.PI/2;
+  const cw2=add(new T.CylinderGeometry(0.04,0.04,1.5,12),M.blue,GX,CY-0.36,-0.05,inner);cw2.rotation.z=Math.PI/2;
+  const corona=new T.PointLight(0xa57cff,0,2.4,2);corona.position.set(GX,CY,0.2);scene.add(corona);
+
+  // tuberías de gas
+  const cpath=pts=>new T.CatmullRomCurve3(pts,false,'catmullrom',0.15);
+  const pO2=cpath([V(KX+0.48,1.3,0),V(KX+0.9,1.3,0),V(GX-GW/2-0.2,1.3,0),V(GX-GW/2-0.05,CY,-0.05),V(GX-0.7,CY,-0.05)]);
+  const pCell=new T.LineCurve3(V(GX-0.7,CY,-0.05),V(GX+0.7,CY,-0.05));
+  const IX=2.3,IY=0.55;
+  const pO3=cpath([V(GX+0.7,CY,-0.05),V(SX,CY,-0.05),V(RX+0.15,GY-0.35,0.15),V(RX+0.45,GY-0.35,0.15),V(IX-0.05,1.1,0.15),V(IX,0.95,0.05),V(IX,IY+0.08,0)]);
+  const tube=(c,r,m)=>scene.add(new T.Mesh(new T.TubeGeometry(c,100,r,10,false),m));
+  tube(cpath([V(KX+0.48,1.3,0),V(KX+0.9,1.3,0),V(GX-GW/2-0.2,1.3,0),V(GX-GW/2,1.3,0)]),0.03,M.steel);
+  tube(cpath([V(RX+0.14,GY-0.35,0.15),V(RX+0.45,GY-0.35,0.15),V(IX-0.05,1.1,0.15),V(IX,0.95,0.05),V(IX,IY+0.14,0)]),0.03,M.steel);
+  tube(cpath([V(RX+0.14,GY-0.6,0.15),V(RX+0.4,GY-0.6,0.15),V(RX+0.5,0.3,0.25),V(RX+0.5,0.05,0.25)]),0.025,M.blue);
+
+  // 3) agua: bomba de refuerzo + venturi + columna de contacto
+  const pipeR=0.1;
+  const wPath=cpath([V(0.9,IY,0.9),V(1.5,IY,0.9),V(1.7,IY,0.3),V(1.8,IY,0),V(IX,IY,0),V(3.2,IY,0),V(3.55,IY,0),V(3.6,0.45,0)]);
+  tube(cpath([V(0.6,IY,1.4),V(0.9,IY,0.9),V(1.5,IY,0.9),V(1.7,IY,0.3),V(1.8,IY,0)]),pipeR,M.pvc);
+  const pipeX=(x0,x1,y,z,m)=>{const o=add(new T.CylinderGeometry(pipeR,pipeR,x1-x0,24),m,(x0+x1)/2,y,z);o.rotation.z=Math.PI/2;};
+  pipeX(1.8,IX-0.28,IY,0,M.pvc);pipeX(IX+0.28,3.3,IY,0,M.pvc);
+  // bomba
+  const PX=1.15,PZ=0.9;
+  add(new T.BoxGeometry(0.9,0.06,0.5),M.steel,PX,0.08,PZ);
+  const mot=add(new T.CylinderGeometry(0.16,0.16,0.42,24),M.blue,PX-0.1,0.3,PZ);mot.rotation.z=Math.PI/2;
+  for(let k=0;k<5;k++){const r=add(new T.CylinderGeometry(0.172,0.172,0.02,24),M.blue,PX-0.27+k*0.07,0.3,PZ);r.rotation.z=Math.PI/2;}
+  add(new T.CylinderGeometry(0.2,0.2,0.14,28),M.steel,PX+0.2,0.33,PZ).rotation.z=Math.PI/2;
+  add(new T.CylinderGeometry(0.06,0.06,0.25,12),M.steel,PX+0.2,0.5,PZ);
+  // venturi
+  add(new T.CylinderGeometry(0.06,pipeR*1.25,0.28,24),M.pvcG,IX-0.14,IY,0).rotation.z=Math.PI/2;
+  add(new T.CylinderGeometry(pipeR*1.25,0.06,0.28,24),M.pvcG,IX+0.14,IY,0).rotation.z=Math.PI/2;
+  add(new T.CylinderGeometry(0.065,0.065,0.08,16),M.pvcG,IX,IY,0).rotation.z=Math.PI/2;
+  add(new T.CylinderGeometry(0.04,0.04,0.14,12),M.pvcG,IX,IY+0.1,0);
+  [IX-0.3,IX+0.3].forEach(x=>{const f=add(new T.CylinderGeometry(0.16,0.16,0.04,24),M.pvcG,x,IY,0);f.rotation.z=Math.PI/2;});
+  // columna de contacto
+  const CX=3.75,CH=2.6,CR=0.42,CB=0.3;
+  add(new T.CylinderGeometry(CR,CR,CH,40,1,true),M.glass,CX,CB+CH/2,0);
+  add(new T.CylinderGeometry(CR-0.02,CR-0.02,CH-0.25,40),M.water,CX,CB+(CH-0.25)/2,0);
+  const top=add(new T.SphereGeometry(CR,40,16,0,Math.PI*2,0,Math.PI/2),M.pvcG,CX,CB+CH,0);
+  add(new T.CylinderGeometry(CR+0.03,CR+0.03,0.06,40),M.pvcG,CX,CB+CH,0);
+  add(new T.CylinderGeometry(CR+0.03,CR+0.08,0.3,40),M.pvcG,CX,CB-0.15+0.15,0);
+  [0,1,2,3].forEach(k=>{const a=k*Math.PI/2+Math.PI/4;add(new T.BoxGeometry(0.06,CB,0.06),M.steel,CX+Math.cos(a)*(CR+0.02),CB/2,Math.sin(a)*(CR+0.02));});
+  pipeX(3.3,CX-CR,IY,0,M.pvc);
+  // salida al estanque + sonda ORP
+  const outP=cpath([V(CX+CR,CB+0.25,0),V(CX+CR+0.5,CB+0.25,0),V(CX+CR+0.8,CB+0.25,0.5),V(CX+CR+0.8,CB+0.25,1.4)]);
+  tube(outP,pipeR,M.pvc);
+  add(new T.CylinderGeometry(0.03,0.03,0.4,10),M.black,CX+CR+0.5,CB+0.45,0);
+  add(new T.BoxGeometry(0.22,0.28,0.1),std({color:0xf4f6f8,roughness:0.5}),CX+CR+0.5,CB+0.85,0);
+  add(new T.PlaneGeometry(0.16,0.08),new T.MeshBasicMaterial({map:tex(160,80,(g)=>{g.fillStyle='#06120a';g.fillRect(0,0,160,80);g.fillStyle='#3dff7a';g.font='bold 34px monospace';g.textAlign='center';g.textBaseline='middle';g.fillText('310mV',80,42);}),toneMapped:false}),CX+CR+0.5,CB+0.88,0.051);
+  // destructor de ozono residual
+  const DX=CX,DY=CB+CH+0.75;
+  tube(cpath([V(CX,CB+CH+0.35,0),V(CX,DY-0.25,0)]),0.035,M.steel);
+  add(new T.BoxGeometry(0.55,0.5,0.4),M.destr,DX,DY,0);
+  for(let k=0;k<6;k++)add(new T.BoxGeometry(0.57,0.025,0.42),M.cell,DX,DY-0.2+k*0.08,0);
+  add(new T.CylinderGeometry(0.04,0.04,0.3,12),M.steel,DX,DY+0.4,0);
+  add(new T.SphereGeometry(0.05,12,8),M.steel,DX,DY+0.56,0);
+
+  // moléculas
+  const merge=gs=>{const pos=[],nor=[],col=[];gs.forEach(o=>{let g=o.g.toNonIndexed();g.applyMatrix4(o.m);pos.push(...g.attributes.position.array);nor.push(...g.attributes.normal.array);const c=lin(o.c);for(let i=0;i<g.attributes.position.count;i++)col.push(c.r,c.g,c.b);});
+    const out=new T.BufferGeometry();out.setAttribute('position',new T.Float32BufferAttribute(pos,3));out.setAttribute('normal',new T.Float32BufferAttribute(nor,3));out.setAttribute('color',new T.Float32BufferAttribute(col,3));return out;};
+  const mt=(x,y,z)=>new T.Matrix4().makeTranslation(x,y,z);
+  const sp=r=>new T.IcosahedronGeometry(r,1);
+  const gO2=merge([{g:sp(0.04),c:'#E53935',m:mt(-0.032,0,0)},{g:sp(0.04),c:'#E53935',m:mt(0.032,0,0)}]);
+  const gO3=merge([{g:sp(0.038),c:'#4FC3F7',m:mt(0,0.022,0)},{g:sp(0.038),c:'#4FC3F7',m:mt(-0.05,-0.02,0)},{g:sp(0.038),c:'#4FC3F7',m:mt(0.05,-0.02,0)}]);
+  const gO1=sp(0.04);
+  const NG=reduce?70:110,NW=reduce?40:70,NOFF=12;
+  const m2=new T.InstancedMesh(gO2,M.mol,NG+NOFF),m3=new T.InstancedMesh(gO3,M.mol,NG+NW+NOFF),m1=new T.InstancedMesh(gO1,std({color:0xff8a65,emissive:0xff5722,emissiveIntensity:0.6}),30);
+  [m2,m3,m1].forEach(m=>{m.frustumCulled=false;scene.add(m);});
+  const gas=[];for(let i=0;i<NG;i++)gas.push({u:Math.random(),j:V((Math.random()-0.5),(Math.random()-0.5),(Math.random()-0.5)),r:Math.random(),q:new T.Quaternion().setFromEuler(new T.Euler(Math.random()*6,Math.random()*6,0)),ax:V(Math.random()-0.5,Math.random()-0.5,Math.random()-0.5).normalize()});
+  const dis=[];for(let i=0;i<NW;i++)dis.push({u:Math.random(),y:Math.random(),a:Math.random()*6.28,rr:Math.random(),q:new T.Quaternion(),ax:V(Math.random()-0.5,Math.random()-0.5,Math.random()-0.5).normalize(),r:Math.random()});
+  const off=[];for(let i=0;i<NOFF;i++)off.push({u:Math.random(),q:new T.Quaternion()});
+  const NBB=reduce?60:110;
+  const bub=new T.InstancedMesh(new T.SphereGeometry(0.03,8,6),M.bubble,NBB);bub.frustumCulled=false;scene.add(bub);
+  const bb=[];for(let i=0;i<NBB;i++)bb.push({y:Math.random(),a:Math.random()*6.28,rr:Math.random(),s:0.6+Math.random()*0.8});
+  const NORG=40,org=new T.InstancedMesh(new T.DodecahedronGeometry(0.05,0),M.org,NORG);org.frustumCulled=false;scene.add(org);
+  const og=[];for(let i=0;i<NORG;i++)og.push({y:Math.random(),a:Math.random()*6.28,rr:Math.random(),life:Math.random()});
+
+  // pantalla del generador
+  function drawLcd(){const g=lcd.getContext('2d');g.fillStyle=st.on?'#1d3a12':'#162016';g.fillRect(0,0,256,96);g.fillStyle=st.on?'#9dff6a':'#3b5a32';g.font='bold 34px monospace';g.textAlign='left';g.textBaseline='middle';
+    g.fillText(st.on?('O3 '+R.o3.toFixed(0)+' g/h'):'O3  OFF',12,30);g.font='26px monospace';g.fillText(st.on?(st.c.toFixed(1)+'% '+st.q+'L/m'):'STANDBY',12,70);lcdT.needsUpdate=true;}
+
+  // recorrido guiado
+  const STEPS=[
+    {t:'Vista general',k:'Recorrido guiado',p:'Un sistema de ozonización tiene cuatro partes: la <b>fuente de oxígeno</b>, el <b>generador</b> que fabrica el ozono, el <b>inyector</b> que lo mezcla con el agua y la <b>columna de contacto</b> donde reacciona. Toca <b>Siguiente</b> o un número.',tg:V(0,1.3,0),az:0.45,el:0.32,d:null,hl:[]},
+    {t:'Fuente de oxígeno',k:'Paso 1 de 6',p:'Un <b>concentrador PSA</b> separa el oxígeno del aire con columnas de zeolita y entrega O₂ al ~93 %, muy seco. Con oxígeno el generador produce 3 a 5 veces más ozono que con aire. Las moléculas <b style="color:#E53935">rojas</b> de dos esferas son O₂.',tg:V(KX,1.0,0),az:0.35,el:0.2,d:4.6,hl:['conc'],pin:V(KX,1.85,0)},
+    {t:'Generador de ozono',k:'Paso 2 de 6',p:'El gabinete tiene una <b>pantalla con teclado</b> para fijar la producción, una <b>rejilla</b> de ventilación, y en la columna lateral un <b>manómetro</b>, una <b>válvula de aguja</b> y un <b>rotámetro</b> para regular el flujo de gas. El rótulo amarillo avisa del alto voltaje interior.',tg:V(GX+0.2,GY,0.3),az:0.15,el:0.12,d:4.6,hl:['cab'],pin:V(GX,GY+1.15,0)},
+    {t:'Celda de descarga corona',k:'Paso 3 de 6',p:'Dentro hay tubos con un electrodo y un <b>dieléctrico</b> de vidrio. Con miles de voltios aparece una descarga violeta que rompe el O₂ en átomos de oxígeno (naranja). Cada átomo se une a otro O₂ y forma <b style="color:#0288D1">O₃</b> (tres esferas celestes). Activé la vista interior.',tg:V(GX,CY,0),az:0.25,el:0.1,d:3.8,hl:['cell'],pin:V(GX-0.3,CY+0.55,0),inside:true},
+    {t:'Bomba e inyector venturi',k:'Paso 4 de 6',p:'Una <b>bomba de refuerzo</b> empuja agua por el <b>venturi</b>. En el estrechamiento el agua acelera y la presión baja, lo que succiona el gas con ozono por el tubo superior y lo rompe en burbujas finas.',tg:V(1.9,0.6,0.4),az:0.35,el:0.25,d:4.2,hl:['venturi'],pin:V(IX,IY+0.55,0)},
+    {t:'Columna de contacto',k:'Paso 5 de 6',p:'Las burbujas suben por la columna y el ozono se disuelve. Al chocar con la <b style="color:#8D6E63">materia orgánica</b> (café) la oxida y la rompe; también oxida nitrito a nitrato y aclara el agua. El tiempo de contacto típico es de 1 a 4 minutos.',tg:V(CX,1.6,0),az:0.3,el:0.18,d:5.2,hl:['col'],pin:V(CX-0.5,2.4,0)},
+    {t:'Destructor y control ORP',k:'Paso 6 de 6',p:'El gas que no se disolvió sube al <b>destructor</b>, que convierte el ozono de vuelta en O₂ antes de liberarlo. A la salida, la <b>sonda ORP</b> (≈ 250–350 mV) controla el generador; antes de los peces el agua pasa por UV o desgasificación para eliminar cualquier residual.',tg:V(CX+0.3,2.4,0.3),az:0.55,el:0.25,d:5.4,hl:['destr'],pin:V(DX,DY+0.75,0)}
+  ];
+  const HL={conc:[M.conc],cab:[M.cab,M.side],cell:[M.cell],venturi:[M.pvcG,M.blue],col:[M.water],destr:[M.destr]};
+  const lw=$('o3Lbls');
+  const pins=STEPS.map((s,i)=>{if(!s.pin)return null;const b=document.createElement('button');b.type='button';b.className='pin';b.innerHTML='<b>'+i+'</b><span>'+s.t+'</span>';b.addEventListener('click',()=>goStep(i));lw.appendChild(b);return b;});
+  const dots=$('oDots');STEPS.forEach((_,i)=>{const d=document.createElement('button');d.type='button';d.setAttribute('aria-label','Paso '+i);d.addEventListener('click',()=>goStep(i));dots.appendChild(d);});
+  const tgt=V(0,1.3,0);let az,el,dist,auto=true,goal=null,step=0,inside=false;
+  const narrow=()=>host.clientWidth<620;
+  const D0=()=>narrow()?15:11.2;
+  const shortest=(a,b)=>{let d=(b-a)%(Math.PI*2);if(d>Math.PI)d-=Math.PI*2;if(d<-Math.PI)d+=Math.PI*2;return a+d;};
+  function resetView(){az=0.45;el=0.32;dist=D0();tgt.set(0,1.3,0);goal=null;}
+  resetView();
+  function setInside(on){inside=on;$('oIn').setAttribute('aria-pressed',on);inner.visible=on;
+    [M.cab,M.side].forEach(m=>{m.transparent=on;m.opacity=on?0.18:1;m.depthWrite=!on;m.needsUpdate=true;});}
+  function goStep(i){
+    step=Math.max(0,Math.min(STEPS.length-1,i));const s=STEPS[step];
+    $('oTourN').textContent=step===0?'★':step;$('oTourT').textContent=s.t;$('oTourK').textContent=s.k;$('oTourP').innerHTML=s.p;
+    $('oPrev').disabled=step===0;$('oNext').textContent=step===STEPS.length-1?'Volver al inicio ⟲':'Siguiente →';
+    [].forEach.call(dots.children,(d,j)=>d.setAttribute('aria-current',j===step?'true':'false'));
+    pins.forEach((p,j)=>p&&p.classList.toggle('on',j===step));
+    goal={tg:s.tg.clone(),az:s.az,el:s.el,d:s.d?s.d*(narrow()?1.45:1):D0()};
+    if(s.inside)setInside(true);
+    if(step>0){auto=false;$('oRot').setAttribute('aria-pressed','false');}
+  }
+  $('oPrev').addEventListener('click',()=>goStep(step-1));
+  $('oNext').addEventListener('click',()=>goStep(step===STEPS.length-1?0:step+1));
+  tg('oIn',on=>setInside(on));
+  tg('oLbl',on=>lw.classList.toggle('off',!on));
+  tg('oRot',on=>{auto=on;});
+  $('oReset').addEventListener('click',()=>goStep(0));
+  const shell=$('o3Shell');
+  const setFull=on=>{shell.classList.toggle('full',on);$('oFs').textContent=on?'✕':'⛶';document.body.style.overflow=on?'hidden':'';};
+  $('oFs').addEventListener('click',()=>setFull(!shell.classList.contains('full')));
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&shell.classList.contains('full'))setFull(false);});
+  const cv=renderer.domElement,ptr=new Map();let pinch0=0,dist0=0;
+  const hint=$('o3Hint');const killHint=()=>hint.classList.add('gone');setTimeout(killHint,6000);
+  cv.addEventListener('pointerdown',e=>{goal=null;killHint();cv.setPointerCapture(e.pointerId);ptr.set(e.pointerId,{x:e.clientX,y:e.clientY});if(ptr.size===2){const a=[...ptr.values()];pinch0=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y);dist0=dist;}});
+  cv.addEventListener('pointermove',e=>{if(!ptr.has(e.pointerId))return;const p=ptr.get(e.pointerId);const dx=e.clientX-p.x,dy=e.clientY-p.y;p.x=e.clientX;p.y=e.clientY;
+    if(ptr.size===1){az-=dx*0.008;el=Math.max(0.02,Math.min(1.35,el+dy*0.006));}
+    else if(ptr.size===2&&pinch0>0){const a=[...ptr.values()];dist=Math.max(3,Math.min(20,dist0*pinch0/(Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y)||1)));}});
+  const up=e=>{ptr.delete(e.pointerId);if(ptr.size<2)pinch0=0;};
+  cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
+  cv.addEventListener('wheel',e=>{e.preventDefault();goal=null;dist=Math.max(3,Math.min(20,dist*(1+e.deltaY*0.001)));},{passive:false});
+  function resize(){host.classList.toggle('narrow',narrow());const w=host.clientWidth,h=host.clientHeight;if(w<2||h<2)return;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();}
+  new ResizeObserver(resize).observe(host);resize();
+
+  goStep(0);goal=null;
+  const m4=new T.Matrix4(),pos=new T.Vector3(),scl=new T.Vector3(),qa=new T.Quaternion(),one=V(1,1,1),pv=new T.Vector3(),qi=new T.Quaternion();
+  let clk=0,pw=1;
+  return function(dt){
+    clk+=dt;
+    if(!isFinite(az+el+dist+tgt.x+tgt.y+tgt.z))resetView();
+    if(auto)az+=dt*0.12;
+    if(goal){const k=1-Math.exp(-dt*3);az+=(shortest(az,goal.az)-az)*k;el+=(goal.el-el)*k;dist+=(goal.d-dist)*k;tgt.lerp(goal.tg,k);}
+    camera.position.set(tgt.x+dist*Math.cos(el)*Math.sin(az),tgt.y+dist*Math.sin(el),tgt.z+dist*Math.cos(el)*Math.cos(az));camera.lookAt(tgt);
+    const pulse=0.3+0.3*Math.sin(clk*4);
+    Object.keys(HL).forEach(key=>{const on=STEPS[step].hl.indexOf(key)>=0;HL[key].forEach(m=>{m.emissive.setHex(on?0x1e88e5:0);m.emissiveIntensity=on?pulse:0;});});
+    pw+=((st.on?1:0)-pw)*Math.min(1,dt*5);
+    const fl=0.75+0.25*Math.sin(clk*53)*Math.sin(clk*17);
+    glowM.opacity=0.8*pw*fl;corona.intensity=inside?2.5*pw*fl:0;
+    flt.position.y=GY-0.42+0.32*Math.min(1,st.q/40);
+    const frac=st.on?Math.min(1,st.c/12)*0.85+0.1:0;   // fracción visible de O₃ tras la celda
+    // gas: concentrador → celda → venturi
+    let n2=0,n3=0,n1=0;
+    for(let i=0;i<NG;i++){const g=gas[i];g.u+=dt*0.07;if(g.u>1){g.u-=1;g.r=Math.random();}
+      qa.setFromAxisAngle(g.ax,dt*2);g.q.multiply(qa);
+      const u=g.u;let isO3=false;
+      if(u<0.35){pos.copy(pO2.getPointAt(u/0.35));pos.addScaledVector(g.j,0.04);}
+      else if(u<0.6){const t=(u-0.35)/0.25;pos.copy(pCell.getPointAt(t));const k=i%6;pos.y=TUBES[k%3];pos.z=(k<3?-0.12:0.12)-0.05;pos.addScaledVector(g.j,0.03);
+        isO3=g.r<frac*t;
+        if(st.on&&!isO3&&g.r<frac&&Math.abs(t-g.r/frac)<0.08&&n1<30){pv.copy(pos).add(V(0.05,0.03,0));scl.set(1,1,1);m4.compose(pv,qi,scl);m1.setMatrixAt(n1++,m4);}}
+      else{pos.copy(pO3.getPointAt((u-0.6)/0.4));pos.addScaledVector(g.j,0.035);isO3=g.r<frac;}
+      m4.compose(pos,g.q,one);
+      if(isO3)m3.setMatrixAt(n3++,m4);else m2.setMatrixAt(n2++,m4);}
+    // disuelto en el agua: tubería tras venturi y columna
+    const wOn=st.on?1:0;
+    for(let i=0;i<NW;i++){const d=dis[i];if(!wOn)break;d.u+=dt*0.18;if(d.u>1){d.u-=1;d.r=Math.random();}
+      qa.setFromAxisAngle(d.ax,dt*2);d.q.multiply(qa);
+      if(d.u<0.3){const t=d.u/0.3;pos.set(IX+(CX-CR-IX)*t,IY+(Math.random()-0.5)*0.02+Math.sin(i)*0.05,Math.cos(i*1.7)*0.05);}
+      else{const t=(d.u-0.3)/0.7;const r=d.rr*(CR-0.08);pos.set(CX+Math.cos(d.a+t*2)*r,CB+0.1+t*(CH-0.45),Math.sin(d.a+t*2)*r);if(d.r>1-t*0.8)continue;}
+      scl.set(0.85,0.85,0.85);m4.compose(pos,d.q,scl);m3.setMatrixAt(n3++,m4);}
+    // gas residual al destructor: O₃ entra, O₂ sale
+    for(let i=0;i<NOFF;i++){const o=off[i];if(!wOn)break;o.u=(o.u+dt*0.2)%1;
+      if(o.u<0.55){pos.set(CX+Math.sin(i)*0.02,CB+CH+0.1+o.u/0.55*(DY-0.25-(CB+CH+0.1)),0);m4.compose(pos,qi,one);m3.setMatrixAt(n3++,m4);}
+      else{pos.set(DX+Math.sin(i)*0.03,DY+0.6+(o.u-0.55)*1.4,Math.cos(i)*0.03);m4.compose(pos,qi,one);m2.setMatrixAt(n2++,m4);}}
+    m2.count=n2;m3.count=n3;m1.count=n1;[m2,m3,m1].forEach(m=>m.instanceMatrix.needsUpdate=true);
+    // burbujas en la columna
+    for(let i=0;i<NBB;i++){const b=bb[i];b.y+=dt*0.22*b.s*(0.4+wOn);if(b.y>1)b.y-=1;
+      const r=b.rr*(CR-0.06),s=Math.max(0.0001,(1-b.y*0.7)*(0.3+0.7*wOn));pos.set(CX+Math.cos(b.a+b.y*3)*r,CB+0.1+b.y*(CH-0.4),Math.sin(b.a+b.y*3)*r);scl.set(s,s,s);m4.compose(pos,qi,scl);bub.setMatrixAt(i,m4);}
+    bub.instanceMatrix.needsUpdate=true;
+    // materia orgánica: se oxida según la dosis
+    const ox=st.on?Math.min(1,R.dose/20):0;
+    for(let i=0;i<NORG;i++){const o=og[i];o.y+=dt*0.06;if(o.y>1){o.y-=1;o.life=Math.random();}
+      const vis=o.life>ox*o.y*1.3?1:Math.max(0,1-(ox*o.y*1.3-o.life)*6);const r=o.rr*(CR-0.08);
+      pos.set(CX+Math.cos(o.a)*r,CB+0.15+o.y*(CH-0.5),Math.sin(o.a)*r);scl.set(vis,vis,vis);qa.setFromAxisAngle(V(0,1,0),clk+i);m4.compose(pos,qa,scl.set(Math.max(0.0001,vis),Math.max(0.0001,vis),Math.max(0.0001,vis)));org.setMatrixAt(i,m4);}
+    org.instanceMatrix.needsUpdate=true;
+    if(dirty){drawLcd();dirty=false;}
     renderer.render(scene,camera);
     const w=host.clientWidth,h=host.clientHeight;
     STEPS.forEach((s,i)=>{const e=pins[i];if(!e)return;pv.copy(s.pin).project(camera);if(pv.z>1||Math.abs(pv.x)>1.05||Math.abs(pv.y)>1.05){e.style.display='none';return;}e.style.display='';e.style.left=((pv.x+1)/2*w).toFixed(0)+'px';e.style.top=((1-pv.y)/2*h).toFixed(0)+'px';});
